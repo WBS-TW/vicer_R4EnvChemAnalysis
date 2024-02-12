@@ -178,6 +178,7 @@ data[1, c("RT_min")] #returns first value for column named "RT_min"
 data$RT_min #returns all values from column named "RT_min"
 
 data$RT_min[1] <- 1.2 #changes first value of column "RT_min" to 1.2
+data$new <- c(1:6) #adds new column "new" to the data with the values 1 to 6
 ```
 
 [To store data with different lengths, can use `lists` instead.]{.underline}
@@ -194,4 +195,32 @@ str(data_list)
 data_list[[1]] #will return first list
 data_list[[2]][1:4] #returns first 4 values of list 2
 data_list[[3]][3] #returns third value from list 3
+```
+
+If have two objects can compare them with logical tests:
+
+```{r}
+h <- c(1,2,3)
+i <- c(2,2,4)
+
+#elementwise comparison
+h != i #is h not equal to i, so givs TRUE, FALSE, TRUE
+h == i #is h equal to i, gives FALSE, TRUE, FALSE
+
+j <- 4
+
+j %in% h #is j in h, 4 is not in h
+j %in% i #is j in i, 4 is in i
+```
+
+```{r}
+data$new[data$sample_type=="influent"] <- "is influent" #will write "is influent" on the rows in column "new" is sample_types equals "influent
+```
+
+To check if data has NA
+
+```{r}
+data$new[data$new=="is influent"] <- NA
+
+is.na(data) #returns TRUE if is has NA
 ```

@@ -2,8 +2,13 @@
 
 This is a Quarto book.
 
-To learn more about Quarto books visit <https://quarto.org/docs/books>.
+It was made for the PhD course "**R programming for environmental analytical chemistry"**, 6 hp, at Linköping University during spring 2024.
+
+The aim with the course was to learn basic R programming, learn to write functions for the purpose of analysing enviornmental chemical data, visualise the data, and basic datamanagement creation.
+
+This Quarto book has served the purpose of documenting the development during the course.
 
 ```{r}
-1 + 1
+#| echo: false
+#To learn more about Quarto books visit https://quarto.org/docs/books.
 ```
