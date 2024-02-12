@@ -1,0 +1,197 @@
+# Basics
+
+Set directory of project with `setwd`
+
+```{r}
+setwd("C:/Users/vicer06/OneDrive - Linköpings universitet/Documents/GitHub/R4EnvChemAnalysis")
+```
+
+Rstudio consists of four windows, top left is where the Rscript files get opened and where the code can be written and edited, bottom left is where the console can be found for writing commands. In top right can for instance the workspace be seen which shows all created objects and in the bottom right can for instance the the files in the working directory be seen, created plots, loaded packages, etc.
+
+![Figure. Overview of RStudio](images/rstudio-01.png){width="574"}
+
+For some functions in R, different packages can be used. For example, to create more complex plots `ggplot()` function can be used. To be able to use it, the `ggplot2` packages needs to be first installed by `install.packages("ggplot2")` in the console, or by goint to *Tools\>Install Packages...\>search for `ggplot2`*.
+
+Installation of packages only needs to be done ones. To be able to use the functions includes in a package, it needs to be loaded for each new R session by:
+
+```{r}
+#| output: true
+library("ggplot2")
+```
+
+`ggplot2` can also be installed by installing the packages `tidyverse`, which contains multiple packages and load it with `library():`
+
+```{r}
+library("tidyverse")
+```
+
+If one want to use a function and are not sure which arguments the function requires, one can use `args("function name")` . Further by using `?"name of function/package/.."` , one can read about that certain function or package in the help-tab in the bottom right corner
+
+```{r}
+args(plot) #for the function plot, need to have the arguments x and y
+```
+
+```{r}
+args(round) #function to round numeric vector, the function needs the numeric vector, which can consist of only one number
+
+x <- 6.02214072
+round(x) #by default will round the number to zero digits
+
+round(x, digits = 3) #can change to how many digits one wants
+```
+
+------------------------------------------------------------------------
+
+Objects can easily be created by using the symbol `<-`, and that points towards the name of the object and to write comments that can make the written code easier to interpretate `#` can be used:
+
+```{r}
+#| output: true
+#This is a code that creates objects a which contains the sum of 2 + 5
+
+a <- 2 + 5
+a
+
+#It is also possible to assign a vector of numbers to objects as done here for b which contains the numbers 2,3,4,5,6
+
+b <- c(2:6)
+b
+#Further, it is possible to use addition, subtraction, etc, on objects.
+
+c <- b+a
+c
+d <- b*a
+d
+d <- d - 2
+d
+
+
+#Also, it is possible to use matrix operator on vectors
+
+e1 <- b %*% b #inner multiplication
+e2 <- b %o% b #outer multiplication
+e1
+e2
+```
+
+Important: object names cannot start with a number or contain symbols such as \^, !, \$, @, +, -, /, \*
+
+```{r}
+#2a <- c(2,4)
+
+#Error: unexpected symbol in "2a"
+```
+
+```{r}
+#object! <- c(1:4)
+
+#Error: unexpected '!' in "object!"
+```
+
+```{r}
+#However, it is possible to use "_" in an objects name
+
+object_name <- c(5:8)
+```
+
+If an new objects is given the same name as an existing objects, the content in the objects will be written over by the new content:
+
+```{r}
+f <- 2+6 #objects f is created which contains the sum of 2+6
+f
+
+f <- c(2,4,6) #object f now has the values 2, 4, and 6
+f
+```
+
+To avoid writing over existing objects, one can either look in the top-right part of RStudio in the "Environment"-tab to see which names are already in use, or can use the command `ls()`
+
+```{r}
+ls()
+```
+
+------------------------------------------------------------------------
+
+[When a script is running and you would like to cancel it, you can press `clrl+c`]{.underline}
+
+------------------------------------------------------------------------
+
+More useful functions:
+
+```{r}
+
+sum(b) #sums a set of values
+
+mean(b) #returns the mean values of a set of values 
+
+replicate(n = 3, a+2) #repeats the command (here a+2) n number of times
+
+sample(x = object_name, size = 2, replace = TRUE) #returns random value from x (in this case object_name). size determines number of values to return and replace = TRUE mean the same value can be returned multiple times (if FALSE, will not return same value multiple times)
+
+```
+
+------------------------------------------------------------------------
+
+#### Data types
+
+The main data types in R includes
+
+-   Numeric ⟹ `3.14, 2, 6.022`
+
+-   Integer ⟹ `2, 3, 4`
+
+-   Complex ⟹ `4i+5`
+
+-   Logical ⟹ `TRUE/FALSE`
+
+-   Character ⟹ "x", "hello", "RT"
+
+To check if a vector is numeric: `is.numeric("data")` , returns `TRUE` if data is numeric (incldues both integers or decimals)
+
+`class("data")` returns the type of data e.g. `numeric`
+
+`typeof("data")` are more specific, e.g. returns `double` if data contains decimal numbers
+
+If want to change vector to integers can sue `as.integer("data")`
+
+-   Factor ⟹ categorical variable, can be used to divide data according to different levels e.g. data has the categories `influent` and `effluent`
+
+```{r}
+data <- data.frame(sample_type = as.factor(c("influent", "effluent")), #as.factor can be used to convert the type of sample into factor
+                   RT_min = c(1.1,1.1,2.3,2.3,3.4,3.4),
+                   m_z = c(180, 190, 200, 180, 230, 200))
+
+str(data) #can be used to see structure of data frame
+```
+
+Data frame can be used to store data in a table, similar to Excel. Can have different columns with data (in example above, have columns `sample_type` , `RT_min` , and `m_z` ) and the columns contains data in six rows. The columns can contain different types of data, e.g. `character` , `numeric` , `logical`, but they must have the same length.
+
+Can extract a certain part of a data frame by using `[]`
+
+```{r}
+#data[row, column]
+
+data[2] #second columns (RT_min) with all row data
+data[2,] #second row, with all column data
+data[,2:3] #column 2 and 3 (RT_min, m_z), all rows
+data[4:6, 2:3] #row 4 to 6, for column 2 and 3
+data[1, c("RT_min")] #returns first value for column named "RT_min"
+data$RT_min #returns all values from column named "RT_min"
+
+data$RT_min[1] <- 1.2 #changes first value of column "RT_min" to 1.2
+```
+
+[To store data with different lengths, can use `lists` instead.]{.underline}
+
+```{r}
+data_list <- list(sample_type = c("influent", "effluent"),
+                  retention_time = c(1.1, 2.1, 2.4, 3.0, 4.6, 4.8, 5.3),
+                  m_z = c(180, 190, 200, 210))
+
+str(data_list)
+```
+
+```{r}
+data_list[[1]] #will return first list
+data_list[[2]][1:4] #returns first 4 values of list 2
+data_list[[3]][3] #returns third value from list 3
+```
