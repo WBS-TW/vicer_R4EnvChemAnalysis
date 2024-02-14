@@ -42,7 +42,9 @@ round(x, digits = 3) #can change to how many digits one wants
 
 ------------------------------------------------------------------------
 
-Objects can easily be created by using the symbol `<-`, and that points towards the name of the object and to write comments that can make the written code easier to interpretate `#` can be used:
+## Simple commands
+
+Objects is a way to store data in R. Objects can easily be created by using the symbol `<-`, and that points towards the name of the object. Further, to write comments that can make the written code easier to interpretate `#` can be used:
 
 ```{r}
 #| output: true
@@ -68,12 +70,12 @@ d
 #Also, it is possible to use matrix operator on vectors
 
 e1 <- b %*% b #inner multiplication
-e2 <- b %o% b #outer multiplication
 e1
+e2 <- b %o% b #outer multiplication
 e2
 ```
 
-Important: object names cannot start with a number or contain symbols such as \^, !, \$, @, +, -, /, \*
+Important: object names cannot start with a number or contain symbols such as \^, !, \$, \@, +, -, /, \*
 
 ```{r}
 #2a <- c(2,4)
@@ -115,7 +117,7 @@ ls()
 
 ------------------------------------------------------------------------
 
-More useful functions:
+**More useful functions:**
 
 ```{r}
 
@@ -131,7 +133,7 @@ sample(x = object_name, size = 2, replace = TRUE) #returns random value from x (
 
 ------------------------------------------------------------------------
 
-#### Data types
+## Data types
 
 The main data types in R includes
 
@@ -217,10 +219,28 @@ j %in% i #is j in i, 4 is in i
 data$new[data$sample_type=="influent"] <- "is influent" #will write "is influent" on the rows in column "new" is sample_types equals "influent
 ```
 
-To check if data has NA
+To check if data has `NA`
 
 ```{r}
-data$new[data$new=="is influent"] <- NA
+data$new[data$new=="is influent"] <- NA #put "is influent" to NA
 
 is.na(data) #returns TRUE if is has NA
 ```
+
+------------------------------------------------------------------------
+
+## Writing Functions
+
+XXX
+
+------------------------------------------------------------------------
+
+## If Statements/ For Loops
+
+XXX
+
+------------------------------------------------------------------------
+
+## Import/ Export data
+
+XXX
