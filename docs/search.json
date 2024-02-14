@@ -1,0 +1,51 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "R4EnvChemAnalysis - PhD Course",
+    "section": "",
+    "text": "Preface\nThis is a Quarto book.\nIt was made for the PhD course “R programming for environmental analytical chemistry”, 6 hp, at Linköping University during spring 2024.\nThe aim with the course was to learn basic R programming, learn to write functions for the purpose of analysing enviornmental chemical data, visualise the data, and basic datamanagement creation.\nThis Quarto book has served the purpose of documenting the development during the course."
+  },
+  {
+    "objectID": "Basics.html#simple-commands",
+    "href": "Basics.html#simple-commands",
+    "title": "1  Basics",
+    "section": "1.1 Simple commands",
+    "text": "1.1 Simple commands\nObjects is a way to store data in R. Objects can easily be created by using the symbol &lt;-, and that points towards the name of the object. Further, to write comments that can make the written code easier to interpretate # can be used:\n\n#This is a code that creates objects a which contains the sum of 2 + 5\n\na &lt;- 2 + 5\na\n\n[1] 7\n\n#It is also possible to assign a vector of numbers to objects as done here for b which contains the numbers 2,3,4,5,6\n\nb &lt;- c(2:6)\nb\n\n[1] 2 3 4 5 6\n\n#Further, it is possible to use addition, subtraction, etc, on objects.\n\nc &lt;- b+a\nc\n\n[1]  9 10 11 12 13\n\nd &lt;- b*a\nd\n\n[1] 14 21 28 35 42\n\nd &lt;- d - 2\nd\n\n[1] 12 19 26 33 40\n\n#Also, it is possible to use matrix operator on vectors\n\ne1 &lt;- b %*% b #inner multiplication\ne1\n\n     [,1]\n[1,]   90\n\ne2 &lt;- b %o% b #outer multiplication\ne2\n\n     [,1] [,2] [,3] [,4] [,5]\n[1,]    4    6    8   10   12\n[2,]    6    9   12   15   18\n[3,]    8   12   16   20   24\n[4,]   10   15   20   25   30\n[5,]   12   18   24   30   36\n\n\nImportant: object names cannot start with a number or contain symbols such as ^, !, $, @, +, -, /, *\n\n#2a &lt;- c(2,4)\n\n#Error: unexpected symbol in \"2a\"\n\n\n#object! &lt;- c(1:4)\n\n#Error: unexpected '!' in \"object!\"\n\n\n#However, it is possible to use \"_\" in an objects name\n\nobject_name &lt;- c(5:8)\n\nIf an new objects is given the same name as an existing objects, the content in the objects will be written over by the new content:\n\nf &lt;- 2+6 #objects f is created which contains the sum of 2+6\nf\n\n[1] 8\n\nf &lt;- c(2,4,6) #object f now has the values 2, 4, and 6\nf\n\n[1] 2 4 6\n\n\nTo avoid writing over existing objects, one can either look in the top-right part of RStudio in the “Environment”-tab to see which names are already in use, or can use the command ls()\n\nls()\n\n [1] \"a\"               \"b\"               \"c\"               \"d\"              \n [5] \"e1\"              \"e2\"              \"f\"               \"has_annotations\"\n [9] \"object_name\"     \"x\"              \n\n\n\nWhen a script is running and you would like to cancel it, you can press clrl+c\n\nMore useful functions:\n\nsum(b) #sums a set of values\n\n[1] 20\n\nmean(b) #returns the mean values of a set of values \n\n[1] 4\n\nreplicate(n = 3, a+2) #repeats the command (here a+2) n number of times\n\n[1] 9 9 9\n\nsample(x = object_name, size = 2, replace = TRUE) #returns random value from x (in this case object_name). size determines number of values to return and replace = TRUE mean the same value can be returned multiple times (if FALSE, will not return same value multiple times)\n\n[1] 5 7"
+  },
+  {
+    "objectID": "Basics.html#data-types",
+    "href": "Basics.html#data-types",
+    "title": "1  Basics",
+    "section": "1.2 Data types",
+    "text": "1.2 Data types\nThe main data types in R includes\n\nNumeric ⟹ 3.14, 2, 6.022\nInteger ⟹ 2, 3, 4\nComplex ⟹ 4i+5\nLogical ⟹ TRUE/FALSE\nCharacter ⟹ “x”, “hello”, “RT”\n\nTo check if a vector is numeric: is.numeric(\"data\") , returns TRUE if data is numeric (incldues both integers or decimals)\nclass(\"data\") returns the type of data e.g. numeric\ntypeof(\"data\") are more specific, e.g. returns double if data contains decimal numbers\nIf want to change vector to integers can sue as.integer(\"data\")\n\nFactor ⟹ categorical variable, can be used to divide data according to different levels e.g. data has the categories influent and effluent\n\n\ndata &lt;- data.frame(sample_type = as.factor(c(\"influent\", \"effluent\")), #as.factor can be used to convert the type of sample into factor\n                   RT_min = c(1.1,1.1,2.3,2.3,3.4,3.4),\n                   m_z = c(180, 190, 200, 180, 230, 200))\n\nstr(data) #can be used to see structure of data frame\n\n'data.frame':   6 obs. of  3 variables:\n $ sample_type: Factor w/ 2 levels \"effluent\",\"influent\": 2 1 2 1 2 1\n $ RT_min     : num  1.1 1.1 2.3 2.3 3.4 3.4\n $ m_z        : num  180 190 200 180 230 200\n\n\nData frame can be used to store data in a table, similar to Excel. Can have different columns with data (in example above, have columns sample_type , RT_min , and m_z ) and the columns contains data in six rows. The columns can contain different types of data, e.g. character , numeric , logical, but they must have the same length.\nCan extract a certain part of a data frame by using []\n\n#data[row, column]\n\ndata[2] #second columns (RT_min) with all row data\n\n  RT_min\n1    1.1\n2    1.1\n3    2.3\n4    2.3\n5    3.4\n6    3.4\n\ndata[2,] #second row, with all column data\n\n  sample_type RT_min m_z\n2    effluent    1.1 190\n\ndata[,2:3] #column 2 and 3 (RT_min, m_z), all rows\n\n  RT_min m_z\n1    1.1 180\n2    1.1 190\n3    2.3 200\n4    2.3 180\n5    3.4 230\n6    3.4 200\n\ndata[4:6, 2:3] #row 4 to 6, for column 2 and 3\n\n  RT_min m_z\n4    2.3 180\n5    3.4 230\n6    3.4 200\n\ndata[1, c(\"RT_min\")] #returns first value for column named \"RT_min\"\n\n[1] 1.1\n\ndata$RT_min #returns all values from column named \"RT_min\"\n\n[1] 1.1 1.1 2.3 2.3 3.4 3.4\n\ndata$RT_min[1] &lt;- 1.2 #changes first value of column \"RT_min\" to 1.2\ndata$new &lt;- c(1:6) #adds new column \"new\" to the data with the values 1 to 6\n\nTo store data with different lengths, can use lists instead.\n\ndata_list &lt;- list(sample_type = c(\"influent\", \"effluent\"),\n                  retention_time = c(1.1, 2.1, 2.4, 3.0, 4.6, 4.8, 5.3),\n                  m_z = c(180, 190, 200, 210))\n\nstr(data_list)\n\nList of 3\n $ sample_type   : chr [1:2] \"influent\" \"effluent\"\n $ retention_time: num [1:7] 1.1 2.1 2.4 3 4.6 4.8 5.3\n $ m_z           : num [1:4] 180 190 200 210\n\n\n\ndata_list[[1]] #will return first list\n\n[1] \"influent\" \"effluent\"\n\ndata_list[[2]][1:4] #returns first 4 values of list 2\n\n[1] 1.1 2.1 2.4 3.0\n\ndata_list[[3]][3] #returns third value from list 3\n\n[1] 200\n\n\nIf have two objects can compare them with logical tests:\n\nh &lt;- c(1,2,3)\ni &lt;- c(2,2,4)\n\n#elementwise comparison\nh != i #is h not equal to i, so givs TRUE, FALSE, TRUE\n\n[1]  TRUE FALSE  TRUE\n\nh == i #is h equal to i, gives FALSE, TRUE, FALSE\n\n[1] FALSE  TRUE FALSE\n\nj &lt;- 4\n\nj %in% h #is j in h, 4 is not in h\n\n[1] FALSE\n\nj %in% i #is j in i, 4 is in i\n\n[1] TRUE\n\n\n\ndata$new[data$sample_type==\"influent\"] &lt;- \"is influent\" #will write \"is influent\" on the rows in column \"new\" is sample_types equals \"influent\n\nTo check if data has NA\n\ndata$new[data$new==\"is influent\"] &lt;- NA #put \"is influent\" to NA\n\nis.na(data) #returns TRUE if is has NA\n\n     sample_type RT_min   m_z   new\n[1,]       FALSE  FALSE FALSE  TRUE\n[2,]       FALSE  FALSE FALSE FALSE\n[3,]       FALSE  FALSE FALSE  TRUE\n[4,]       FALSE  FALSE FALSE FALSE\n[5,]       FALSE  FALSE FALSE  TRUE\n[6,]       FALSE  FALSE FALSE FALSE"
+  },
+  {
+    "objectID": "Basics.html#writing-functions",
+    "href": "Basics.html#writing-functions",
+    "title": "1  Basics",
+    "section": "1.3 Writing Functions",
+    "text": "1.3 Writing Functions\nXXX"
+  },
+  {
+    "objectID": "Basics.html#if-statements-for-loops",
+    "href": "Basics.html#if-statements-for-loops",
+    "title": "1  Basics",
+    "section": "1.4 If Statements/ For Loops",
+    "text": "1.4 If Statements/ For Loops\nXXX"
+  },
+  {
+    "objectID": "Basics.html#import-export-data",
+    "href": "Basics.html#import-export-data",
+    "title": "1  Basics",
+    "section": "1.5 Import/ Export data",
+    "text": "1.5 Import/ Export data\nXXX"
+  },
+  {
+    "objectID": "Data_vis.html#basic-plotting",
+    "href": "Data_vis.html#basic-plotting",
+    "title": "2  Data Visualisation",
+    "section": "2.1 Basic Plotting",
+    "text": "2.1 Basic Plotting"
+  }
+]

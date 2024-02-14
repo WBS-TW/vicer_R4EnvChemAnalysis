@@ -1,5 +1,6 @@
 project:
   type: book
+  output-dir: docs
 
 book:
   title: "R4EnvChemAnalysis - PhD Course"
@@ -8,6 +9,7 @@ book:
   chapters:
     - index.qmd
     - Basics.qmd
+    - Data_vis.qmd
 
 bibliography: references.bib
 

@@ -127,6 +127,8 @@ mean(b) #returns the mean values of a set of values
 
 replicate(n = 3, a+2) #repeats the command (here a+2) n number of times
 
+trunc(3.14) #returns only integers of a number
+
 sample(x = object_name, size = 2, replace = TRUE) #returns random value from x (in this case object_name). size determines number of values to return and replace = TRUE mean the same value can be returned multiple times (if FALSE, will not return same value multiple times)
 
 ```
@@ -231,16 +233,101 @@ is.na(data) #returns TRUE if is has NA
 
 ## Writing Functions
 
-XXX
+Instead of using the included functions in R (e.g. `plot()` ) or in a package (e.g. `ggplot()` ), it is possible to write your own functions.
+
+To make a function, three parts is needed: *name, set of arguments, and body of code* and has en general layout as: `function_name <- function("set of arguments"){"functions code}`
+
+```{r}
+#Function that sums the values in objects "vector" without any set of arguments used
+vector <- 1:10
+first_function <- function(){
+  output <- sum(vector)
+  return(output)
+}
+first_function()
+
+#This function does the same, but here an argument "samp" is needed for it to work
+second_function <- function(samp){
+  sum_sample <- sum(samp)
+  return(sum_sample)
+}
+second_function(samp=vector)
+
+#Same type of function again, but here we have an default value for argument "samp", so if the argument is not specifically used, the default it used.
+third_function <- function(samp=1:4){
+  sum_sample <- sum(samp)
+  return(sum_sample)
+}
+third_function()
+third_function(samp=vector)
+
+```
+
+If one has a written some command and want to make it into a function, R can do that for you if you highlight the commands and press `Alt + cltr + x` (or *code \> extract function*).
 
 ------------------------------------------------------------------------
 
 ## If Statements/ For Loops
 
-XXX
+An useful way to write code is to use **If statements** and **For loops**.
+
+-   In If statements, only if a certain criteria is true, a certain command will happen. In R they have the general form of: `if("criteria"){"command to happen if true"}.`
+
+```{r}
+#Only if v1 is smaller than v2 will v3 be created as the sum of v1 and v2
+v1 <- 5
+v2 <- 10
+if (v1<v2) {
+  v3 <- v1+v2
+  print(v3)
+}
+
+if (v1>v2) {
+  v4 <- v1+v2
+  print(v4)
+}
+#Returns nothing since statement is not true
+
+```
+
+It is also possible to add a "plan B" with if statements by using `else{}` .
+
+```{r}
+#will return the sum w1 and w2 if the if statment is true, otherwise will take w1-w2
+w1 <- 5
+w2 <- 10
+if (w1>w2) {
+  w3 <- w1+w2
+  print(w3)
+} else {
+  w3 <- w1-w2
+  print(w3)
+}
+```
+
+```{r}
+#Can combine if statments with function. In this case, if input value of x is larger than 0, will return y as y+x*-1
+x1 <- 2
+y1 <- 3
+a_function <- function(x,y){
+  if (x > 0){
+    y <- y+x*-1
+  }
+  return(y)
+}
+a_function(x=x1, y=y1)
+```
+
+-   In For loops, certain commands will be repeated for a certain number of times. In R they have the general form of: `for("item in object"){"command as long as item is in object"}.`
+
+```{r}
+#The For loop will add the numbers in o1 +1 to the empty vector o2
+o1 <- 1:4
+o2 <- c()
+for (i in o1) {
+  o2[i] <- i+1
+}
+o2
+```
 
 ------------------------------------------------------------------------
-
-## Import/ Export data
-
-XXX
