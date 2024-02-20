@@ -131,6 +131,13 @@ trunc(3.14) #returns only integers of a number
 
 sample(x = object_name, size = 2, replace = TRUE) #returns random value from x (in this case object_name). size determines number of values to return and replace = TRUE mean the same value can be returned multiple times (if FALSE, will not return same value multiple times)
 
+a1 <- data.frame(a11=1:10,
+                 a12=2:11)
+apply(a1[,1:2], 2, mean) #performs specified function (in this case mean) of column 1 and 2 in a1
+apply(a1[,1:2], 1, mean) #performed specified function on each row for the columns 1 and 2 in a1
+
+sd(b, na.rm=TRUE) #calculate the standard deviation of vector b and ignoers NA values
+
 ```
 
 ------------------------------------------------------------------------

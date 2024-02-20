@@ -4,6 +4,105 @@ XXXX
 
 ## **Import/ Export data**
 
+Data can be imported in R in different ways. In the Environment tab, there is an import-data button, in which it is possible to select the type of data (e.g. Excel). From that tab it is possible to receive the command needed if one wants to have it in a script.
+
+To **import** *.csv* data, the `read.csv()` function can be used:
+
+`csv_data <- read.csv("csv file location")`
+
+It is also possible to easily **export** data to a csv-file by using the function `write.csv()` :
+
+`write.csv("name of data", "name of the file to export to (and location if other than working directory)", row.names = FALSE)` row.names = FALSE to remove the row names to be written in the output.
+
+For **importing** data from an *Excel-file*, the package `readxl` package can be used. In the package, the function `read_excel()` can be used which requires the location of the file and to import a specific sheet, the argument `sheet= "name of the sheet"` can be used.
+
+```{r}
+library(readxl)
+#Will import the sheet "Ovwerview" from the Excel-file "Statistics_Kumla_20200408" and save it in the object "Data_Kumla"
+Data_Kumla <- read_excel("~/Courses/R_Course/Statistics_Kumla_20200408.xlsx", sheet = "Overview")
+```
+
+The imported data will be a data frame.
+
 ------------------------------------------------------------------------
 
 ## Basic Plotting
+
+Plots can be made by using the Base R functions.
+
+```{r}
+#Scatter plot of the data in column "PFOS" and "sum_PFOS"
+plot(x=Data_Kumla$PFOS, y=Data_Kumla$sum_PFOS,
+     xlab = "PFOS concentration [ng/L]", #adds x-axis title
+     ylab = "sum_PFOS [ng/L]", #adds y-axis title
+     pch = 16, #solid circlesch, pch=1 unfilled cicles
+     cex.lab=0.75, #changes font size of axis titels, 1 is default size
+     cex.axis=0.75, #changes font size of axis values
+     cex = 0.6, #changes point size
+     col="darkred") 
+
+grid(lty=1, col="lightgrey", lwd=1) #adds a grid
+
+lines(lowess(Data_Kumla$PFOS, Data_Kumla$sum_PFOS),
+      col="black", lwd=2, lty=2) #adds a local regression line as a black colour dashed (lty=2) line with line width 2
+
+abline(lm(Data_Kumla$PFOS ~ Data_Kumla$sum_PFOS, data=Data_Kumla), col="darkgrey", lwd=2, lty=3) #adds regression line in darkgrey colour
+
+legend(x="topleft", legend=c("Scatter plot", "LOWESS", "Linear regression"), fill=c("darkred","black","darkgrey"),
+       cex=0.5)
+```
+
+Other plot types:
+
+```{r}
+Data_Kumla$`Sampling site`<- factor(Data_Kumla$`Sampling site`)
+
+barplot(height=Data_Kumla$PFOS,
+        ylab="Sampling site",
+        xlab="PFOS concentraion [ng/L]",
+        col= c("darkred","darkgreen","darkblue"),
+        cex.axis = 0.75,
+        cex.names = 0.75,
+        legend.text=c("K1", "KS", "KRef"),
+        args.legend=list(x="bottomright", cex=0.5),
+        horiz = TRUE,
+        xlim = c(0, max(Data_Kumla$PFOS)+75))
+
+box() #adds box around the plot
+```
+
+------------------------------------------------------------------------
+
+## Tidyverse
+
+[Tidyverse](https://www.tidyverse.org/packages/) contains a collection of packages. All the functions from the packages follow the same type of structure, making them easier to use. The core packages included in Tidyverse are `ggplot2`, `dplyr`, `tidyr`, `readr`, `purr`, `tibble`, `stringr`, and `forcats`.
+
+|            |                                                                                                                                    |
+|-------|-----------------------------------------------------------------|
+| **readr**  | for reading rectangular data from e.g. .csv by using `read_csv()`                                                                  |
+| **tidyr**  | for organising tabular data e.g. `pivot_longer()` to combine multiple columns to a long table                                      |
+| **purr**   | can be used to exchange For Loops with code e.g. by using `map()` to apply a function to all elements in a list and returns a list |
+| **dplyr**  | can be used for data manipulations e.g. by piping                                                                                  |
+
+#### 
+
+### Pipes 
+
+Is a way to simplify R code. By using %\<% code can be rewritten to become easier interpretated. The symbol can be thought of as a "+" symbol.
+
+For example, if you would like to only have the concentrations of *PFOS* in *Data_Kumla* above 100 ng/L. Instead of having to use For loops and/or if statements or other commands, it can simply be written using *pipe operations*:
+
+```{r}
+PFOS_above100 <- Data_Kumla %>% select(PFOS) %>% filter(PFOS>100)
+PFOS_above100
+```
+
+Or in situation when nested function i used. E.g. want to the mean of the PFOS concentrations and round it to 1 decimal.
+
+```{r}
+mean_PFOS <- round(mean(Data_Kumla$PFOS))
+```
+
+### ggplot2
+
+XXXXXXX pipline ggplot2 etc
