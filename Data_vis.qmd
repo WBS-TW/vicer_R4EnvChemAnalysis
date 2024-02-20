@@ -88,10 +88,11 @@ box() #adds box around the plot
 
 Is a way to simplify R code. By using %\<% code can be rewritten to become easier interpretated. The symbol can be thought of as a "+" symbol.
 
-For example, if you would like to only have the concentrations of *PFOS* in *Data_Kumla* above 100 ng/L. Instead of having to use For loops and/or if statements or other commands, it can simply be written using *pipe operations*:
+For example, if you would like to only have the concentrations of *PFOS* in *Data_Kumla* above 100 ng/L. Instead of having to use For loops and/or if statements or other type of commands, it can simply be written using *pipe operations*:
 
 ```{r}
 PFOS_above100 <- Data_Kumla %>% select(PFOS) %>% filter(PFOS>100)
+#or use |> instead of %>%, first requires paranthesis when calling functions, second does not
 PFOS_above100
 ```
 
@@ -152,7 +153,7 @@ p+ geom_text(aes(mean(PFOS)+350, mean(sum_PFOS)+10,label=paste("Mean point")), s
 sampling <- as.factor(Data_Kumla$`Sampling site`)
 b <- ggplot(data=Data_Kumla, aes(x=sampling, y=PFOS, fill=sampling))+
   geom_bar(stat = "identity", width = 0.5, colour="black",position=position_dodge())+
-  scale_fill_manual(values = c("K1" = "darkblue", "K2" = "darkgreen", "KRef" = "darkred"))+
+  scale_fill_manual(values = c("K1" = "darkblue", "KS" = "darkgreen", "KRef" = "darkred"))+
   theme_minimal()+
   theme(
     panel.background = element_rect(fill = "white"),  # Set white background
@@ -177,4 +178,34 @@ b <- ggplot(data=Data_Kumla, aes(x=sampling, y=PFOS, fill=sampling))+
 )
 
 b
+```
+
+```{r}
+b2 <- ggplot(data=Data_Kumla, aes(x=PFOS,fill=sampling))+
+  geom_bar(stat = "bin", binwidth = 108, colour="black",position=position_dodge())+
+  scale_fill_manual(values = c("K1" = "darkblue", "KS" = "darkgreen", "KRef" = "darkred"))+
+  theme_minimal()+
+  theme(
+    panel.background = element_rect(fill = "white"),  # Set white background
+    panel.grid.major = element_blank(),  # Remove grid lines
+    panel.grid.minor = element_blank(),  # Remove grid lines
+    axis.text = element_text(size = 9),  # Increase font size of axis text
+    axis.title.y = element_text(size = 9,face = "bold"),  # Make y-axis label bold and italic
+    axis.text.y = element_text(color = "black", size = 9),  # Make x-axis text bold
+    axis.title.x = element_text(size = 10,face = "bold"),
+    axis.text.x = element_text(color = "black", size = 9),  # Make x-axis text bold
+    axis.ticks.x = element_line(color = "black"),  # Add ticks to x-axis in black color
+    axis.ticks.y = element_line(color = "black"),  # Add ticks to y-axis in black color
+    #aspect.ratio = 1,  # Set aspect ratio
+    plot.margin = margin(0.5, 0.5, 0.4, 0.5, "cm"),  # Set plot margins
+    legend.text=element_text(size=9),
+    #legend.position = c(0.85, 0.85),
+    legend.background = element_rect(fill="white",
+                                   size=0.5, linetype="solid", 
+                                   colour ="black"),
+    legend.title = element_blank(),
+    #legend.margin = margin(0.001, 1, 0.5, 0.5)
+)
+
+b2
 ```
