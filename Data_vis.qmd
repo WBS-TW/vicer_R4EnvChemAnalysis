@@ -1,7 +1,5 @@
 # Data Visualisation
 
-XXXX
-
 ## **Import/ Export data**
 
 Data can be imported in R in different ways. In the Environment tab, there is an import-data button, in which it is possible to select the type of data (e.g. Excel). From that tab it is possible to receive the command needed if one wants to have it in a script.
@@ -77,16 +75,16 @@ box() #adds box around the plot
 
 [Tidyverse](https://www.tidyverse.org/packages/) contains a collection of packages. All the functions from the packages follow the same type of structure, making them easier to use. The core packages included in Tidyverse are `ggplot2`, `dplyr`, `tidyr`, `readr`, `purr`, `tibble`, `stringr`, and `forcats`.
 
-|            |                                                                                                                                    |
-|-------|-----------------------------------------------------------------|
-| **readr**  | for reading rectangular data from e.g. .csv by using `read_csv()`                                                                  |
-| **tidyr**  | for organising tabular data e.g. `pivot_longer()` to combine multiple columns to a long table                                      |
-| **purr**   | can be used to exchange For Loops with code e.g. by using `map()` to apply a function to all elements in a list and returns a list |
-| **dplyr**  | can be used for data manipulations e.g. by piping                                                                                  |
+|           |                                                                                                                                    |
+|-------------|----------------------------------------------------------|
+| **readr** | for reading rectangular data from e.g. .csv by using `read_csv()`                                                                  |
+| **tidyr** | for organising tabular data e.g. `pivot_longer()` to combine multiple columns to a long table                                      |
+| **purr**  | can be used to exchange For Loops with code e.g. by using `map()` to apply a function to all elements in a list and returns a list |
+| **dplyr** | can be used for data manipulations e.g. by piping                                                                                  |
 
 #### 
 
-### Pipes 
+### Pipes
 
 Is a way to simplify R code. By using %\<% code can be rewritten to become easier interpretated. The symbol can be thought of as a "+" symbol.
 
@@ -100,9 +98,17 @@ PFOS_above100
 Or in situation when nested function i used. E.g. want to the mean of the PFOS concentrations and round it to 1 decimal.
 
 ```{r}
-mean_PFOS <- round(mean(Data_Kumla$PFOS))
+mean_PFOS <- round(mean(Data_Kumla$PFOS),1)
+mean_PFOS
+```
+
+However, by using pipe operation it becomes more readable:
+
+```{r}
+mean_PFOS_pipe <- Data_Kumla$PFOS %>% mean %>% round(1)
+mean_PFOS_pipe
 ```
 
 ### ggplot2
 
-XXXXXXX pipline ggplot2 etc
+XXXXXXX ggplot2 etc
