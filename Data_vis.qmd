@@ -33,7 +33,7 @@ Plots can be made by using the Base R functions.
 plot(x=Data_Kumla$PFOS, y=Data_Kumla$sum_PFOS,
      xlab = "PFOS concentration [ng/L]", #adds x-axis title
      ylab = "sum_PFOS [ng/L]", #adds y-axis title
-     pch = 16, #solid circlesch, pch=1 unfilled cicles
+     pch = 16, #solid circles, pch=1 unfilled cicles
      cex.lab=0.75, #changes font size of axis titels, 1 is default size
      cex.axis=0.75, #changes font size of axis values
      cex = 0.6, #changes point size
@@ -44,7 +44,7 @@ grid(lty=1, col="lightgrey", lwd=1) #adds a grid
 lines(lowess(Data_Kumla$PFOS, Data_Kumla$sum_PFOS),
       col="black", lwd=2, lty=2) #adds a local regression line as a black colour dashed (lty=2) line with line width 2
 
-abline(lm(Data_Kumla$PFOS ~ Data_Kumla$sum_PFOS, data=Data_Kumla), col="darkgrey", lwd=2, lty=3) #adds regression line in darkgrey colour
+abline(lm(Data_Kumla$sum_PFOS ~ Data_Kumla$PFOS, data=Data_Kumla), col="darkgrey", lwd=2, lty=3) #adds regression line in darkgrey colour
 
 legend(x="topleft", legend=c("Scatter plot", "LOWESS", "Linear regression"), fill=c("darkred","black","darkgrey"),
        cex=0.5)
@@ -111,4 +111,70 @@ mean_PFOS_pipe
 
 ### ggplot2
 
-XXXXXXX ggplot2 etc
+ggplot2 can be used to make plots in R instead of using the base R functions.
+
+```{r}
+mean_data <- data.frame(a=mean(Data_Kumla$PFOS), b=mean(Data_Kumla$sum_PFOS))
+p <- ggplot(data=Data_Kumla, mapping=aes(x=PFOS, y=sum_PFOS))+
+  geom_point(size=0.6, aes(colour="Scatter plot"))+
+  geom_smooth(method="loess", size=0.6, aes(colour="LOWESS"), se=FALSE,linetype="longdash")+
+  geom_smooth(method="lm", size=0.6, aes(colour="Linear regression"), se=FALSE, linetype="dashed")+
+  scale_color_manual(values = c("Scatter plot" = "darkred", "LOWESS" = "black", "Linear regression" = "darkgrey")) + #colours of points
+  
+  theme_minimal()+
+  theme(
+    panel.background = element_rect(fill = "white"),  # Set white background
+    panel.grid = element_blank(),  # Remove grid lines
+    axis.text = element_text(size = 9),  # Increase font size of axis text
+    axis.title.y = element_text(size = 9,face = "bold"),  # Make y-axis label bold and italic
+    axis.text.y = element_text(color = "black", size = 9),  # Make x-axis text bold
+    axis.title.x = element_text(size = 10,face = "bold"),
+    axis.text.x = element_text(color = "black", size = 9),  # Make x-axis text bold
+    axis.ticks.x = element_line(color = "black"),  # Add ticks to x-axis in black color
+    axis.ticks.y = element_line(color = "black"),  # Add ticks to y-axis in black color
+    aspect.ratio = 1,  # Set aspect ratio
+    plot.margin = margin(0.5, 0.5, 0.4, 0.5, "cm"),  # Set plot margins
+    legend.text=element_text(size=9),
+    legend.position = c(0.25, 0.85),
+    legend.background = element_rect(fill="white",
+                                   size=0.5, linetype="solid", 
+                                   colour ="black"),
+    legend.title = element_blank(), #removes the title of the legend
+    legend.margin = margin(0.001, 1, 0.5, 0.5))+
+  geom_point(data=mean_data, aes(x=a,y=b), colour="black",size=3, alpha=0.9, shape=21, fill="salmon") #highlights the mean point in red
+
+p+ geom_text(aes(mean(PFOS)+350, mean(sum_PFOS)+10,label=paste("Mean point")), size=3, colour="red4") #adds a text for the mean point
+
+#p+ geom_point(data=Data_Kumla, aes(x=PFOSA, y=sum_PFOS), colour="pink")
+```
+
+```{r}
+sampling <- as.factor(Data_Kumla$`Sampling site`)
+b <- ggplot(data=Data_Kumla, aes(x=sampling, y=PFOS, fill=sampling))+
+  geom_bar(stat = "identity", width = 0.5, colour="black",position=position_dodge())+
+  scale_fill_manual(values = c("K1" = "darkblue", "K2" = "darkgreen", "KRef" = "darkred"))+
+  theme_minimal()+
+  theme(
+    panel.background = element_rect(fill = "white"),  # Set white background
+    panel.grid.major = element_blank(),  # Remove grid lines
+    panel.grid.minor = element_blank(),  # Remove grid lines
+    axis.text = element_text(size = 9),  # Increase font size of axis text
+    axis.title.y = element_text(size = 9,face = "bold"),  # Make y-axis label bold and italic
+    axis.text.y = element_text(color = "black", size = 9),  # Make x-axis text bold
+    axis.title.x = element_text(size = 10,face = "bold"),
+    axis.text.x = element_text(color = "black", size = 9),  # Make x-axis text bold
+    axis.ticks.x = element_line(color = "black"),  # Add ticks to x-axis in black color
+    axis.ticks.y = element_line(color = "black"),  # Add ticks to y-axis in black color
+    #aspect.ratio = 1,  # Set aspect ratio
+    plot.margin = margin(0.5, 0.5, 0.4, 0.5, "cm"),  # Set plot margins
+    legend.text=element_text(size=9),
+    #legend.position = c(0.85, 0.85),
+    legend.background = element_rect(fill="white",
+                                   size=0.5, linetype="solid", 
+                                   colour ="black"),
+    legend.title = element_blank(),
+    #legend.margin = margin(0.001, 1, 0.5, 0.5)
+)
+
+b
+```
