@@ -115,11 +115,14 @@ mean_PFOS_pipe
 ggplot2 can be used to make plots in R instead of using the base R functions.
 
 ```{r}
+require(ggpubr) #reqiured to add regression equation
 mean_data <- data.frame(a=mean(Data_Kumla$PFOS), b=mean(Data_Kumla$sum_PFOS))
 p <- ggplot(data=Data_Kumla, mapping=aes(x=PFOS, y=sum_PFOS))+
   geom_point(size=0.6, aes(colour="Scatter plot"))+
   geom_smooth(method="loess", size=0.6, aes(colour="LOWESS"), se=FALSE,linetype="longdash")+
   geom_smooth(method="lm", size=0.6, aes(colour="Linear regression"), se=FALSE, linetype="dashed")+
+  stat_regline_equation(label.x=1300, label.y=580, colour="darkgrey", size=3)+ #adds regression equation
+  stat_cor(aes(label=..rr.label..), label.x=1300, label.y=420, size=3, colour="darkgrey", r.digits = 4)+ #adds R^2
   scale_color_manual(values = c("Scatter plot" = "darkred", "LOWESS" = "black", "Linear regression" = "darkgrey")) + #colours of points
   
   theme_minimal()+
@@ -147,6 +150,14 @@ p <- ggplot(data=Data_Kumla, mapping=aes(x=PFOS, y=sum_PFOS))+
 p+ geom_text(aes(mean(PFOS)+350, mean(sum_PFOS)+10,label=paste("Mean point")), size=3, colour="red4") #adds a text for the mean point
 
 #p+ geom_point(data=Data_Kumla, aes(x=PFOSA, y=sum_PFOS), colour="pink")
+
+```
+
+```{r}
+ggscatter(data=Data_Kumla,x="PFOS", y="sum_PFOS", add="reg.line")+
+  stat_cor(label.x=1300, label.y=750)+
+  stat_regline_equation(label.x=1300, label.y=480)
+  
 ```
 
 ```{r}
