@@ -82,7 +82,7 @@ box() #adds box around the plot
 | **purr**  | can be used to exchange For Loops with code e.g. by using `map()` to apply a function to all elements in a list and returns a list |
 | **dplyr** | can be used for data manipulations e.g. by piping                                                                                  |
 
-#### 
+Tidy data: Each variable is a column, each column is a variable. Each observation is a row, each row is an observation. Each value is a cell, each cell is a single value.
 
 ### Pipes
 
@@ -209,3 +209,173 @@ b2 <- ggplot(data=Data_Kumla, aes(x=PFOS,fill=sampling))+
 
 b2
 ```
+
+------------------------------------------------------------------------
+
+```{r}
+#http://www.sthda.com/english/wiki/ggplot2-barplots-quick-start-guide-r-software-and-data-visualization 
+
+#+++++++++++++++++++++++++
+# Function to calculate the mean and the standard deviation
+  # for each group
+#+++++++++++++++++++++++++
+# data : a data frame
+# varname : the name of a column containing the variable
+  #to be summariezed
+# groupnames : vector of column names to be used as
+  # grouping variables
+
+data_summary <- function(data, varname, groupnames){
+  require(plyr)
+  summary_func <- function(x, col){
+    c(mean = mean(x[[col]], na.rm=TRUE),
+      sd = sd(x[[col]], na.rm=TRUE))
+  }
+  data_sum<-ddply(data, groupnames, .fun=summary_func,
+                  varname)
+  data_sum <- rename(data_sum, c("mean" = varname))
+ return(data_sum)
+}
+
+```
+
+```{r}
+#another way to calculate mean and sd
+data_pfas |> group_by(Type_of_PFAS) |> summarize(Conc_mean = mean(Conc_of_PFAS), Cond_SD = sd(Conc_of_PFAS)) 
+```
+
+```{r}
+data_pfas <- Data_Kumla |> pivot_longer(cols = 13:31,
+                            names_to = "Type_of_PFAS",
+                            values_to = "Conc_of_PFAS") |>
+                        select(c(`Sampling site`, Type_of_PFAS, Conc_of_PFAS))
+
+data_pfas_sd <- data_pfas |> data_summary(varname="Conc_of_PFAS", groupnames="Type_of_PFAS") |> filter(Conc_of_PFAS <100) #exclude PFAS above 100 in mean concentration
+
+
+ggplot(data=data_pfas_sd, aes(y=Conc_of_PFAS, x=Type_of_PFAS, fill=Type_of_PFAS))+
+  geom_bar(stat = "identity",position=position_dodge())+
+  geom_errorbar(aes(ymin=Conc_of_PFAS-sd, ymax=Conc_of_PFAS+sd), width=0.2, position=position_dodge(0.9))+ #add errorbars
+  theme_minimal()+
+  theme(
+    panel.background = element_rect(fill = "white"),  # Set white background
+    panel.grid.major = element_blank(),  # Remove grid lines
+    panel.grid.minor = element_blank(),  # Remove grid lines
+    axis.text = element_text(size = 9),  # Increase font size of axis text
+    axis.title.y = element_text(size = 9,face = "bold"),  # Make y-axis label bold and italic
+    axis.text.y = element_text(color = "black", size = 9),  # Make x-axis text bold
+    axis.title.x = element_text(size = 10,face = "bold"),
+    axis.text.x = element_text(color = "black", size = 9, angle=45, hjust=1),  # Make x-axis text bold and in an angle
+    axis.ticks.x = element_line(color = "black"),  # Add ticks to x-axis in black color
+    axis.ticks.y = element_line(color = "black"),  # Add ticks to y-axis in black color
+    #aspect.ratio = 1,  # Set aspect ratio
+    plot.margin = margin(0.5, 0.5, 1, 0.5, "cm"),  # Set plot margins
+    legend.text=element_text(size=7),
+    #legend.position = c(0.85, 0.85),
+    legend.background = element_rect(fill="white",
+                                   size=0.5, linetype="solid", 
+                                   colour ="black"),
+    legend.title = element_blank(),
+    #legend.margin = margin(0.001, 1, 0.5, 0.5)'
+)
+```
+
+```{r}
+#excludes PFOS that has higher concentrations
+data_pfas |> filter(Type_of_PFAS != c("PFOS")) |>
+ggplot(mapping=aes(x=Type_of_PFAS, y=Conc_of_PFAS, fill=Type_of_PFAS))+
+  geom_boxplot(outlier.color = "darkred", outlier.shape=16, outlier.size = .6, notch=FALSE,aes(y=log(Conc_of_PFAS)))+ #log of conc. values
+  geom_line(data=data_pfas_sd, aes(x = Type_of_PFAS, y = log(Conc_of_PFAS)), size = 1, color="red", group = 1)+ #log of mean values
+  
+  labs(x = "Type of PFAS", y = "log(Concentration of PFAS)", color= "") +
+
+  
+  theme_minimal()+
+  theme(
+    panel.background = element_rect(fill = "white"),  # Set white background
+    panel.grid.major = element_blank(),  # Remove grid lines
+    panel.grid.minor = element_blank(),  # Remove grid lines
+    axis.text = element_text(size = 9),  # Increase font size of axis text
+    axis.title.y = element_text(size = 9,face = "bold"),  # Make y-axis label bold and italic
+    axis.text.y = element_text(color = "black", size = 9),  # Make x-axis text bold
+    axis.title.x = element_text(size = 10,face = "bold"),
+    axis.text.x = element_text(color = "black", size = 9, angle=45, hjust=1),  # Make x-axis text bold and in an angle
+    axis.ticks.x = element_line(color = "black"),  # Add ticks to x-axis in black color
+    axis.ticks.y = element_line(color = "black"),  # Add ticks to y-axis in black color
+    #aspect.ratio = 1,  # Set aspect ratio
+    plot.margin = margin(0.5, 0.5, 1, 0.5, "cm"),  # Set plot margins
+    legend.text=element_text(size=7),
+    #legend.position = c(0.85, 0.85),
+    legend.background = element_rect(fill="white",
+                                   size=0.5, linetype="solid", 
+                                   colour ="black"),
+    legend.title = element_blank(),
+    #legend.margin = margin(0.001, 1, 0.5, 0.5)'
+)
+
+
+```
+
+```{r}
+
+sampling_pfos <- Data_Kumla |> select(c(`Sampling site`, PFOS))
+
+ggplot(data=sampling_pfos, aes(x=`Sampling site`,y=PFOS, fill=`Sampling site`))+
+  geom_boxplot(outlier.color = "red", outlier.shape=16, outlier.size = .8, notch=TRUE, aes(y=log(PFOS)))+
+  
+  scale_fill_manual(values=c("darkred", "darkgreen", "darkblue"))+
+  labs(x = "Sampling site", y = "log(Concentration of PFOS)", color= "") +
+  
+  theme_minimal()+
+  theme(
+    panel.background = element_rect(fill = "white"),  # Set white background
+    panel.grid.major = element_blank(),  # Remove grid lines
+    panel.grid.minor = element_blank(),  # Remove grid lines
+    axis.text = element_text(size = 9),  # Increase font size of axis text
+    axis.title.y = element_text(size = 9,face = "bold"),  # Make y-axis label bold and italic
+    axis.text.y = element_text(color = "black", size = 9),  # Make x-axis text bold
+    axis.title.x = element_text(size = 10,face = "bold"),
+    axis.text.x = element_text(color = "black", size = 9, angle=45, hjust=1),  # Make x-axis text bold and in an angle
+    axis.ticks.x = element_line(color = "black"),  # Add ticks to x-axis in black color
+    axis.ticks.y = element_line(color = "black"),  # Add ticks to y-axis in black color
+    #aspect.ratio = 1,  # Set aspect ratio
+    plot.margin = margin(0.5, 0.5, 1, 0.5, "cm"),  # Set plot margins
+    legend.text=element_text(size=7),
+    #legend.position = c(0.85, 0.85),
+    legend.background = element_rect(fill="white",
+                                   size=0.5, linetype="solid", 
+                                   colour ="black"),
+    legend.title = element_blank(),
+    #legend.margin = margin(0.001, 1, 0.5, 0.5)'
+)
+```
+
+```{r}
+ggplot(data=Data_Kumla)+
+  geom_point(size=0.6, aes(colour="Scatter plot", x=PFOS,y=log(sum_PFOS)))+
+  geom_smooth(method="loess", size=0.8, aes(colour="LOWESS",x=PFOS,y=log(sum_PFOS)), se=TRUE,linetype="longdash")+
+  scale_color_manual(values = c("Scatter plot" = "darkred", "LOWESS" = "black")) + #colours of points
+  
+  theme_minimal()+
+  theme(
+    panel.background = element_rect(fill = "white"),  # Set white background
+    panel.grid = element_blank(),  # Remove grid lines
+    axis.text = element_text(size = 9),  # Increase font size of axis text
+    axis.title.y = element_text(size = 9,face = "bold"),  # Make y-axis label bold and italic
+    axis.text.y = element_text(color = "black", size = 9),  # Make x-axis text bold
+    axis.title.x = element_text(size = 10,face = "bold"),
+    axis.text.x = element_text(color = "black", size = 9),  # Make x-axis text bold
+    axis.ticks.x = element_line(color = "black"),  # Add ticks to x-axis in black color
+    axis.ticks.y = element_line(color = "black"),  # Add ticks to y-axis in black color
+    aspect.ratio = 1,  # Set aspect ratio
+    plot.margin = margin(0.5, 0.5, 0.4, 0.5, "cm"),  # Set plot margins
+    legend.text=element_text(size=9),
+    #legend.position = c(0.25, 0.85),
+    legend.background = element_rect(fill="white",
+                                   size=0.5, linetype="solid", 
+                                   colour ="black"),
+    legend.title = element_blank(), #removes the title of the legend
+    legend.margin = margin(0.001, 1, 0.5, 0.5))
+```
+
+------------------------------------------------------------------------
