@@ -4,7 +4,7 @@
 
 Data can be imported in R in different ways. In the Environment tab, there is an import-data button, in which it is possible to select the type of data (e.g. Excel). From that tab it is possible to receive the command needed if one wants to have it in a script.
 
-To **import** *.csv* data, the `read.csv()` function can be used:
+To **import** *.csv* data, the `read.csv()` (or `read_csv()`) function can be used:
 
 `csv_data <- read.csv("csv file location")`
 
@@ -76,7 +76,7 @@ box() #adds box around the plot
 [Tidyverse](https://www.tidyverse.org/packages/) contains a collection of packages. All the functions from the packages follow the same type of structure, making them easier to use. The core packages included in Tidyverse are `ggplot2`, `dplyr`, `tidyr`, `readr`, `purr`, `tibble`, `stringr`, and `forcats`.
 
 |           |                                                                                                                                    |
-|-------------|----------------------------------------------------------|
+|------------------|------------------------------------------------------|
 | **readr** | for reading rectangular data from e.g. .csv by using `read_csv()`                                                                  |
 | **tidyr** | for organising tabular data e.g. `pivot_longer()` to combine multiple columns to a long table                                      |
 | **purr**  | can be used to exchange For Loops with code e.g. by using `map()` to apply a function to all elements in a list and returns a list |
@@ -86,7 +86,7 @@ Tidy data: Each variable is a column, each column is a variable. Each observatio
 
 ### Pipes
 
-Is a way to simplify R code. By using %\<% code can be rewritten to become easier interpretated. The symbol can be thought of as a "+" symbol.
+Is a way to simplify R code. By using %\>% (or \|\>, shortcut: *ctrl+shift+m*) code can be rewritten to become easier interpretated. The symbol can be thought of as a "+" symbol.
 
 For example, if you would like to only have the concentrations of *PFOS* in *Data_Kumla* above 100 ng/L. Instead of having to use For loops and/or if statements or other type of commands, it can simply be written using *pipe operations*:
 
@@ -251,7 +251,7 @@ data_summary <- function(data, varname, groupnames){
 ```
 
 ```{r}
-#another way to calculate mean and sd
+#another way to calculate mean and sd, notice data_pfas created below with pivot_longer(). Could use Data_Kumla and summarize on selected columns instead.
 data_pfas |> group_by(Type_of_PFAS) |> summarize(Conc_mean = mean(Conc_of_PFAS), Cond_SD = sd(Conc_of_PFAS)) 
 ```
 
@@ -295,8 +295,14 @@ ggplot(data=data_pfas_sd, aes(y=Conc_of_PFAS, x=Type_of_PFAS, fill=Type_of_PFAS)
 #excludes PFOS that has higher concentrations
 data_pfas |> filter(Type_of_PFAS != c("PFOS")) |>
 ggplot(mapping=aes(x=Type_of_PFAS, y=Conc_of_PFAS, fill=Type_of_PFAS))+
-  geom_boxplot(outlier.color = "darkred", outlier.shape=16, outlier.size = .6, notch=FALSE,aes(y=log(Conc_of_PFAS)))+ #log of conc. values
-  geom_line(data=data_pfas_sd, aes(x = Type_of_PFAS, y = log(Conc_of_PFAS)), size = 1, color="red", group = 1)+ #log of mean values
+  geom_boxplot(outlier.color = "darkred", outlier.shape=16, outlier.size = .6, notch=FALSE)+ #log of conc. values
+  geom_line(data=data_pfas_sd, aes(x = Type_of_PFAS, y = Conc_of_PFAS), size = 1, color="red", group = 1)+ #log of mean values
+  
+  stat_boxplot(geom = "errorbar",
+                   width = 0.25)+
+  stat_summary(fun.y=mean, geom="point", shape=20, size=4, color="red", fill="red", alpha=0.7) +
+  
+  scale_y_log10()+
   
   labs(x = "Type of PFAS", y = "log(Concentration of PFAS)", color= "") +
 

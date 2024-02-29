@@ -10,6 +10,7 @@ book:
     - index.qmd
     - Basics.qmd
     - Data_vis.qmd
+    - qc_hdmse_peak.qmd
 
 bibliography: references.bib
 
