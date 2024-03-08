@@ -1,0 +1,453 @@
+# Data Analysis - QC mix
+
+```{r}
+#| output: false
+#| warning: false
+
+#Data is importer for the two data set (mzmine and ms_dial). A reference data frame is constructed (unifi) as well as data frame with theoretical values (qc_compounds)
+
+#library(readr)
+#library(readxl)
+
+mzmine <- read_excel("~/Project/hrms_converter-2024/qc5rep_hdmse_peakpicking_featurelist_MZMINE.xlsx", 
+    col_types = c("text", "text", "numeric", 
+        "numeric", "text", "text", "numeric", 
+        "numeric", "text", "numeric", "numeric", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "numeric", "text", 
+        "text", "text", "text", "text", "numeric", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "numeric", 
+        "numeric", "numeric", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "numeric", "numeric", "numeric", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "numeric", 
+        "numeric", "numeric", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "numeric", "numeric", "numeric", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "numeric", 
+        "numeric", "numeric"))
+
+ms_dial <- read_excel("~/Project/hrms_converter-2024/qc3rep_hdmse_peakpicking_featurelist_MSDIAL.xlsx")
+
+unifi <- data.frame(compound=c("acetaminophen","caffeine","leucine enkephaline","reserpine","sulfadimethoxine","sulfaguanidine","terfenadine","val-tyr-val","verapamil")
+  , mz_unifi=c(152.0697, 195.0870, 556.2756, 609.2787, 311.0801, 215.0589, 472.3197, 380.2173, 455.2892),
+  rt_unifi=c(0.56,1.30,2.37,3.37,2.96,0.31,3.66,1.28,3.26),
+  dt_unifi=c(2.26,2.60,6.41,7.23,4.00,3.01,6.48,5.05,5.66))
+
+qc_compounds <- data.frame(
+  compound=c("acetaminophen","caffeine","leucine enkephaline","reserpine","sulfadimethoxine","sulfaguanidine","terfenadine","val-tyr-val","verapamil")
+  , mz=c(152.0705, 195.0876, 556.2765, 609.2806, 311.0808, 215.0597, 472.3209, 380.2179, 455.2904))
+```
+
+```{r}
+#Creating new obects with only the part of the data for both data sets. RT and Mobility is rounded to two digits to be compariable to unifi data
+
+#Only keep rows that corresponds to the compounds in qc_compounds
+mzmine_subset <- mzmine |> 
+  select(id,height,ion_mobility,rt,mz) |> 
+  mutate(across(c(rt,ion_mobility),round, 2)) |> 
+  mutate(across(mz,round, 4)) |>
+  filter(id %in% qc_compounds$compound )
+
+#msdial data is filtered to excluded the rows where mobility is -1.00
+#Also only keep rows that corresponds to the qc compounds
+msdial_subset <- ms_dial |> 
+  select(`Alignment ID`,Average,`Average Rt(min)`,`Average mobility`,`Average Mz`) |> 
+  mutate(across(c(`Average Rt(min)`,`Average mobility`),round, 2)) |> 
+  mutate(across(`Average Mz`,round, 4)) |>
+  filter(`Average mobility` != -1.00 & `Alignment ID` %in% qc_compounds$compound )
+```
+
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
+Instead of manually add which features corresponds to the target compounds, can try filter the data sets (mzmine and msdial) for the compounds in unifi according to the retention time (RT), drift time (DT), and Mass-To-Charge ration(*m/z*).
+
+|                                                                                                                                                                     |
+|------------------------------------------------------------------------|
+| [R for Data Science (2e) - 19  Joins (hadley.nz)](https://r4ds.hadley.nz/joins.html)                                                                                |
+| "Mutating joins, which add new variables to one data frame from matching observations in another." e.g. `left_join()` and `inner_join()`                            |
+| "Filtering joins, which filter observations from one data frame based on whether or not they match an observation in another." e.g. `semi_join()` and `anti_join()` |
+
+```{r}
+#library(tidyverse)
+##library(readxl)
+mzmine <- read_csv("~/Project/hrms_converter-2024/qc5rep_hdmse_peakpicking_featurelist_MZMINE.csv",show_col_types = FALSE)
+glimpse(mzmine)
+
+msdial <- ms_dial <- read_excel("~/Project/hrms_converter-2024/qc3rep_hdmse_peakpicking_featurelist_MSDIAL.xlsx") 
+
+mzmine |> filter(is.na(rt) | is.na(mz) | is.na(ion_mobility)) #check that there are no missing values. Need to have entries for each obesrvation
+mzmine |> count(rt, mz, ion_mobility) |> filter(n>1) #check that the variables uniquely identifies each feature
+
+msdial |> filter(is.na(`Average Rt(min)`) | is.na(`Average Mz`) | is.na(`Average mobility`)) #check that there are no missing values. Need to have entries for each obesrvation
+msdial |> count(`Average Rt(min)`, `Average Mz`, `Average mobility`) |> filter(n>1) #check that the variables uniquely identifies each feature
+```
+
+To combine two data frames by using the `join` -functions (`left_join()`, `inner_join()`, `right_join()`, `full_join()`, `semi_join()`, `anti_join()`) in `dplyr` -packages.
+
+`left_join()`: output will have the same number of rows as input data frame x.
+
+```{r}
+mzmine2 <- mzmine #copied the data frames only for testing purposes
+unifi2 <- unifi
+msdial2 <- msdial
+
+#MsDial data does not have mz and rt ranges as MzMine data has, therefore added manually
+msdial2$mz_min <- msdial2$`Average Mz`-0.005
+msdial2$mz_max <- msdial2$`Average Mz`+0.005
+msdial2$rt_min <- msdial2$`Average Rt(min)`-0.08
+msdial2$rt_max <- msdial2$`Average Rt(min)`+0.08
+
+#finds the compounds in unifi in the mzmine data
+subset_mzmine <- unifi2 |> inner_join(mzmine2, join_by(overlaps("mz_unifi","mz_unifi","mz_range:min", "mz_range:max"),overlaps("rt_unifi","rt_unifi","rt_range:min", "rt_range:max"))) |> 
+  filter(abs(dt_unifi - ion_mobility) < 2) 
+
+#subset_msdial <- unifi2 |> inner_join(msdial2, join_by(overlaps("mz_unifi","mz_unifi","mz_min", "mz_max"),overlaps("rt_unifi","rt_unifi","rt_min", "rt_max"))) |> filter(abs(dt_unifi - `Average mobility`) < 1.7) 
+
+#finds the compounds in unifi in the msdial data
+subset_msdial <- unifi2 |> 
+  inner_join(msdial2, join_by(overlaps("mz_unifi","mz_unifi","mz_min", "mz_max"),overlaps("rt_unifi","rt_unifi","rt_min", "rt_max"))) |> 
+  group_by(mz_unifi) |> 
+  mutate(dt_diff = abs(dt_unifi - `Average mobility`)) |> 
+  filter(dt_diff <=min(dt_diff))
+
+no_duplicates_msdial <- subset_msdial[!duplicated(subset_msdial$compound), ] #removes the second duplicate feature
+```
+
+$MassError[ppm]=\frac{\textit{m/z}_{theretical}-\mathit{m/z}_{measured}}{\mathit{m/z}_{theoretical}}*10^6$
+
+```{r}
+#function to calculate the mass error 
+mass_error <- function(mz_theoretical,mz_meaured){
+  mass_error <- (mz_theoretical-mz_meaured)/mz_theoretical*10^6
+  return(mass_error)
+}
+
+mass_error(qc_compounds$mz,subset_mzmine$mz)
+mass_error(qc_compounds$mz,no_duplicates_msdial$`Average Mz`)
+```
+
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
+```{r}
+#calculate the mass accuracy for mzmine, msdial, and unif based on the qc_compounds values. First the m/z values are sorted from small to large so the calculations can be performed row-wise for the correct compound. Lastly, the results are added to a column in a new object.
+
+qc_compounds <- arrange(qc_compounds, mz)
+
+mass_errors <- as.data.frame(qc_compounds[1:2])
+
+mzmine_subset <- mzmine_subset |> arrange(mz) |> mutate(Mass_error_ppm = round((qc_compounds$mz-mz)/qc_compounds$mz*10^6,3))
+
+msdial_subset <- msdial_subset |> arrange(`Average Mz`) |> mutate(Mass_error_ppm = round((qc_compounds$mz - `Average Mz`) /qc_compounds$mz * 10^6,3))
+
+unifi <- unifi |> arrange(mz_unifi) |> mutate(Mass_error_ppm = round((qc_compounds$mz - mz_unifi) /qc_compounds$mz * 10^6,3))
+
+
+mass_errors$Mzmine <- mzmine_subset$Mass_error_ppm
+mass_errors$MsDial <- msdial_subset$Mass_error_ppm
+mass_errors$Unifi <- unifi$Mass_error_ppm
+
+#Adds a column that tells if the Mzmine or MsDial Mass errors are close or far away from the error of Unifi
+mass_errors <- mass_errors |> mutate(mzmine_fromunifi = case_when(abs(Unifi - Mzmine) > 2 ~ "Large",
+                                                   abs(Unifi - Mzmine) <= 2 & abs(Unifi - Mzmine) > 0.3 ~ "Medium",
+                                                   abs(Unifi - Mzmine) <= 0.3 ~ "Small")) |> 
+  mutate(msdial_fromunifi = case_when(abs(Unifi - MsDial) > 2 ~ "Large",
+                                                   abs(Unifi - MsDial) <= 2 & abs(Unifi - MsDial) > 0.3 ~ "Medium",
+                                                   abs(Unifi - MsDial) <= 0.3 ~ "Small"))
+  
+```
+
+```{r}
+#Plot the ms
+mass_errors$msdial_fromunifi <- as.factor(mass_errors$msdial_fromunifi)
+mass_errors$mzmine_fromunifi <- as.factor(mass_errors$mzmine_fromunifi)
+  
+p <- ggplot(data=mass_errors, mapping=aes(x=mz))+
+  geom_point(aes(y=Mzmine, colour="Mzmine", shape="Mzmine", size=mzmine_fromunifi), alpha = 0.7)+
+  geom_point(aes(y=MsDial, colour="MsDial", shape="MsDial", size=msdial_fromunifi), alpha = 0.7)+
+  geom_line(aes(y=Unifi, colour="Unifi"),size=0.5)+
+  
+  scale_size_manual(name="Distance from Unifi", values = c("Large"=4.2, "Medium"=2.8, "Small"=2))+
+  scale_shape_manual(values = c("Mzmine" = 19, "MsDial" = 17)) +
+  scale_colour_manual(values = c("Mzmine" = "darkred", "MsDial" = "black", "Unifi" = "darkgrey")) + #colours of points
+  labs(fill = "", y = "Mass Accuracy [ppm]", x=expression(paste("Theoretical ",italic("m/z"), " values"))) +
+  
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red", linewidth = 0.1) + #adds horzontal line at y=0
+  
+  theme_minimal()+
+  theme(
+    panel.background = element_rect(fill = "white"),  # Set white background
+    panel.grid = element_blank(),  # Remove grid lines
+    axis.text = element_text(size = 9),  # Increase font size of axis text
+    axis.title.y = element_text(size = 9,face = "bold"),  # Make y-axis label bold and italic
+    axis.text.y = element_text(color = "black", size = 9),  # Make x-axis text bold
+    axis.title.x = element_text(size = 10,face = "bold"),
+    axis.text.x = element_text(color = "black", size = 9),  # Make x-axis text bold
+    axis.ticks.x = element_line(color = "black"),  # Add ticks to x-axis in black color
+    axis.ticks.y = element_line(color = "black"),  # Add ticks to y-axis in black color
+    aspect.ratio = 0.5,  # Set aspect ratio
+    plot.margin = margin(0.5, 0.5, 0.4, 0.5, "cm"),  # Set plot margins
+    legend.text=element_text(size=9),
+    legend.position = "right",
+    legend.background = element_rect(fill="white",
+                                   size=0.5, linetype="solid", 
+                                   colour ="black"),
+    #legend.title = element_blank(), #removes the title of the legend
+    legend.title = element_text(size=9),
+    legend.margin = margin(0.001, 1, 0.5, 0.5),)
+
+p  + geom_text(aes(x=mz+10, y=Unifi,label=compound), size=2, colour="red4",
+               nudge_x = 0.25, nudge_y = 0.25, 
+               check_overlap = FALSE) #adds a text for the mean point
+
+#+ guides(size = "none")
+
+```
+
+```{r}
+#RT and DT difference between MS-Dial and Mzmine compared to UNIFI
+
+#adding and then renaming the RT columns from each file
+rt_difference <- data.frame(qc_compounds[,], msdial_subset[,3], mzmine_subset[,4], unifi[,3]) |> rename(MsDial_RT="Average.Rt.min.", MzMine_RT="rt", Unifi_RT="unifi...3.")
+#adding and then renaming the DT columns from each file
+dt_difference <- data.frame(qc_compounds[,], msdial_subset[,4], mzmine_subset[,3], unifi[,4]) |> rename(MsDial_DT="Average.mobility", MzMine_DT="ion_mobility", Unifi_DT="unifi...4.")
+
+
+#rt_difference <- rt_difference |> mutate(mzmine_fromunifi = case_when(abs(Unifi - Mzmine) > 2 ~ "Large",
+#                                                   abs(Unifi_RT - MzMine_RT) <= 2 & abs(Unifi_RT - MzMine_RT) > 0.3 ~ "Medium",
+#                                                   abs(Unifi_RT - MzMine_RT) <= 0.3 ~ "Small")) |> mutate(msdial_fromunifi = case_when(abs(Unifi_RT - MsDial_RT) > 2 ~ "Large",
+#                                                   abs(Unifi_RT - MsDial_RT) <= 2 & abs(Unifi_RT - MsDial_RT) > 0.3 ~ "Medium",
+#                                                   abs(Unifi_RT - MsDial_RT) <= 0.3 ~ "Small"))
+
+rt_difference_long <- rt_difference |> pivot_longer(cols = 3:5,
+                            names_to = "Software",
+                            values_to = "RT_softwares") 
+
+dt_difference_long <- dt_difference |> pivot_longer(cols = 3:5,
+                            names_to = "software_name",
+                            values_to = "DT_softwares") 
+```
+
+```{r}
+rt_difference_long |> filter(Software != "MsDial_RT" & Software != "MzMine_RT")
+```
+
+```{r}
+#Plot of RT vs theoretical m/z values for the different softwares
+b <- ggplot(data=rt_difference_long, mapping=aes(x=mz, y=RT_softwares))+
+  geom_bar(stat = "identity",position=position_dodge(), aes(fill=Software))+
+  
+  scale_fill_manual(values = c("MzMine_RT" = "darkred", "MsDial_RT" = "darkgreen", "Unifi_RT" = "darkgrey")) + #colours of points
+  labs( y = "Retention time [min]", x=expression(paste("Theoretical ",italic("m/z"), " values"))) +
+  scale_y_continuous(limit=c(0,4),expand = c(0,0))+
+  
+  #geom_text(aes(x=mz, y=RT_softwares, label=compound), size=2, colour="red4",
+  #             nudge_x = 0.25, nudge_y = 0.25, 
+  #             check_overlap = FALSE)+
+  
+  theme_minimal()+
+  theme(
+    panel.background = element_rect(fill = "white"),  # Set white background
+    panel.grid.major = element_blank(),  # Remove grid lines
+    panel.grid.minor = element_blank(),  # Remove grid lines
+    axis.text = element_text(size = 9),  # Increase font size of axis text
+    axis.title.y = element_text(size = 9,face = "bold"),  # Make y-axis label bold and italic
+    axis.text.y = element_text(color = "black", size = 9),  # Make x-axis text bold
+    axis.title.x = element_text(size = 10,face = "bold"),
+    axis.text.x = element_text(color = "black", size = 9),  # Make x-axis text bold
+    axis.ticks.x = element_line(color = "black"),  # Add ticks to x-axis in black color
+    axis.ticks.y = element_line(color = "black"),  # Add ticks to y-axis in black color
+    #aspect.ratio = 1,  # Set aspect ratio
+    plot.margin = margin(0.5, 0.5, 0.4, 0.5, "cm"),  # Set plot margins
+    legend.text=element_text(size=9),
+    #legend.position = c(0.85, 0.85),
+    legend.background = element_rect(fill="white",
+                                   size=0.5, linetype="solid", 
+                                   colour ="black"),
+    legend.title = element_blank(),
+    #legend.margin = margin(0.001, 1, 0.5, 0.5)
+)
+
+b + geom_label(data=rt_difference, mapping=aes(x=mz, y=MsDial_RT, label=compound),
+              size=2, colour="black",
+              nudge_x = 0.25, nudge_y = 0.15) 
+```
+
+```{r}
+d <- ggplot(data=dt_difference_long, mapping=aes(x=mz, y=DT_softwares))+
+  geom_bar(stat = "identity",position=position_dodge(), aes(fill=software_name))+
+  
+  scale_fill_manual(values = c("MzMine_DT" = "darkred", "MsDial_DT" = "darkgreen", "Unifi_DT" = "darkgrey")) +
+  labs( y = "Drift Time [ms]", x=expression(paste("Theoretical ",italic("m/z"), " values"))) +
+  scale_y_continuous(limit=c(0,10),expand = c(0,0))+ #removes the gap between the bars and the x-axis
+  
+
+  geom_line(data=dt_difference, color="black", aes(x=mz, y=Unifi_DT),size = 0.5, linetype = "dashed")+ #plots black line for Unifi_DT
+  
+  theme_minimal()+
+  theme(
+    panel.background = element_rect(fill = "white"),  # Set white background
+    panel.grid.major = element_blank(),  # Remove grid lines
+    panel.grid.minor = element_blank(),  # Remove grid lines
+    axis.text = element_text(size = 9),  # Increase font size of axis text
+    axis.title.y = element_text(size = 9,face = "bold"),  # Make y-axis label bold and italic
+    axis.text.y = element_text(color = "black", size = 9),  # Make x-axis text bold
+    axis.title.x = element_text(size = 10,face = "bold"),
+    axis.text.x = element_text(color = "black", size = 9),  # Make x-axis text bold
+    axis.ticks.x = element_line(color = "black"),  # Add ticks to x-axis in black color
+    axis.ticks.y = element_line(color = "black"),  # Add ticks to y-axis in black color
+    plot.margin = margin(0.5, 0.5, 0.4, 0.5, "cm"),  # Set plot margins
+    legend.text=element_text(size=9),
+    legend.background = element_rect(fill="white",
+                                   size=0.5, linetype="solid", 
+                                   colour ="black"),
+    legend.title = element_blank(),
+)
+
+d + geom_label(data=dt_difference, mapping=aes(x=mz-10, y=MzMine_DT, label=compound),
+              size=2, colour="black", nudge_y = 0.7, 
+              ) #hjust="inward"
+```
+
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
+## Drug mixture
+
+To compare the drug mixture (200 ppb) measured in ESI(+)-LC-IMS-HRMS (MSe mode, HDMSe). Data is from old settings and new setting that is supposed to be more suitable for labile compounds.
+
+```{r}
+#library(tidyverse), library(readxl), library(ggrepel), library(ggpubr)
+data_drugmix <- read_csv("~/Project/hrms_converter-2024/new_old_settings_drugmix_featurelist_MzMine.csv", show_col_types = FALSE) |> 
+  select(-`charge`,-`fragment_scans`,-`alignment_scores:rate`, -`alignment_scores:aligned_features_n`,-`alignment_scores:align_extra_features`,-`alignment_scores:weighted_distance_score`,-`alignment_scores:mz_diff_ppm`,-`alignment_scores:mz_diff`,-`alignment_scores:rt_absolute_error`,-`alignment_scores:ion_mobility_absolute_error`,-`intensity_range:min`,-`intensity_range:max`)
+
+target_drugs <- read_excel("~/Project/hrms_converter-2024/illicit drugs CS-IS_data.xlsx", na = "NA") |> 
+  filter(Class=="Analyte") |> 
+  mutate(rt_target_min = Vion_RT - 0.05) |> 
+  mutate(rt_target_max = Vion_RT + 0.05) |> 
+  select(-`Monoisomass`, -`Adduct_ion`,  -`Vion_observed_mz`, -`Agilent_observed_mz`, -`Agilent_RT`)
+
+
+found_drugs <- target_drugs |> inner_join(data_drugmix, join_by(overlaps("Theor_adduct_mz","Theor_adduct_mz","mz_range:min", "mz_range:max"))) |> 
+  select(1:11, mz, height, everything()) #reorder columns
+
+#found_drugs |> filter(
+#  !(is.na(Vion_RT) & `height` < 500), #removes those without RT that has height less than 500
+#  !(!is.na(Vion_RT) & ("rt" < "rt_target_min" & "rt" > "rt_target_max")) #for those with RT, filter according to rt similarities
+#)
+
+filtered_found_drugs <-found_drugs |> filter(
+  !(`height` < 500), #removes rows with height less than 500
+  !(!is.na(Vion_RT) & ("rt" < "rt_target_min" & "rt" > "rt_target_max")) #for those with prev. measured RT, compares them with currect RT
+) |> 
+  slice_max(by=Compound, height) #to remove multiple features assigned the same compound by only keeping the ones with largest height. Due to not having any DT values to compare to filter the data more
+
+
+filtered_found_drugs <- filtered_found_drugs |> 
+  mutate(Mass_error_ppm = mass_error(Theor_adduct_mz, mz), .after = "mz")|>  #adds the mass error (calculated with the function) to a new column after m/z values
+  mutate(height_ratio = `datafile:Drugdtd-200ppb-newsetting_1_A,2_1.mzML:height`/`datafile:Drugstd-200ppb_1_A,3_1.mzML:height`, .after="height") |> #adds the ratio between the height of the old and new settings 
+  mutate(area_ratio = `datafile:Drugdtd-200ppb-newsetting_1_A,2_1.mzML:area`/`datafile:Drugstd-200ppb_1_A,3_1.mzML:area`, .after="area")
+
+
+p1 <-ggplot(filtered_found_drugs, mapping = aes(x=mz, y=area_ratio, label=Compound))+ #plot area ratio
+  geom_point()+
+  geom_hline(yintercept = 1, linetype = "dashed", color = "red", linewidth = 0.1) + #adds horzontal line at y=0
+  
+  geom_label_repel(size = 2.5,
+                   point.padding = NA, # additional padding around each point
+                   min.segment.length = 0, # draw all line segments
+                   force=2,
+                   nudge_x=5, nudge_y=-0.03
+                   )+
+  
+  theme_minimal()+
+  theme(
+    panel.background = element_rect(fill = "white"),  # Set white background
+    panel.grid.major = element_blank(),  # Remove grid lines
+    panel.grid.minor = element_blank(),  # Remove grid lines
+    axis.text = element_text(size = 9),  # Increase font size of axis text
+    axis.title.y = element_text(size = 9,face = "bold"),  # Make y-axis label bold and italic
+    axis.text.y = element_text(color = "black", size = 9),  # Make x-axis text bold
+    axis.title.x = element_text(size = 10,face = "bold"),
+    axis.text.x = element_text(color = "black", size = 9),  # Make x-axis text bold
+    axis.ticks.x = element_line(color = "black"),  # Add ticks to x-axis in black color
+    axis.ticks.y = element_line(color = "black"),  # Add ticks to y-axis in black color
+    plot.margin = margin(0.5, 0.5, 0.4, 0.5, "cm"),  # Set plot margins
+    legend.text=element_text(size=9),
+    legend.background = element_rect(fill="white",
+                                   size=0.5, linetype="solid", 
+                                   colour ="black"),
+    legend.title = element_blank(),
+)
+p2 <- ggplot(filtered_found_drugs, mapping=aes(x=mz,y=height_ratio,label=Compound))+ #plot height ratio
+  geom_point()+
+  geom_hline(yintercept = 1, linetype = "dashed", color = "red", linewidth = 0.1) + #adds horzontal line at y=0
+  
+  geom_label_repel(size = 2.5,
+                   point.padding = NA, # additional padding around each point
+                   min.segment.length = 0, # draw all line segments
+                   force=2,
+                   nudge_x=5, nudge_y=-0.03
+                   )+
+  
+  theme_minimal()+
+  theme(
+    panel.background = element_rect(fill = "white"),  # Set white background
+    panel.grid.major = element_blank(),  # Remove grid lines
+    panel.grid.minor = element_blank(),  # Remove grid lines
+    axis.text = element_text(size = 9),  # Increase font size of axis text
+    axis.title.y = element_text(size = 9,face = "bold"),  # Make y-axis label bold and italic
+    axis.text.y = element_text(color = "black", size = 9),  # Make x-axis text bold
+    axis.title.x = element_text(size = 10,face = "bold"),
+    axis.text.x = element_text(color = "black", size = 9),  # Make x-axis text bold
+    axis.ticks.x = element_line(color = "black"),  # Add ticks to x-axis in black color
+    axis.ticks.y = element_line(color = "black"),  # Add ticks to y-axis in black color
+    plot.margin = margin(0.5, 0.5, 0.4, 0.5, "cm"),  # Set plot margins
+    legend.text=element_text(size=9),
+    legend.background = element_rect(fill="white",
+                                   size=0.5, linetype="solid", 
+                                   colour ="black"),
+    legend.title = element_blank(),
+) 
+
+ggarrange(p1, p2,
+          labels = c("A", "B"),
+          #ncol = 1, nrow = 2,
+          widths = 2, heights = 10)
+
+```
+
+```{r}
+target_IS <- read_excel("~/Project/hrms_converter-2024/illicit drugs CS-IS_data.xlsx", na = "NA") |> 
+  filter(Class=="IS") |> 
+  select(-`Monoisomass`, -`Adduct_ion`,  -`Vion_observed_mz`, -`Agilent_observed_mz`, -`Agilent_RT`)
+
+
+```
+
+------------------------------------------------------------------------
+
+TidyMass
+
+```{r}
+source("https://www.tidymass.org/tidymass-packages/install_tidymass.txt")
+install_tidymass(from = "tidymass.org")
+```

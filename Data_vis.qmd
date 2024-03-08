@@ -76,7 +76,7 @@ box() #adds box around the plot
 [Tidyverse](https://www.tidyverse.org/packages/) contains a collection of packages. All the functions from the packages follow the same type of structure, making them easier to use. The core packages included in Tidyverse are `ggplot2`, `dplyr`, `tidyr`, `readr`, `purr`, `tibble`, `stringr`, and `forcats`.
 
 |           |                                                                                                                                    |
-|------------------|------------------------------------------------------|
+|-----------|------------------------------------------------------------------------------------------------------------------------------------|
 | **readr** | for reading rectangular data from e.g. .csv by using `read_csv()`                                                                  |
 | **tidyr** | for organising tabular data e.g. `pivot_longer()` to combine multiple columns to a long table                                      |
 | **purr**  | can be used to exchange For Loops with code e.g. by using `map()` to apply a function to all elements in a list and returns a list |
@@ -91,8 +91,9 @@ Is a way to simplify R code. By using %\>% (or \|\>, shortcut: *ctrl+shift+m*) c
 For example, if you would like to only have the concentrations of *PFOS* in *Data_Kumla* above 100 ng/L. Instead of having to use For loops and/or if statements or other type of commands, it can simply be written using *pipe operations*:
 
 ```{r}
-PFOS_above100 <- Data_Kumla %>% select(PFOS) %>% filter(PFOS>100)
-#or use |> instead of %>%, first requires paranthesis when calling functions, second does not
+#| warning: false
+PFOS_above100 <- Data_Kumla |> select(PFOS)|> filter(PFOS>100)
+#or use %>% instead of |>, first requires paranthesis when calling functions, second does not
 PFOS_above100
 ```
 
