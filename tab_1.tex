@@ -1,0 +1,29 @@
+\setlength{\LTpost}{0mm}
+\begin{longtable}{llrrrrr}
+\caption*{
+{\large \textbf{Drug mixture - 200 ppb}} \\ 
+{\small For \textbf{new} and \textbf{old} MS settings analytes with corresponding \emph{Internal Standard}}
+} \\ 
+\toprule
+\multicolumn{2}{c}{Analyte Information} & \multicolumn{3}{c}{Differences as  \emph{Analyte} - \emph{IS}} & \multicolumn{2}{c}{Normalisation as  \emph{analyte\_height/IS\_height}} \\ 
+\cmidrule(lr){1-2} \cmidrule(lr){3-5} \cmidrule(lr){6-7}
+Analyte Name & Molecular formula & Retention Time ,<br>min & Drift Time ,<br>ms & Mass Error,<br>ppm & OLD & NEW \\ 
+\midrule\addlinespace[2.5pt]
+\multicolumn{7}{l}{\emph{Methamphetamine-d9}} \\ 
+\midrule\addlinespace[2.5pt]
+Phentermine\textsuperscript{\textit{1}} & C10H15N & $0.017$ & $0.000$ & $1.115$ & $0.642$ & $0.365$ \\ 
+Methamphetamine\textsuperscript{\textit{1}} & C10H15N & $0.017$ & $0.000$ & $1.115$ & $0.642$ & $0.365$ \\ 
+\midrule\addlinespace[2.5pt]
+\multicolumn{7}{l}{\vspace*{-5mm}} \\ 
+\midrule\addlinespace[2.5pt]
+MDMA & C11H15NO2 & $0.015$ & $-0.024$ & $-1.235$ & $1.716$ & $1.290$ \\ 
+MDEA & C12H17NO2 & $0.012$ & $-0.024$ & $-0.635$ & $1.663$ & $2.001$ \\ 
+Benzoylecgonine & C16H19NO4 & $0.000$ & $0.000$ & $-0.404$ & $2.419$ & $2.320$ \\ 
+THC-COOH & C21H28O4 & $-0.002$ & $-0.095$ & \textsuperscript{\textit{2}} $-11.002$ & $3.269$ & $2.502$ \\ 
+\bottomrule
+\end{longtable}
+\begin{minipage}{\linewidth}
+\textsuperscript{\textit{1}}Isomeric compounds. They have been matched to the same feature, hence, the reason for the identical values.\\
+\textsuperscript{\textit{2}}The large mass error difference between \emph{analyte} and \emph{IS} is due to a larger mass error for the corresponding IS (10.9 compared to analyte -0.101)\\
+\end{minipage}
+

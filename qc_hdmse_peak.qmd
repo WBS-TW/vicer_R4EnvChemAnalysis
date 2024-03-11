@@ -441,6 +441,119 @@ target_IS <- read_excel("~/Project/hrms_converter-2024/illicit drugs CS-IS_data.
   select(-`Monoisomass`, -`Adduct_ion`,  -`Vion_observed_mz`, -`Agilent_observed_mz`, -`Agilent_RT`)
 
 
+found_IS <- target_IS |> inner_join(data_drugmix, join_by(overlaps("Theor_adduct_mz","Theor_adduct_mz","mz_range:min", "mz_range:max"))) |> 
+  select(1:11, mz, height, everything()) |>  #reorder columns 
+  mutate(Mass_error_ppm = mass_error(Theor_adduct_mz, mz), .after = "mz")
+  
+filtered_found_IS <- found_IS |>  slice_min(by=Compound, abs(Mass_error_ppm)) #only keeps the rows with the smallest absolut mass error for each compound
+
+
+normalisation_IS <- inner_join(x=filtered_found_drugs, y=filtered_found_IS, join_by(x$Formula == y$Formula)) |> 
+  mutate(normalised_height_NEW = `datafile:Drugdtd-200ppb-newsetting_1_A,2_1.mzML:height.x`/`datafile:Drugdtd-200ppb-newsetting_1_A,2_1.mzML:height.y`, .after="height.x") |> 
+  mutate(normalised_height_OLD = `datafile:Drugstd-200ppb_1_A,3_1.mzML:height.x`/`datafile:Drugstd-200ppb_1_A,3_1.mzML:height.y`, .after="height.x") |> 
+  mutate(RT_diff = rt.x-rt.y, .after="rt.x") |> 
+  mutate(mz_error_diff = Mass_error_ppm.x-Mass_error_ppm.y, .after="mz.x") |> 
+  mutate(DT_diff = ion_mobility.x-ion_mobility.y, .after="ion_mobility.x")
+
+######################################################################
+normalisation_IS$plot <- NA #empy column to put plot in
+plot_object <- ggplot(data = normalisation_IS, aes(x=normalised_height_OLD, y=normalised_height_NEW))+geom_point(colour="darkgreen")+theme_minimal()+theme(legend.position="none")  #create plot object to put in empty colum in the table
+
+#library(gt) #package for makeing tables + library(gtExtras) # plot in table
+
+#creates a table of selected column from normalisation_IS data
+ gt_tab <- normalisation_IS |> select(Compound.x, Formula, RT_diff, DT_diff, mz_error_diff, normalised_height_OLD, normalised_height_NEW,plot) |> 
+    gt() |>
+   tab_options(table.font.color="black")|> 
+    tab_header(
+      title=md("**Drug mixture - 200 ppb**"), #**to make bold
+      subtitle =md("For **new** and **old** MS settings analytes with corresponding *Internal Standard*") #* to make italic
+      ) |> 
+    fmt_number(columns = c(RT_diff, DT_diff, mz_error_diff,normalised_height_OLD, normalised_height_NEW), decimals=3) |>  #to formate numbers, can select specific columns to display certain nr. of deicmals for example. 
+    tab_footnote(
+    footnote = "Isomeric compounds. They have been matched to the same feature, hence, the reason for the identical values.",
+    locations = cells_body(columns = Compound.x, rows = 1:2)
+  ) |> 
+    tab_footnote(
+    footnote = md("The large mass error difference between *analyte* and *IS* is due to a larger mass error for the corresponding IS (10.9 compared to analyte -0.101)"),
+    locations = cells_body(
+      columns = mz_error_diff,
+      rows = mz_error_diff == min((mz_error_diff))
+    )
+  ) |> 
+    tab_row_group(
+    label = md("*Methamphetamine-d9*"), #or can use gt(groupname_col="Compound.y") to add groupnames for all analytes
+    rows = 1:2
+  ) |> 
+    tab_spanner(
+    label = "Analyte Information",
+    columns = c(Compound.x, Formula)
+  ) |> 
+    tab_spanner(
+    label = md("Normalisation as <br> *analyte_height/IS_height*"),
+    columns = c(normalised_height_OLD, normalised_height_NEW)
+  )|> 
+    tab_spanner(
+    label = md("Differences as <br> *Analyte* - *IS*"),
+    columns = c(RT_diff, DT_diff, mz_error_diff)
+  ) |> 
+    cols_label(
+    Compound.x = html("Analyte Name"),
+    Formula = html("Molecular formula"),
+    RT_diff = html("Retention Time ,<br>min"),
+    DT_diff = html("Drift Time ,<br>ms"),
+    mz_error_diff = html("Mass Error,<br>ppm"),
+    normalised_height_OLD = html("OLD"),
+    normalised_height_NEW = html("NEW"),
+  ) |> 
+   tab_style(
+    style = list(
+      cell_fill(color = "lightcyan"),
+      cell_text(weight = "bold")
+      ),
+    locations = cells_body(
+      columns = normalised_height_OLD
+    ) 
+  ) |> 
+     tab_style(
+    style = list(
+      cell_fill(color = "#F9E3D6"),
+      cell_text(weight = "bold")
+      ),
+    locations = cells_body(
+      columns = normalised_height_NEW
+    ) 
+  ) |> 
+    tab_style(
+    style = list(
+      cell_text(color="red")
+      ),
+    locations = cells_body(
+      columns = mz_error_diff,
+      rows = mz_error_diff ==min((mz_error_diff))
+    ) 
+  )|> 
+   text_transform(
+     locations = cells_body(columns = plot),
+     fn = function(x) {
+       plot_object |> 
+         ggplot_image((height=px(200)))
+     }
+   )
+gt_tab
+gt_tab |> gtsave(filename = "tab_1.html") #saves the table in HTML format
+gt_tab |> gtsave(filename = "tab_1.tex") #saves the table in LaTEX format
+gt_tab |> gtsave(filename = "tab_1.docx") #saves the table in WORD format
+
+
+
+agg_iris = normalisation_IS  |> 
+    group_by(Compound.x)  |> 
+    reframe(
+        normalised_height= list(normalised_height_OLD, normalised_height_NEW),
+    )
+
+agg_iris |> gt() |> gt_plt_sparkline(column = normalised_height)
 ```
 
 ------------------------------------------------------------------------
