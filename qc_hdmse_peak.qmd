@@ -1,6 +1,19 @@
 # Data Analysis - QC mix
 
 ```{r}
+#| echo: false
+#| output: false
+
+#Libraries
+library(tidyverse)
+library(readxl)
+library(ggrepel)
+library(ggpubr)
+library(gt)
+library(gtExtras)
+```
+
+```{r}
 #| output: false
 #| warning: false
 
@@ -541,9 +554,9 @@ plot_object <- ggplot(data = normalisation_IS, aes(x=normalised_height_OLD, y=no
      }
    )
 gt_tab
-gt_tab |> gtsave(filename = "tab_1.html") #saves the table in HTML format
-gt_tab |> gtsave(filename = "tab_1.tex") #saves the table in LaTEX format
-gt_tab |> gtsave(filename = "tab_1.docx") #saves the table in WORD format
+#gt_tab |> gtsave(filename = "tab_1.html") #saves the table in HTML format
+#gt_tab |> gtsave(filename = "tab_1.tex") #saves the table in LaTEX format
+#gt_tab |> gtsave(filename = "tab_1.docx") #saves the table in WORD format
 
 
 
@@ -561,6 +574,6 @@ agg_iris |> gt() |> gt_plt_sparkline(column = normalised_height)
 TidyMass
 
 ```{r}
-source("https://www.tidymass.org/tidymass-packages/install_tidymass.txt")
-install_tidymass(from = "tidymass.org")
+#source("https://www.tidymass.org/tidymass-packages/install_tidymass.txt")
+#install_tidymass(from = "tidymass.org")
 ```

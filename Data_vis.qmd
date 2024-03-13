@@ -76,7 +76,7 @@ box() #adds box around the plot
 [Tidyverse](https://www.tidyverse.org/packages/) contains a collection of packages. All the functions from the packages follow the same type of structure, making them easier to use. The core packages included in Tidyverse are `ggplot2`, `dplyr`, `tidyr`, `readr`, `purr`, `tibble`, `stringr`, and `forcats`.
 
 |           |                                                                                                                                    |
-|-----------|------------------------------------------------------------------------------------------------------------------------------------|
+|-------------|-----------------------------------------------------------|
 | **readr** | for reading rectangular data from e.g. .csv by using `read_csv()`                                                                  |
 | **tidyr** | for organising tabular data e.g. `pivot_longer()` to combine multiple columns to a long table                                      |
 | **purr**  | can be used to exchange For Loops with code e.g. by using `map()` to apply a function to all elements in a list and returns a list |
@@ -92,6 +92,7 @@ For example, if you would like to only have the concentrations of *PFOS* in *Dat
 
 ```{r}
 #| warning: false
+library(tidyverse)
 PFOS_above100 <- Data_Kumla |> select(PFOS)|> filter(PFOS>100)
 #or use %>% instead of |>, first requires paranthesis when calling functions, second does not
 PFOS_above100
@@ -252,6 +253,7 @@ data_summary <- function(data, varname, groupnames){
 ```
 
 ```{r}
+#| eval: false
 #another way to calculate mean and sd, notice data_pfas created below with pivot_longer(). Could use Data_Kumla and summarize on selected columns instead.
 data_pfas |> group_by(Type_of_PFAS) |> summarize(Conc_mean = mean(Conc_of_PFAS), Cond_SD = sd(Conc_of_PFAS)) 
 ```
