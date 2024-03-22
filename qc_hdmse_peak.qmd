@@ -1,4 +1,6 @@
-# Data Analysis - QC mix
+# Data Analysis
+
+## QC mix
 
 ```{r}
 #| echo: false
@@ -242,6 +244,9 @@ rt_difference <- data.frame(qc_compounds[,], msdial_subset[,3], mzmine_subset[,4
 #adding and then renaming the DT columns from each file
 dt_difference <- data.frame(qc_compounds[,], msdial_subset[,4], mzmine_subset[,3], unifi[,4]) |> rename(MsDial_DT="Average.mobility", MzMine_DT="ion_mobility", Unifi_DT="unifi...4.")
 
+dt_difference <- dt_difference |> 
+  mutate("diff_msdial" = MsDial_DT - Unifi_DT) |> 
+  mutate("diff_mzmine" = MzMine_DT - Unifi_DT)
 
 #rt_difference <- rt_difference |> mutate(mzmine_fromunifi = case_when(abs(Unifi - Mzmine) > 2 ~ "Large",
 #                                                   abs(Unifi_RT - MzMine_RT) <= 2 & abs(Unifi_RT - MzMine_RT) > 0.3 ~ "Medium",
@@ -304,6 +309,7 @@ b + geom_label(data=rt_difference, mapping=aes(x=mz, y=MsDial_RT, label=compound
 ```
 
 ```{r}
+######################################
 d <- ggplot(data=dt_difference_long, mapping=aes(x=mz, y=DT_softwares))+
   geom_bar(stat = "identity",position=position_dodge(), aes(fill=software_name))+
   
@@ -337,6 +343,65 @@ d <- ggplot(data=dt_difference_long, mapping=aes(x=mz, y=DT_softwares))+
 d + geom_label(data=dt_difference, mapping=aes(x=mz-10, y=MzMine_DT, label=compound),
               size=2, colour="black", nudge_y = 0.7, 
               ) #hjust="inward"
+d
+###################################
+d1 <- dt_difference |> filter(diff_msdial>0.5) |> #exlucde "outlier"
+  ggplot(mapping=aes(x=mz, y=diff_msdial))+
+  geom_point(size=1)+  
+  geom_smooth(method="loess", size=0.6, se=FALSE, linetype="dashed", color="darkred")+
+  stat_cor(aes(label=..rr.label..), label.x=400, label.y=1.2, size=3, colour="black", r.digits = 5)+ #adds R^2
+  theme_minimal()+
+  theme(
+    panel.background = element_rect(fill = "white"),  # Set white background
+    panel.grid = element_blank(),  # Remove grid lines
+    axis.text = element_text(size = 9),  # Increase font size of axis text
+    axis.title.y = element_text(size = 9,face = "bold"),  # Make y-axis label bold and italic
+    axis.text.y = element_text(color = "black", size = 9),  # Make x-axis text bold
+    axis.title.x = element_text(size = 10,face = "bold"),
+    axis.text.x = element_text(color = "black", size = 9),  # Make x-axis text bold
+    axis.ticks.x = element_line(color = "black"),  # Add ticks to x-axis in black color
+    axis.ticks.y = element_line(color = "black"),  # Add ticks to y-axis in black color
+    aspect.ratio = 1,  # Set aspect ratio
+    plot.margin = margin(0.5, 0.5, 0.4, 0.5, "cm"),  # Set plot margins
+    legend.text=element_text(size=9),
+    legend.position = c(0.25, 0.85),
+    legend.background = element_rect(fill="white",
+                                   size=0.5, linetype="solid", 
+                                   colour ="black"),
+    legend.title = element_blank(), #removes the title of the legend
+    legend.margin = margin(0.001, 1, 0.5, 0.5))
+d1
+###################################
+d2 <- dt_difference |> filter(compound != "terfenadine") |> 
+  ggplot(mapping=aes(x=mz, y=diff_mzmine))+
+  geom_point(size=1)+  
+  geom_smooth(method="loess", size=0.6, se=FALSE, linetype="dashed", color="darkgreen")+
+  stat_cor(aes(label=..rr.label..), label.x=200, label.y=1.4, size=3, colour="black", r.digits = 5)+ #adds R^2
+  theme_minimal()+
+  theme(
+    panel.background = element_rect(fill = "white"),  # Set white background
+    panel.grid = element_blank(),  # Remove grid lines
+    axis.text = element_text(size = 9),  # Increase font size of axis text
+    axis.title.y = element_text(size = 9,face = "bold"),  # Make y-axis label bold and italic
+    axis.text.y = element_text(color = "black", size = 9),  # Make x-axis text bold
+    axis.title.x = element_text(size = 10,face = "bold"),
+    axis.text.x = element_text(color = "black", size = 9),  # Make x-axis text bold
+    axis.ticks.x = element_line(color = "black"),  # Add ticks to x-axis in black color
+    axis.ticks.y = element_line(color = "black"),  # Add ticks to y-axis in black color
+    aspect.ratio = 1,  # Set aspect ratio
+    plot.margin = margin(0.5, 0.5, 0.4, 0.5, "cm"),  # Set plot margins
+    legend.text=element_text(size=9),
+    legend.position = c(0.25, 0.85),
+    legend.background = element_rect(fill="white",
+                                   size=0.5, linetype="solid", 
+                                   colour ="black"),
+    legend.title = element_blank(), #removes the title of the legend
+    legend.margin = margin(0.001, 1, 0.5, 0.5))
+d2
+ggarrange(d1, d2,
+          labels = c("A", "B"),
+          #ncol = 1, nrow = 2,
+          widths = 2, heights = 10)
 ```
 
 ------------------------------------------------------------------------
@@ -377,7 +442,8 @@ filtered_found_drugs <-found_drugs |> filter(
 filtered_found_drugs <- filtered_found_drugs |> 
   mutate(Mass_error_ppm = mass_error(Theor_adduct_mz, mz), .after = "mz")|>  #adds the mass error (calculated with the function) to a new column after m/z values
   mutate(height_ratio = `datafile:Drugdtd-200ppb-newsetting_1_A,2_1.mzML:height`/`datafile:Drugstd-200ppb_1_A,3_1.mzML:height`, .after="height") |> #adds the ratio between the height of the old and new settings 
-  mutate(area_ratio = `datafile:Drugdtd-200ppb-newsetting_1_A,2_1.mzML:area`/`datafile:Drugstd-200ppb_1_A,3_1.mzML:area`, .after="area")
+  mutate(area_ratio = `datafile:Drugdtd-200ppb-newsetting_1_A,2_1.mzML:area`/`datafile:Drugstd-200ppb_1_A,3_1.mzML:area`, .after="area") |> 
+  mutate(diff_DT = ion_mobility - DT_UNIFI, .after="ion_mobility")
 
 
 p1 <-ggplot(filtered_found_drugs, mapping = aes(x=mz, y=area_ratio, label=Compound))+ #plot area ratio
@@ -446,6 +512,68 @@ ggarrange(p1, p2,
           #ncol = 1, nrow = 2,
           widths = 2, heights = 10)
 
+```
+
+```{r}
+#Plot of DT difference between MZmine and UNIFI
+p3 <- filtered_found_drugs |> 
+  ggplot(mapping=aes(x=Theor_adduct_mz, y=diff_DT))+
+  geom_point(size=1)+  
+  geom_smooth(method="loess", size=0.6, se=FALSE, linetype="dashed", color="darkblue")+
+  stat_cor(aes(label=..rr.label..), label.x=200, label.y=1.2, size=3, colour="black", r.digits = 5)+ #adds R^2
+
+  theme_minimal()+
+  theme(
+    panel.background = element_rect(fill = "white"),  # Set white background
+    panel.grid = element_blank(),  # Remove grid lines
+    axis.text = element_text(size = 9),  # Increase font size of axis text
+    axis.title.y = element_text(size = 9,face = "bold"),  # Make y-axis label bold and italic
+    axis.text.y = element_text(color = "black", size = 9),  # Make x-axis text bold
+    axis.title.x = element_text(size = 10,face = "bold"),
+    axis.text.x = element_text(color = "black", size = 9),  # Make x-axis text bold
+    axis.ticks.x = element_line(color = "black"),  # Add ticks to x-axis in black color
+    axis.ticks.y = element_line(color = "black"),  # Add ticks to y-axis in black color
+    aspect.ratio = 1,  # Set aspect ratio
+    plot.margin = margin(0.5, 0.5, 0.4, 0.5, "cm"),  # Set plot margins
+    legend.text=element_text(size=9),
+    legend.position = c(0.25, 0.85),
+    legend.background = element_rect(fill="white",
+                                   size=0.5, linetype="solid", 
+                                   colour ="black"),
+    legend.title = element_blank(), #removes the title of the legend
+    legend.margin = margin(0.001, 1, 0.5, 0.5))
+p3
+p4 <- filtered_found_drugs |> 
+  ggplot(mapping=aes(x=DT_UNIFI, y=diff_DT))+
+  geom_point(size=1)+  
+  geom_smooth(method="loess", size=0.6, se=FALSE, linetype="dashed", color="orange")+
+  stat_cor(aes(label=..rr.label..), label.x=4, label.y=1.2, size=3, colour="black", r.digits = 5)+ #adds R^2
+
+  theme_minimal()+
+  theme(
+    panel.background = element_rect(fill = "white"),  # Set white background
+    panel.grid = element_blank(),  # Remove grid lines
+    axis.text = element_text(size = 9),  # Increase font size of axis text
+    axis.title.y = element_text(size = 9,face = "bold"),  # Make y-axis label bold and italic
+    axis.text.y = element_text(color = "black", size = 9),  # Make x-axis text bold
+    axis.title.x = element_text(size = 10,face = "bold"),
+    axis.text.x = element_text(color = "black", size = 9),  # Make x-axis text bold
+    axis.ticks.x = element_line(color = "black"),  # Add ticks to x-axis in black color
+    axis.ticks.y = element_line(color = "black"),  # Add ticks to y-axis in black color
+    aspect.ratio = 1,  # Set aspect ratio
+    plot.margin = margin(0.5, 0.5, 0.4, 0.5, "cm"),  # Set plot margins
+    legend.text=element_text(size=9),
+    legend.position = c(0.25, 0.85),
+    legend.background = element_rect(fill="white",
+                                   size=0.5, linetype="solid", 
+                                   colour ="black"),
+    legend.title = element_blank(), #removes the title of the legend
+    legend.margin = margin(0.001, 1, 0.5, 0.5))
+p4
+ggarrange(p3, p4,
+          labels = c("A", "B"),
+          #ncol = 1, nrow = 2,
+          widths = 2, heights = 10)
 ```
 
 ```{r}
@@ -556,7 +684,7 @@ plot_object <- ggplot(data = normalisation_IS, aes(x=normalised_height_OLD, y=no
 gt_tab
 #gt_tab |> gtsave(filename = "tab_1.html") #saves the table in HTML format
 #gt_tab |> gtsave(filename = "tab_1.tex") #saves the table in LaTEX format
-#gt_tab |> gtsave(filename = "tab_1.docx") #saves the table in WORD format
+gt_tab |> gtsave(filename = "tab_1.docx") #saves the table in WORD format
 
 
 
@@ -568,6 +696,129 @@ agg_iris = normalisation_IS  |>
 
 agg_iris |> gt() |> gt_plt_sparkline(column = normalised_height)
 ```
+
+------------------------------------------------------------------------
+
+## Drug mix 2024-03-20
+
+```{r}
+#| warning: false
+drugmix <- read_excel("~/Project/hrms_converter-2024/illicit drugs CS-IS_data - MassErrors_Calculations.xlsx", 
+    sheet = "Drugmix_240320_21 (2)") 
+drugmix <- drugmix |> 
+  mutate(Mass_acc=case_when(`mode...14` == "[M+H]+" ~ mass_error(Theor_adduct_mz, `m/z...9`),
+                            `mode...14` == "[M+Na]+" ~ mass_error(`Theor. [M+Na]+`, `m/z...9`),
+                            `mode...14` == "[M+NH4]+" ~ mass_error(`Theor. [M+NH4]+`, `m/z...9`)), .after=`mode...14`) |> 
+  mutate(Mass_acc2=case_when(`mode...21` == "[M+H]+" ~ mass_error(Theor_adduct_mz, `m/z...16`),
+                            `mode...21` == "[M+Na]+" ~ mass_error(`Theor. [M+Na]+`, `m/z...16`),
+                            `mode...21` == "[M+NH4]+" ~ mass_error(`Theor. [M+NH4]+`, `m/z...16`)), .after=`mode...21`) |> 
+  mutate(Mass_acc3=case_when(`mode...28` == "[M+H]+" ~ mass_error(Theor_adduct_mz, `m/z...23`),
+                            `mode...28` == "[M+Na]+" ~ mass_error(`Theor. [M+Na]+`, `m/z...23`),
+                            `mode...28` == "[M+NH4]+" ~ mass_error(`Theor. [M+NH4]+`, `m/z...23`)), .after=`mode...28`) |> 
+  mutate(Mass_acc4=case_when(`mode...35` == "[M+H]+" ~ mass_error(Theor_adduct_mz, `m/z...30`),
+                            `mode...35` == "[M+Na]+" ~ mass_error(`Theor. [M+Na]+`, `m/z...30`),
+                            `mode...35` == "[M+NH4]+" ~ mass_error(`Theor. [M+NH4]+`, `m/z...30`)), .after=`mode...35`) |> 
+  mutate(Mass_acc5=case_when(`mode...42` == "[M+H]+" ~ mass_error(Theor_adduct_mz, `m/z...37`),
+                            `mode...42` == "[M+Na]+" ~ mass_error(`Theor. [M+Na]+`, `m/z...37`),
+                            `mode...42` == "[M+NH4]+" ~ mass_error(`Theor. [M+NH4]+`, `m/z...37`)), .after=`mode...42`)
+
+drugmix |> 
+  pivot_longer(cols = c(`detector count...13`, `detector count...20`, `detector count...27`, `detector count...34`,`detector count...41`),
+                            names_to = "detectorcoun_comb",
+                            values_to = "Intensities") 
+
+f1 <- ggplot(drugmix, aes(x=Theor_adduct_mz, y=`detector count...13`))+
+  geom_point()+
+  geom_point(aes(x=Theor_adduct_mz, y=`detector count...20`), color="red")+
+  geom_point(aes(x=Theor_adduct_mz, y=`detector count...27`), color="green")+
+  geom_point(aes(x=Theor_adduct_mz, y=`detector count...34`), color="blue")+
+  geom_point(aes(x=Theor_adduct_mz, y=`detector count...41`), color="orange")+
+  
+  labs( y = "Detector Count", x=expression(paste("Theoretical ",italic("m/z"), " values"))) +
+  
+    theme_minimal()+
+  theme(
+    panel.background = element_rect(fill = "white"),  # Set white background
+    panel.grid.major = element_blank(),  # Remove grid lines
+    panel.grid.minor = element_blank(),  # Remove grid lines
+    axis.text = element_text(size = 9),  # Increase font size of axis text
+    axis.title.y = element_text(size = 9,face = "bold"),  # Make y-axis label bold and italic
+    axis.text.y = element_text(color = "black", size = 9),  # Make x-axis text bold
+    axis.title.x = element_text(size = 10,face = "bold"),
+    axis.text.x = element_text(color = "black", size = 9),  # Make x-axis text bold
+    axis.ticks.x = element_line(color = "black"),  # Add ticks to x-axis in black color
+    axis.ticks.y = element_line(color = "black"),  # Add ticks to y-axis in black color
+    plot.margin = margin(0.5, 0.5, 0.4, 0.5, "cm"),  # Set plot margins
+    legend.text=element_text(size=9),
+    legend.background = element_rect(fill="white",
+                                   size=0.5, linetype="solid", 
+                                   colour ="black"),
+    legend.title = element_blank(),
+)
+
+f2 <-ggplot(drugmix, aes(x=Compound, y=Mass_acc))+
+  geom_point()+
+  geom_point(aes(y=Mass_acc2), color="red")+
+  geom_point(aes(y=Mass_acc3), color="green")+
+  geom_point(aes(y=Mass_acc4), color="blue")+
+  geom_point(aes(y=Mass_acc5), color="orange")+
+  
+  labs( y = "Mass Accuracy [ppm]", x=" ") +
+  
+    theme_minimal()+
+  theme(
+    panel.background = element_rect(fill = "white"),  # Set white background
+    panel.grid.major = element_blank(),  # Remove grid lines
+    panel.grid.minor = element_blank(),  # Remove grid lines
+    axis.text = element_text(size = 9),  # Increase font size of axis text
+    axis.title.y = element_text(size = 9,face = "bold"),  # Make y-axis label bold and italic
+    axis.text.y = element_text(color = "black", size = 9),  # Make x-axis text bold
+    axis.title.x = element_text(size = 10,face = "bold"),
+    axis.text.x = element_text(color = "black", size = 9, angle = 45, hjust = 1),  # Make x-axis text bold
+    axis.ticks.x = element_line(color = "black", ),  # Add ticks to x-axis in black color
+    axis.ticks.y = element_line(color = "black"),  # Add ticks to y-axis in black color
+    plot.margin = margin(0.5, 0.5, 0.4, 0.5, "cm"),  # Set plot margins
+    legend.text=element_text(size=9),
+    legend.background = element_rect(fill="white",
+                                   size=0.5, linetype="solid", 
+                                   colour ="black"),
+    legend.title = element_blank(),
+)
+f3 <- ggplot(drugmix, aes(x=Theor_adduct_mz, y=`CCS...12`))+
+  geom_point()+
+  geom_point(aes(x=Theor_adduct_mz, y=`CCS...19`), color="red")+
+  geom_point(aes(x=Theor_adduct_mz, y=`CCS...26`), color="green")+
+  geom_point(aes(x=Theor_adduct_mz, y=`CCS...33`), color="blue")+
+  geom_point(aes(x=Theor_adduct_mz, y=`CCS...40`), color="orange")+
+  
+  labs( y = "Drift Time", x=expression(paste("Theoretical ",italic("m/z"), " values"))) +
+  
+    theme_minimal()+
+  theme(
+    panel.background = element_rect(fill = "white"),  # Set white background
+    panel.grid.major = element_blank(),  # Remove grid lines
+    panel.grid.minor = element_blank(),  # Remove grid lines
+    axis.text = element_text(size = 9),  # Increase font size of axis text
+    axis.title.y = element_text(size = 9,face = "bold"),  # Make y-axis label bold and italic
+    axis.text.y = element_text(color = "black", size = 9),  # Make x-axis text bold
+    axis.title.x = element_text(size = 10,face = "bold"),
+    axis.text.x = element_text(color = "black", size = 9),  # Make x-axis text bold
+    axis.ticks.x = element_line(color = "black"),  # Add ticks to x-axis in black color
+    axis.ticks.y = element_line(color = "black"),  # Add ticks to y-axis in black color
+    plot.margin = margin(0.5, 0.5, 0.4, 0.5, "cm"),  # Set plot margins
+    legend.text=element_text(size=9),
+    legend.background = element_rect(fill="white",
+                                   size=0.5, linetype="solid", 
+                                   colour ="black"),
+    legend.title = element_blank(),
+)
+    
+ggarrange(f2, f1, f3,
+          labels = c("A", "B", "C"),
+          ncol=3)
+f3
+```
+
 
 ------------------------------------------------------------------------
 

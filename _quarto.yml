@@ -11,6 +11,7 @@ book:
     - Basics.qmd
     - Data_vis.qmd
     - qc_hdmse_peak.qmd
+   # - NMCT-project.qmd
 
 bibliography: references.bib
 
