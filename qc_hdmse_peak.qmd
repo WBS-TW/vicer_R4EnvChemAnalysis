@@ -1,12 +1,16 @@
 # Data Analysis
 
-## QC mix
+Some analysis of data. Most of the code is just to try different functions and methods to analyse data from a LC-IMS-HRMS instrument and to compare the processing of the data between different softwares.
+
+## QC mixture 
+
+The following part is for analysis of a QC mixture containing 9 analytes.
 
 ```{r}
 #| echo: false
 #| output: false
 
-#Libraries
+# Loading of different Libraries
 library(tidyverse)
 library(readxl)
 library(ggrepel)
@@ -19,10 +23,7 @@ library(gtExtras)
 #| output: false
 #| warning: false
 
-#Data is importer for the two data set (mzmine and ms_dial). A reference data frame is constructed (unifi) as well as data frame with theoretical values (qc_compounds)
-
-#library(readr)
-#library(readxl)
+#Data is importer for the two data set (mzmine and ms_dial). A reference data frame is constructed (unifi) as well as data frame with theoretical values (qc_compounds).
 
 mzmine <- read_excel("~/Project/hrms_converter-2024/qc5rep_hdmse_peakpicking_featurelist_MZMINE.xlsx", 
     col_types = c("text", "text", "numeric", 
@@ -68,16 +69,16 @@ qc_compounds <- data.frame(
 ```
 
 ```{r}
-#Creating new obects with only the part of the data for both data sets. RT and Mobility is rounded to two digits to be compariable to unifi data
+#Creating new objects with only the a subset of the data for both data sets. RT and Mobility is rounded to two digits to be compariable to unifi data
 
-#Only keep rows that corresponds to the compounds in qc_compounds
+#Only keep the rows that corresponds to the compounds in qc_compounds for mzmine data set
 mzmine_subset <- mzmine |> 
-  select(id,height,ion_mobility,rt,mz) |> 
-  mutate(across(c(rt,ion_mobility),round, 2)) |> 
-  mutate(across(mz,round, 4)) |>
-  filter(id %in% qc_compounds$compound )
+  select(id,height,ion_mobility,rt,mz) |>  #to only include those columns in the new data frame
+  mutate(across(c(rt,ion_mobility),round, 2)) |> #round the rt and ion mobility columns values to two decimals
+  mutate(across(mz,round, 4)) |> #round the mz values to four decimals
+  filter(id %in% qc_compounds$compound ) #only keeps the rows in id that is labeled as one of the compounds in qc_compounds data frame
 
-#msdial data is filtered to excluded the rows where mobility is -1.00
+#msdial data is filtered to excluded the rows where mobility is -1.00 since those are duplicates
 #Also only keep rows that corresponds to the qc compounds
 msdial_subset <- ms_dial |> 
   select(`Alignment ID`,Average,`Average Rt(min)`,`Average mobility`,`Average Mz`) |> 
@@ -90,7 +91,13 @@ msdial_subset <- ms_dial |>
 
 ------------------------------------------------------------------------
 
-Instead of manually add which features corresponds to the target compounds, can try filter the data sets (mzmine and msdial) for the compounds in unifi according to the retention time (RT), drift time (DT), and Mass-To-Charge ration(*m/z*).
+**ALTERNATIVE METHOD FOR THE ABOVE WRITTEN CODE**
+
+The methods used above realize on that the "correct" compounds names have manually been added before to the data before importing it in RStudio. However, to skip having to manually add them, the following part is for finding the correct compounds in mzmine or msdial that corresponds to the ones in UNIFI/ QC_compounds data frame.
+
+The criteria for a match is based on the retention time (RT), drift time (DT), and Mass-To-Charge ration(*m/z*) compared to the values in UNIFI.
+
+-   For doing this the `join` -functions can be used.
 
 |                                                                                                                                                                     |
 |------------------------------------------------------------------------|
@@ -99,11 +106,9 @@ Instead of manually add which features corresponds to the target compounds, can 
 | "Filtering joins, which filter observations from one data frame based on whether or not they match an observation in another." e.g. `semi_join()` and `anti_join()` |
 
 ```{r}
-#library(tidyverse)
-##library(readxl)
+#First import the data (if the first code chunk have not been run for importing data
 mzmine <- read_csv("~/Project/hrms_converter-2024/qc5rep_hdmse_peakpicking_featurelist_MZMINE.csv",show_col_types = FALSE)
-glimpse(mzmine)
-
+#glimpse(mzmine) 
 msdial <- ms_dial <- read_excel("~/Project/hrms_converter-2024/qc3rep_hdmse_peakpicking_featurelist_MSDIAL.xlsx") 
 
 mzmine |> filter(is.na(rt) | is.na(mz) | is.na(ion_mobility)) #check that there are no missing values. Need to have entries for each obesrvation
@@ -128,13 +133,13 @@ msdial2$mz_max <- msdial2$`Average Mz`+0.005
 msdial2$rt_min <- msdial2$`Average Rt(min)`-0.08
 msdial2$rt_max <- msdial2$`Average Rt(min)`+0.08
 
-#finds the compounds in unifi in the mzmine data
+#finds the compounds from unifi in the mzmine data by using the join function
 subset_mzmine <- unifi2 |> inner_join(mzmine2, join_by(overlaps("mz_unifi","mz_unifi","mz_range:min", "mz_range:max"),overlaps("rt_unifi","rt_unifi","rt_range:min", "rt_range:max"))) |> 
   filter(abs(dt_unifi - ion_mobility) < 2) 
 
 #subset_msdial <- unifi2 |> inner_join(msdial2, join_by(overlaps("mz_unifi","mz_unifi","mz_min", "mz_max"),overlaps("rt_unifi","rt_unifi","rt_min", "rt_max"))) |> filter(abs(dt_unifi - `Average mobility`) < 1.7) 
 
-#finds the compounds in unifi in the msdial data
+#finds the compounds from unifi in the msdial data by using the join function
 subset_msdial <- unifi2 |> 
   inner_join(msdial2, join_by(overlaps("mz_unifi","mz_unifi","mz_min", "mz_max"),overlaps("rt_unifi","rt_unifi","rt_min", "rt_max"))) |> 
   group_by(mz_unifi) |> 
@@ -143,6 +148,8 @@ subset_msdial <- unifi2 |>
 
 no_duplicates_msdial <- subset_msdial[!duplicated(subset_msdial$compound), ] #removes the second duplicate feature
 ```
+
+**To easier be able to calculate the mass error, a function was created.**
 
 $MassError[ppm]=\frac{\textit{m/z}_{theretical}-\mathit{m/z}_{measured}}{\mathit{m/z}_{theoretical}}*10^6$
 
@@ -161,20 +168,20 @@ mass_error(qc_compounds$mz,no_duplicates_msdial$`Average Mz`)
 
 ------------------------------------------------------------------------
 
+**The following part is used with the "first method" of extracting the correct compounds from msdial and mzmine because ti was written before the other method was written.** Sorry for the mess in jumping between different parts.
+
 ```{r}
-#calculate the mass accuracy for mzmine, msdial, and unif based on the qc_compounds values. First the m/z values are sorted from small to large so the calculations can be performed row-wise for the correct compound. Lastly, the results are added to a column in a new object.
+#calculate the mass accuracy for mzmine, msdial, and unif based on the qc_compounds values. First the m/z values are sorted from small to large so the calculations can be performed row-wise for the correct compound in QC_compounds and the data. Lastly, the results are added to a column in a new object.
 
 qc_compounds <- arrange(qc_compounds, mz)
+mass_errors <- as.data.frame(qc_compounds[1:2]) #create an data frame to add all the mass errors to 
 
-mass_errors <- as.data.frame(qc_compounds[1:2])
-
-mzmine_subset <- mzmine_subset |> arrange(mz) |> mutate(Mass_error_ppm = round((qc_compounds$mz-mz)/qc_compounds$mz*10^6,3))
-
+#calculate mass errors
+mzmine_subset <- mzmine_subset |> arrange(mz) |> mutate(Mass_error_ppm = round((qc_compounds$mz-mz)/qc_compounds$mz*10^6,3)) 
 msdial_subset <- msdial_subset |> arrange(`Average Mz`) |> mutate(Mass_error_ppm = round((qc_compounds$mz - `Average Mz`) /qc_compounds$mz * 10^6,3))
-
 unifi <- unifi |> arrange(mz_unifi) |> mutate(Mass_error_ppm = round((qc_compounds$mz - mz_unifi) /qc_compounds$mz * 10^6,3))
 
-
+#adds the mass errors to the mass error data frame
 mass_errors$Mzmine <- mzmine_subset$Mass_error_ppm
 mass_errors$MsDial <- msdial_subset$Mass_error_ppm
 mass_errors$Unifi <- unifi$Mass_error_ppm
@@ -189,15 +196,17 @@ mass_errors <- mass_errors |> mutate(mzmine_fromunifi = case_when(abs(Unifi - Mz
   
 ```
 
+**Next parts of chunks are for plotting the data for the QC compounds.**
+
 ```{r}
-#Plot the ms
+#Plot the mass errors towards the theoretical m/z values
 mass_errors$msdial_fromunifi <- as.factor(mass_errors$msdial_fromunifi)
 mass_errors$mzmine_fromunifi <- as.factor(mass_errors$mzmine_fromunifi)
   
 p <- ggplot(data=mass_errors, mapping=aes(x=mz))+
-  geom_point(aes(y=Mzmine, colour="Mzmine", shape="Mzmine", size=mzmine_fromunifi), alpha = 0.7)+
-  geom_point(aes(y=MsDial, colour="MsDial", shape="MsDial", size=msdial_fromunifi), alpha = 0.7)+
-  geom_line(aes(y=Unifi, colour="Unifi"),size=0.5)+
+  geom_point(aes(y=Mzmine, colour="Mzmine", shape="Mzmine", size=mzmine_fromunifi), alpha = 0.7)+ #mass erros values from mzmine and adds size of the plots according to how far away they are from unifi
+  geom_point(aes(y=MsDial, colour="MsDial", shape="MsDial", size=msdial_fromunifi), alpha = 0.7)+ #mass erros values from msdial and adds size of the plots according to how far away they are from unifi
+  geom_line(aes(y=Unifi, colour="Unifi"),size=0.5)+ #plot Unifi data 
   
   scale_size_manual(name="Distance from Unifi", values = c("Large"=4.2, "Medium"=2.8, "Small"=2))+
   scale_shape_manual(values = c("Mzmine" = 19, "MsDial" = 17)) +
@@ -309,7 +318,7 @@ b + geom_label(data=rt_difference, mapping=aes(x=mz, y=MsDial_RT, label=compound
 ```
 
 ```{r}
-######################################
+#Plot of DT vs theoretical m/z values for the different softwares
 d <- ggplot(data=dt_difference_long, mapping=aes(x=mz, y=DT_softwares))+
   geom_bar(stat = "identity",position=position_dodge(), aes(fill=software_name))+
   
@@ -344,7 +353,8 @@ d + geom_label(data=dt_difference, mapping=aes(x=mz-10, y=MzMine_DT, label=compo
               size=2, colour="black", nudge_y = 0.7, 
               ) #hjust="inward"
 d
-###################################
+
+#Plot DT only for MSDial and adds regression line
 d1 <- dt_difference |> filter(diff_msdial>0.5) |> #exlucde "outlier"
   ggplot(mapping=aes(x=mz, y=diff_msdial))+
   geom_point(size=1)+  
@@ -371,7 +381,8 @@ d1 <- dt_difference |> filter(diff_msdial>0.5) |> #exlucde "outlier"
     legend.title = element_blank(), #removes the title of the legend
     legend.margin = margin(0.001, 1, 0.5, 0.5))
 d1
-###################################
+
+#Plot DT only for Mzmine and adds regression line
 d2 <- dt_difference |> filter(compound != "terfenadine") |> 
   ggplot(mapping=aes(x=mz, y=diff_mzmine))+
   geom_point(size=1)+  
@@ -398,6 +409,7 @@ d2 <- dt_difference |> filter(compound != "terfenadine") |>
     legend.title = element_blank(), #removes the title of the legend
     legend.margin = margin(0.001, 1, 0.5, 0.5))
 d2
+#Show both Mzmine and Msdial
 ggarrange(d1, d2,
           labels = c("A", "B"),
           #ncol = 1, nrow = 2,
@@ -410,10 +422,10 @@ ggarrange(d1, d2,
 
 ## Drug mixture
 
-To compare the drug mixture (200 ppb) measured in ESI(+)-LC-IMS-HRMS (MSe mode, HDMSe). Data is from old settings and new setting that is supposed to be more suitable for labile compounds.
+The data used for this section is of a mixture of different drugs (200 ppb) including some Isotopically labeled internal standards (IS, 100 ppb). The data has been measured in ESI(+)-LC-IMS-HRMS (MSe mode, HDMSe) with different settings, here called old and new settings where the later is supposed to be more suitable for labile compounds. The data was processed in MZmine.
 
 ```{r}
-#library(tidyverse), library(readxl), library(ggrepel), library(ggpubr)
+#Import the data from mzmine, and the excel sheet containing the target compounds and IS compounds.
 data_drugmix <- read_csv("~/Project/hrms_converter-2024/new_old_settings_drugmix_featurelist_MzMine.csv", show_col_types = FALSE) |> 
   select(-`charge`,-`fragment_scans`,-`alignment_scores:rate`, -`alignment_scores:aligned_features_n`,-`alignment_scores:align_extra_features`,-`alignment_scores:weighted_distance_score`,-`alignment_scores:mz_diff_ppm`,-`alignment_scores:mz_diff`,-`alignment_scores:rt_absolute_error`,-`alignment_scores:ion_mobility_absolute_error`,-`intensity_range:min`,-`intensity_range:max`)
 
@@ -424,13 +436,9 @@ target_drugs <- read_excel("~/Project/hrms_converter-2024/illicit drugs CS-IS_da
   select(-`Monoisomass`, -`Adduct_ion`,  -`Vion_observed_mz`, -`Agilent_observed_mz`, -`Agilent_RT`)
 
 
+#find the target compounds in the drug_mix data
 found_drugs <- target_drugs |> inner_join(data_drugmix, join_by(overlaps("Theor_adduct_mz","Theor_adduct_mz","mz_range:min", "mz_range:max"))) |> 
   select(1:11, mz, height, everything()) #reorder columns
-
-#found_drugs |> filter(
-#  !(is.na(Vion_RT) & `height` < 500), #removes those without RT that has height less than 500
-#  !(!is.na(Vion_RT) & ("rt" < "rt_target_min" & "rt" > "rt_target_max")) #for those with RT, filter according to rt similarities
-#)
 
 filtered_found_drugs <-found_drugs |> filter(
   !(`height` < 500), #removes rows with height less than 500
@@ -439,11 +447,12 @@ filtered_found_drugs <-found_drugs |> filter(
   slice_max(by=Compound, height) #to remove multiple features assigned the same compound by only keeping the ones with largest height. Due to not having any DT values to compare to filter the data more
 
 
+#calculate the mass error and height and area ratio between new and old data
 filtered_found_drugs <- filtered_found_drugs |> 
   mutate(Mass_error_ppm = mass_error(Theor_adduct_mz, mz), .after = "mz")|>  #adds the mass error (calculated with the function) to a new column after m/z values
   mutate(height_ratio = `datafile:Drugdtd-200ppb-newsetting_1_A,2_1.mzML:height`/`datafile:Drugstd-200ppb_1_A,3_1.mzML:height`, .after="height") |> #adds the ratio between the height of the old and new settings 
   mutate(area_ratio = `datafile:Drugdtd-200ppb-newsetting_1_A,2_1.mzML:area`/`datafile:Drugstd-200ppb_1_A,3_1.mzML:area`, .after="area") |> 
-  mutate(diff_DT = ion_mobility - DT_UNIFI, .after="ion_mobility")
+  mutate(diff_DT = ion_mobility - DT_UNIFI, .after="ion_mobility") #different in ion mobility for the processed data compared to UNIFI
 
 
 p1 <-ggplot(filtered_found_drugs, mapping = aes(x=mz, y=area_ratio, label=Compound))+ #plot area ratio
@@ -577,6 +586,7 @@ ggarrange(p3, p4,
 ```
 
 ```{r}
+#Import and find the IS compounds in the processed durg mixture data
 target_IS <- read_excel("~/Project/hrms_converter-2024/illicit drugs CS-IS_data.xlsx", na = "NA") |> 
   filter(Class=="IS") |> 
   select(-`Monoisomass`, -`Adduct_ion`,  -`Vion_observed_mz`, -`Agilent_observed_mz`, -`Agilent_RT`)
@@ -589,6 +599,7 @@ found_IS <- target_IS |> inner_join(data_drugmix, join_by(overlaps("Theor_adduct
 filtered_found_IS <- found_IS |>  slice_min(by=Compound, abs(Mass_error_ppm)) #only keeps the rows with the smallest absolut mass error for each compound
 
 
+#normalise the heights for the new and old with the IS corresponding IS
 normalisation_IS <- inner_join(x=filtered_found_drugs, y=filtered_found_IS, join_by(x$Formula == y$Formula)) |> 
   mutate(normalised_height_NEW = `datafile:Drugdtd-200ppb-newsetting_1_A,2_1.mzML:height.x`/`datafile:Drugdtd-200ppb-newsetting_1_A,2_1.mzML:height.y`, .after="height.x") |> 
   mutate(normalised_height_OLD = `datafile:Drugstd-200ppb_1_A,3_1.mzML:height.x`/`datafile:Drugstd-200ppb_1_A,3_1.mzML:height.y`, .after="height.x") |> 
@@ -684,7 +695,7 @@ plot_object <- ggplot(data = normalisation_IS, aes(x=normalised_height_OLD, y=no
 gt_tab
 #gt_tab |> gtsave(filename = "tab_1.html") #saves the table in HTML format
 #gt_tab |> gtsave(filename = "tab_1.tex") #saves the table in LaTEX format
-gt_tab |> gtsave(filename = "tab_1.docx") #saves the table in WORD format
+#gt_tab |> gtsave(filename = "tab_1.docx") #saves the table in WORD format
 
 
 
@@ -701,8 +712,12 @@ agg_iris |> gt() |> gt_plt_sparkline(column = normalised_height)
 
 ## Drug mix 2024-03-20
 
+The drug mixture has been measured as above, but has been measured with different settings such as LC-gradient, desolvation temperature, etc.
+
 ```{r}
 #| warning: false
+
+#Import the data and calculate the mass error depending on the the adduct the compounds is found as 
 drugmix <- read_excel("~/Project/hrms_converter-2024/illicit drugs CS-IS_data - MassErrors_Calculations.xlsx", 
     sheet = "Drugmix_240320_21 (2)") 
 drugmix <- drugmix |> 
@@ -722,11 +737,14 @@ drugmix <- drugmix |>
                             `mode...42` == "[M+Na]+" ~ mass_error(`Theor. [M+Na]+`, `m/z...37`),
                             `mode...42` == "[M+NH4]+" ~ mass_error(`Theor. [M+NH4]+`, `m/z...37`)), .after=`mode...42`)
 
+##DID NOT WORK AS INTENDEN DUE TO THE FORMAT OF THE EXCEL SHEET##########
 drugmix |> 
   pivot_longer(cols = c(`detector count...13`, `detector count...20`, `detector count...27`, `detector count...34`,`detector count...41`),
                             names_to = "detectorcoun_comb",
                             values_to = "Intensities") 
+#################################
 
+#plot the intensities of the compounds for each type of measurement
 f1 <- ggplot(drugmix, aes(x=Theor_adduct_mz, y=`detector count...13`))+
   geom_point()+
   geom_point(aes(x=Theor_adduct_mz, y=`detector count...20`), color="red")+
@@ -756,6 +774,7 @@ f1 <- ggplot(drugmix, aes(x=Theor_adduct_mz, y=`detector count...13`))+
     legend.title = element_blank(),
 )
 
+#plot the mass error for the compounds for each measurement
 f2 <-ggplot(drugmix, aes(x=Compound, y=Mass_acc))+
   geom_point()+
   geom_point(aes(y=Mass_acc2), color="red")+
@@ -784,6 +803,8 @@ f2 <-ggplot(drugmix, aes(x=Compound, y=Mass_acc))+
                                    colour ="black"),
     legend.title = element_blank(),
 )
+
+#plot the CCS for the compounds for each measurement
 f3 <- ggplot(drugmix, aes(x=Theor_adduct_mz, y=`CCS...12`))+
   geom_point()+
   geom_point(aes(x=Theor_adduct_mz, y=`CCS...19`), color="red")+
@@ -818,7 +839,6 @@ ggarrange(f2, f1, f3,
           ncol=3)
 f3
 ```
-
 
 ------------------------------------------------------------------------
 
