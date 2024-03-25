@@ -11,7 +11,7 @@ book:
     - Basics.qmd
     - Data_vis.qmd
     - qc_hdmse_peak.qmd
-   # - project.qmd
+    - project.qmd
 
 bibliography: references.bib
 

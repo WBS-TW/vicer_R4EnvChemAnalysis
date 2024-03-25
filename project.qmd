@@ -1,6 +1,14 @@
 # Project
 
-Import libraries
+XXXX
+
+**New format of Excel-sheet** to work better to import in RStudio. It includes one column with the samples name, replicate number, target compound, which adduct it was detected as, the measured Mass_To_Charge ratio (*m/z*), Retention time (RT), Drift time (DT), CCS, and detector count (Intensity). All the data obtained from UNIFI software.
+
+Each type of sample has its own sheet. Hence, the data shown in the Figure 1, are from measurements of one standard called StD B, whereas measurements of another standard has another sheet in the same Excel-file. The first sheet in the file is called *Info* and contains information of the samples. For example, StD B is measured in different concentrations (10, 50, 100, 300, and 500 ppb). In the data for StD B, the Sample Items are called StD_XX, where XX is the concentration. However, in *Info*, it is possible to find the name of the measurements (e.g. StD_10_240319), number of replicates, and which standard and concentration that was measured.
+
+![Figure 1. Example of the format of the Excel sheet for imported data.](images/clipboard-2370733782.png){width="584"}
+
+**Import libraries**
 
 ```{r}
 #| echo: false
@@ -18,5 +26,5 @@ library(gtExtras)
 \####
 
 ```{r}
-#
+#data_hrms <- read_excel()
 ```
