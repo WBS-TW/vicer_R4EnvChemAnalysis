@@ -6,9 +6,9 @@ XXXX
 
 Each type of sample has its own sheet. Hence, the data shown in the Figure 1, are from measurements of one standard called *StD B*, whereas measurements of another standard has another sheet in the same Excel-file. The first sheet in the file is called *Info* and contains information of the samples. For example, StD B is measured in different concentrations (10, 50, 100, 300, and 500 ppb). In the data for StD B, the Sample Items are called *StD_XX*, where *XX* is the concentration. However, in *Info*, it is possible to find the name of the measurements (e.g. *StD_10_240319*), number of replicates, and which standard and concentration that was measured.
 
-![Figure 1. Example of the format of the Excel sheet for imported data.](images/clipboard-2370733782.png){width="672"}
+![Figure 1. Example of the format of the Excel sheet for imported data.](images/clipboard-1170207925.png){width="1033"}
 
-## **Loading of libraries**
+## Loading of libraries
 
 ```{r}
 #| echo: false
@@ -24,11 +24,12 @@ library(gtExtras)
 library(viridis)
 library(ggsci )
 library(broom)
+library(patchwork)
 ```
 
-## **Functions** 
+## Functions
 
--    $MassError[ppm]=\frac{\textit{m/z}_{theretical}-\mathit{m/z}_{measured}}{\mathit{m/z}_{theoretical}}*10^6$
+-   $MassError[ppm]=\frac{\textit{m/z}_{theretical}-\mathit{m/z}_{measured}}{\mathit{m/z}_{theoretical}}*10^6$
 
 ```{r}
 #Function to calculate the Mass Error with three digits
@@ -50,16 +51,50 @@ stderror <- function(x){
 -   Function for a *Bar plot*
 
 ```{r}
-bar_plot <- function(dataframe, xvalue, yvalue, fillvalue, error) {
-  xvalue <- enquo(xvalue)   # Capture xvalue as a quosure
-  yvalue <- enquo(yvalue)   # Capture yvalue as a quosure
-  fillvalue <- enquo(fillvalue)   # Capture fillvalue as a quosure
-  error <- enquo(error)   # Capture error as a quosure
+#Uses quosure for the funciton
+#bar_plot <- function(dataframe, xvalue, yvalue, fillvalue, error) {
+#  xvalue <- enquo(xvalue)   # Capture xvalue as a quosure
+#  yvalue <- enquo(yvalue)   # Capture yvalue as a quosure
+#  fillvalue <- enquo(fillvalue)   # Capture fillvalue as a quosure
+#  error <- enquo(error)   # Capture error as a quosure
   
-  p <- ggplot(data=dataframe, aes_string(x=quo_name(xvalue), y=quo_name(yvalue), fill=quo_name(fillvalue)))+
+#  p <- ggplot(data=dataframe, aes_string(x=quo_name(xvalue), y=quo_name(yvalue), fill=quo_name(fillvalue)))+
+#    geom_bar(stat = "identity",position=position_dodge(0.9))+
+#    geom_errorbar(aes(ymin=!!yvalue -!!error, 
+#                      ymax=!!yvalue +!!error), 
+#                  width=0.3, colour="black", size=0.8,position=position_dodge(0.9))+
+#    scale_fill_npg()+
+#    theme_minimal()+
+#    theme(
+#      panel.background = element_rect(fill = "white"),  # Set white background
+#      panel.grid.major = element_blank(),  # Remove grid lines
+#      panel.grid.minor = element_blank(),  # Remove grid lines
+#      axis.text = element_text(size = 9),  # Increase font size of axis text
+#      axis.title.y = element_text(size = 9,face = "bold"),  # Make y-axis label bold and italic
+#      axis.text.y = element_text(color = "black", size = 9),  # Make x-axis text bold
+#      axis.title.x = element_text(size = 10,face = "bold"),
+#      axis.text.x = element_text(color = "black", size = 9, angle = 45, hjust=1),  # Make x-axis text bold
+#      axis.ticks.x = element_line(color = "black"),  # Add ticks to x-axis in black color
+#      axis.ticks.y = element_line(color = "black"),  # Add ticks to y-axis in black color
+#      plot.margin = margin(0.5, 0.5, 0.4, 0.5, "cm"),  # Set plot margins
+#      legend.text=element_text(size=9),
+#      legend.background = element_rect(fill="white",
+#                                     size=0.5, linetype="solid", 
+#                                     colour ="black"),
+#      legend.title = element_blank(),
+#  )
+#return(p)
+#}
+```
+
+```{r}
+#uses embrace-operator ({{ }}) from Tidyverse insetad of quosure
+bar_plot <- function(dataframe, xvalue, yvalue, fillvalue, error) {
+
+  p <- ggplot(data=dataframe, aes(x={{ xvalue }}, y={{ yvalue }}, fill={{ fillvalue }}))+
     geom_bar(stat = "identity",position=position_dodge(0.9))+
-    geom_errorbar(aes(ymin=!!yvalue -!!error, 
-                      ymax=!!yvalue +!!error), 
+    geom_errorbar(aes(ymin={{ yvalue}} -{{error }}, 
+                      ymax={{ yvalue }} +{{ error }}), 
                   width=0.3, colour="black", size=0.8,position=position_dodge(0.9))+
     scale_fill_npg()+
     theme_minimal()+
@@ -88,16 +123,17 @@ return(p)
 -   Function for a *Scatter plot*
 
 ```{r}
+#uses embrace-operator ({{ }}) from Tidyverse insetad of quosure
 scatter_plot <- function(dataframe, xvalue, yvalue, colorvalue, error) {
-  xvalue <- enquo(xvalue)   # Capture xvalue as a quosure
-  yvalue <- enquo(yvalue)   # Capture yvalue as a quosure
-  colorvalue <- enquo(colorvalue)   # Capture colorvalue as a quosure
-  error <- enquo(error)   # Capture error as a quosure
+  #xvalue <- enquo(xvalue)   # Capture xvalue as a quosure
+  #yvalue <- enquo(yvalue)   # Capture yvalue as a quosure
+  #colorvalue <- enquo(colorvalue)   # Capture colorvalue as a quosure
+  #error <- enquo(error)   # Capture error as a quosure
   
-  p <- ggplot(data=dataframe, aes_string(x=quo_name(xvalue), y=quo_name(yvalue), color=quo_name(colorvalue)))+
+  p <- ggplot(data=dataframe, aes(x={{xvalue}}, y={{yvalue}}, color={{colorvalue}}))+
     geom_point()+
-    geom_errorbar(aes(ymin = !!yvalue - !!error, 
-                      ymax = !!yvalue + !!error),
+    geom_errorbar(aes(ymin = {{yvalue}} - {{error}}, 
+                      ymax = {{yvalue}} + {{error}}),
                   width=0.7, colour="black", size=0.7) +
     
     scale_color_viridis(discrete=TRUE)+
@@ -205,13 +241,15 @@ data_hrms_average <-data_hrms |>  filter(!is.na(Mass_to_Charge_Ratio))|>
 Plots using the `bar_plot` function.
 
 ```{r}
-bar_plot(data_hrms_average, Compound, Average_MZ, Sample_Item, SEM_MZ)+
+p1 <- bar_plot(data_hrms_average, Compound, Average_MZ, Sample_Item, SEM_MZ)+
   labs(y = "Average Mass-To-Charge Ratio", x="")+
   scale_y_continuous(expand = expansion(add=c(0,30)))
 
-bar_plot(data_hrms_average, Compound, Average_RT, Sample_Item, SEM_RT)+
+p2 <- bar_plot(data_hrms_average, Compound, Average_RT, Sample_Item, SEM_RT)+
   labs(y = "Average Retention time [min]", x="")+
   scale_y_continuous(expand = expansion(add=c(0,1)))
+
+#(p1 / p2) #need patchwork package for this
 
 bar_plot(data_hrms_average, Compound, Average_DT, Sample_Item, SEM_DT)+
   labs(y = "Average Drift time [ms]", x="")+
@@ -358,3 +396,27 @@ gt_tab
 ## Processed Data MS-DIAL
 
 This section is for data that has been exported from UNIFI and then been processed in **MS-DIAL**. Hence, the output file contains many features and the target compounds needs to be extracted from the processed output file by comparison with expected data (e.g. theoretical *m/z* of different adducts).
+
+```{r}
+
+Data_HRMS_Format_StDB_A <- read_excel("~/01_Projects/02_NM-CT-stdAB_Collaboration_CCS_MEASURMENT_2024/NMCTAB_2024_03_21_MSconvert_MSDIAL/Data_HRMS_Format_StDB.xlsx", 
+    sheet = "Data_StDB_A_MSDIAL_1001_2")
+
+
+Data_HRMS_Format_StDB_A |> mutate(diff_CCS = (`UNIFI ccs`-CCS)/`UNIFI ccs`*100) |> 
+  ggplot(aes(x=Mass_to_Charge_Ratio, y=diff_CCS))+
+  geom_point()
+  #xlim(190,350)
+
+ggplot(Data_HRMS_Format_StDB_A, aes(x=Mass_to_Charge_Ratio,y=CCS, label=Compound))+
+  geom_point()+
+  geom_point(aes(x=Mass_to_Charge_Ratio,y=`UNIFI ccs`, label=Compound), color="red")
+  geom_label_repel(size = 2.5,
+                   point.padding = NA, # additional padding around each point
+                   min.segment.length = 0, # draw all line segments
+                   force=2,
+                   fill= alpha("white",0),
+                   nudge_x=2, nudge_y=2
+                   )
+
+```
