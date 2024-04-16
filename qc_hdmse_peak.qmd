@@ -25,7 +25,7 @@ library(gtExtras)
 
 #Data is importer for the two data set (mzmine and ms_dial). A reference data frame is constructed (unifi) as well as data frame with theoretical values (qc_compounds).
 
-mzmine <- read_excel("~/Project/hrms_converter-2024/qc5rep_hdmse_peakpicking_featurelist_MZMINE.xlsx", 
+mzmine <- read_excel("C:/Users/vicer06/OneDrive - Linköpings universitet/Documents/01_Projects/01_VION_HRMS_MSConvert_Processing_2024/QC_mix_MSDIAL_MZmine_Files/qc5rep_hdmse_peakpicking_featurelist_MZMINE.xlsx", 
     col_types = c("text", "text", "numeric", 
         "numeric", "text", "text", "numeric", 
         "numeric", "text", "numeric", "numeric", 
@@ -56,7 +56,7 @@ mzmine <- read_excel("~/Project/hrms_converter-2024/qc5rep_hdmse_peakpicking_fea
         "text", "text", "text", "numeric", 
         "numeric", "numeric"))
 
-ms_dial <- read_excel("~/Project/hrms_converter-2024/qc3rep_hdmse_peakpicking_featurelist_MSDIAL.xlsx")
+ms_dial <- read_excel("C:/Users/vicer06/OneDrive - Linköpings universitet/Documents/01_Projects/01_VION_HRMS_MSConvert_Processing_2024/QC_mix_MSDIAL_MZmine_Files/qc3rep_hdmse_peakpicking_featurelist_MSDIAL.xlsx")
 
 unifi <- data.frame(compound=c("acetaminophen","caffeine","leucine enkephaline","reserpine","sulfadimethoxine","sulfaguanidine","terfenadine","val-tyr-val","verapamil")
   , mz_unifi=c(152.0697, 195.0870, 556.2756, 609.2787, 311.0801, 215.0589, 472.3197, 380.2173, 455.2892),
@@ -100,16 +100,16 @@ The criteria for a match is based on the retention time (RT), drift time (DT), a
 -   For doing this the `join` -functions can be used.
 
 |                                                                                                                                                                     |
-|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|------------------------------------------------------------------------|
 | [R for Data Science (2e) - 19  Joins (hadley.nz)](https://r4ds.hadley.nz/joins.html)                                                                                |
 | "Mutating joins, which add new variables to one data frame from matching observations in another." e.g. `left_join()` and `inner_join()`                            |
 | "Filtering joins, which filter observations from one data frame based on whether or not they match an observation in another." e.g. `semi_join()` and `anti_join()` |
 
 ```{r}
 #First import the data (if the first code chunk have not been run for importing data
-mzmine <- read_csv("~/Project/hrms_converter-2024/qc5rep_hdmse_peakpicking_featurelist_MZMINE.csv",show_col_types = FALSE)
+mzmine <- read_csv("C:/Users/vicer06/OneDrive - Linköpings universitet/Documents/01_Projects/01_VION_HRMS_MSConvert_Processing_2024/QC_mix_MSDIAL_MZmine_Files/qc5rep_hdmse_peakpicking_featurelist_MZMINE.csv",show_col_types = FALSE)
 #glimpse(mzmine) 
-msdial <- ms_dial <- read_excel("~/Project/hrms_converter-2024/qc3rep_hdmse_peakpicking_featurelist_MSDIAL.xlsx") 
+msdial <- ms_dial <- read_excel("C:/Users/vicer06/OneDrive - Linköpings universitet/Documents/01_Projects/01_VION_HRMS_MSConvert_Processing_2024/QC_mix_MSDIAL_MZmine_Files/qc3rep_hdmse_peakpicking_featurelist_MSDIAL.xlsx") 
 
 mzmine |> filter(is.na(rt) | is.na(mz) | is.na(ion_mobility)) #check that there are no missing values. Need to have entries for each obesrvation
 mzmine |> count(rt, mz, ion_mobility) |> filter(n>1) #check that the variables uniquely identifies each feature
@@ -426,10 +426,10 @@ The data used for this section is of a mixture of different drugs (200 ppb) incl
 
 ```{r}
 #Import the data from mzmine, and the excel sheet containing the target compounds and IS compounds.
-data_drugmix <- read_csv("~/Project/hrms_converter-2024/new_old_settings_drugmix_featurelist_MzMine.csv", show_col_types = FALSE) |> 
+data_drugmix <- read_csv("C:/Users/vicer06/OneDrive - Linköpings universitet/Documents/01_Projects/01_VION_HRMS_MSConvert_Processing_2024/QC_mix_MSDIAL_MZmine_Files/new_old_settings_drugmix_featurelist_MzMine.csv", show_col_types = FALSE) |> 
   select(-`charge`,-`fragment_scans`,-`alignment_scores:rate`, -`alignment_scores:aligned_features_n`,-`alignment_scores:align_extra_features`,-`alignment_scores:weighted_distance_score`,-`alignment_scores:mz_diff_ppm`,-`alignment_scores:mz_diff`,-`alignment_scores:rt_absolute_error`,-`alignment_scores:ion_mobility_absolute_error`,-`intensity_range:min`,-`intensity_range:max`)
 
-target_drugs <- read_excel("~/Project/hrms_converter-2024/illicit drugs CS-IS_data.xlsx", na = "NA") |> 
+target_drugs <- read_excel("C:/Users/vicer06/OneDrive - Linköpings universitet/Documents/01_Projects/01_VION_HRMS_MSConvert_Processing_2024/Illicit_Drugs_Files/illicit drugs CS-IS_data.xlsx", na = "NA") |> 
   filter(Class=="Analyte") |> 
   mutate(rt_target_min = Vion_RT - 0.05) |> 
   mutate(rt_target_max = Vion_RT + 0.05) |> 
@@ -587,7 +587,7 @@ ggarrange(p3, p4,
 
 ```{r}
 #Import and find the IS compounds in the processed durg mixture data
-target_IS <- read_excel("~/Project/hrms_converter-2024/illicit drugs CS-IS_data.xlsx", na = "NA") |> 
+target_IS <- read_excel("C:/Users/vicer06/OneDrive - Linköpings universitet/Documents/01_Projects/01_VION_HRMS_MSConvert_Processing_2024/Illicit_Drugs_Files/illicit drugs CS-IS_data.xlsx", na = "NA") |> 
   filter(Class=="IS") |> 
   select(-`Monoisomass`, -`Adduct_ion`,  -`Vion_observed_mz`, -`Agilent_observed_mz`, -`Agilent_RT`)
 
@@ -718,7 +718,7 @@ The drug mixture has been measured as above, but has been measured with differen
 #| warning: false
 
 #Import the data and calculate the mass error depending on the the adduct the compounds is found as 
-drugmix <- read_excel("~/Project/hrms_converter-2024/illicit drugs CS-IS_data - MassErrors_Calculations.xlsx", 
+drugmix <- read_excel("C:/Users/vicer06/OneDrive - Linköpings universitet/Documents/01_Projects/01_VION_HRMS_MSConvert_Processing_2024/Illicit_Drugs_Files/illicit drugs CS-IS_data - MassErrors_Calculations.xlsx", 
     sheet = "Drugmix_240320_21 (2)") 
 drugmix <- drugmix |> 
   mutate(Mass_acc=case_when(`mode...14` == "[M+H]+" ~ mass_error(Theor_adduct_mz, `m/z...9`),

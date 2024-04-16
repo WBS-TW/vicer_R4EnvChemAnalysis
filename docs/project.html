@@ -64,6 +64,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
+<link href="./raw_ims_hrms.html" rel="next">
 <link href="./qc_hdmse_peak.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -164,6 +165,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Project</span></span></a>
   </div>
 </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./raw_ims_hrms.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Raw Data - IMS-HRMS</span></span></a>
+  </div>
+</li>
     </ul>
     </div>
 </nav>
@@ -212,6 +219,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <section id="loading-of-libraries" class="level2" data-number="4.1">
 <h2 data-number="4.1" class="anchored" data-anchor-id="loading-of-libraries"><span class="header-section-number">4.1</span> Loading of libraries</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Libraries</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readxl)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggrepel)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggpubr)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gt)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gtExtras)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(viridis)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggsci )</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(broom)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
 <section id="functions" class="level2" data-number="4.2">
 <h2 data-number="4.2" class="anchored" data-anchor-id="functions"><span class="header-section-number">4.2</span> Functions</h2>
@@ -219,148 +239,148 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><span class="math inline">\(MassError[ppm]=\frac{\textit{m/z}_{theretical}-\mathit{m/z}_{measured}}{\mathit{m/z}_{theoretical}}*10^6\)</span></li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Function to calculate the Mass Error with three digits</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>mass_error <span class="ot">&lt;-</span> <span class="cf">function</span>(mz_theoretical,mz_meaured){</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  mass_error <span class="ot">&lt;-</span> <span class="fu">round</span>((mz_theoretical<span class="sc">-</span>mz_meaured)<span class="sc">/</span>mz_theoretical<span class="sc">*</span><span class="dv">10</span><span class="sc">^</span><span class="dv">6</span>, <span class="at">digits=</span><span class="dv">3</span>)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(mass_error)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Function to calculate the Mass Error with three digits</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>mass_error <span class="ot">&lt;-</span> <span class="cf">function</span>(mz_theoretical,mz_meaured){</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  mass_error <span class="ot">&lt;-</span> <span class="fu">round</span>((mz_theoretical<span class="sc">-</span>mz_meaured)<span class="sc">/</span>mz_theoretical<span class="sc">*</span><span class="dv">10</span><span class="sc">^</span><span class="dv">6</span>, <span class="at">digits=</span><span class="dv">3</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(mass_error)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <ul>
 <li><span class="math inline">\(SEM=\frac{SD}{\sqrt{N}}\)</span> , SD= Standard Deviation, N=number of samples</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Function to calculate the Standard Error of the Mean (SEM)</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>stderror <span class="ot">&lt;-</span> <span class="cf">function</span>(x){</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">round</span>(<span class="fu">sd</span>(x, <span class="at">na.rm =</span><span class="cn">TRUE</span>)<span class="sc">/</span><span class="fu">sqrt</span>(<span class="fu">length</span>(x)),<span class="dv">4</span>)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Function to calculate the Standard Error of the Mean (SEM)</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>stderror <span class="ot">&lt;-</span> <span class="cf">function</span>(x){</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">round</span>(<span class="fu">sd</span>(x, <span class="at">na.rm =</span><span class="cn">TRUE</span>)<span class="sc">/</span><span class="fu">sqrt</span>(<span class="fu">length</span>(x)),<span class="dv">4</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <ul>
 <li>Function for a <em>Bar plot</em></li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Uses quosure for the funciton</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">#bar_plot &lt;- function(dataframe, xvalue, yvalue, fillvalue, error) {</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">#  xvalue &lt;- enquo(xvalue)   # Capture xvalue as a quosure</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">#  yvalue &lt;- enquo(yvalue)   # Capture yvalue as a quosure</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">#  fillvalue &lt;- enquo(fillvalue)   # Capture fillvalue as a quosure</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co">#  error &lt;- enquo(error)   # Capture error as a quosure</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">#  p &lt;- ggplot(data=dataframe, aes_string(x=quo_name(xvalue), y=quo_name(yvalue), fill=quo_name(fillvalue)))+</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co">#    geom_bar(stat = "identity",position=position_dodge(0.9))+</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co">#    geom_errorbar(aes(ymin=!!yvalue -!!error, </span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co">#                      ymax=!!yvalue +!!error), </span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co">#                  width=0.3, colour="black", size=0.8,position=position_dodge(0.9))+</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co">#    scale_fill_npg()+</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co">#    theme_minimal()+</span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co">#    theme(</span></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="co">#      panel.background = element_rect(fill = "white"),  # Set white background</span></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="co">#      panel.grid.major = element_blank(),  # Remove grid lines</span></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="co">#      panel.grid.minor = element_blank(),  # Remove grid lines</span></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="co">#      axis.text = element_text(size = 9),  # Increase font size of axis text</span></span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="co">#      axis.title.y = element_text(size = 9,face = "bold"),  # Make y-axis label bold and italic</span></span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="co">#      axis.text.y = element_text(color = "black", size = 9),  # Make x-axis text bold</span></span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="co">#      axis.title.x = element_text(size = 10,face = "bold"),</span></span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="co">#      axis.text.x = element_text(color = "black", size = 9, angle = 45, hjust=1),  # Make x-axis text bold</span></span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="co">#      axis.ticks.x = element_line(color = "black"),  # Add ticks to x-axis in black color</span></span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="co">#      axis.ticks.y = element_line(color = "black"),  # Add ticks to y-axis in black color</span></span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a><span class="co">#      plot.margin = margin(0.5, 0.5, 0.4, 0.5, "cm"),  # Set plot margins</span></span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="co">#      legend.text=element_text(size=9),</span></span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a><span class="co">#      legend.background = element_rect(fill="white",</span></span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a><span class="co">#                                     size=0.5, linetype="solid", </span></span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a><span class="co">#                                     colour ="black"),</span></span>
-<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a><span class="co">#      legend.title = element_blank(),</span></span>
-<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a><span class="co">#  )</span></span>
-<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a><span class="co">#return(p)</span></span>
-<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a><span class="co">#}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Uses quosure for the funciton</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co">#bar_plot &lt;- function(dataframe, xvalue, yvalue, fillvalue, error) {</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co">#  xvalue &lt;- enquo(xvalue)   # Capture xvalue as a quosure</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co">#  yvalue &lt;- enquo(yvalue)   # Capture yvalue as a quosure</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co">#  fillvalue &lt;- enquo(fillvalue)   # Capture fillvalue as a quosure</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co">#  error &lt;- enquo(error)   # Capture error as a quosure</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co">#  p &lt;- ggplot(data=dataframe, aes_string(x=quo_name(xvalue), y=quo_name(yvalue), fill=quo_name(fillvalue)))+</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co">#    geom_bar(stat = "identity",position=position_dodge(0.9))+</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="co">#    geom_errorbar(aes(ymin=!!yvalue -!!error, </span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co">#                      ymax=!!yvalue +!!error), </span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="co">#                  width=0.3, colour="black", size=0.8,position=position_dodge(0.9))+</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="co">#    scale_fill_npg()+</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="co">#    theme_minimal()+</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="co">#    theme(</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="co">#      panel.background = element_rect(fill = "white"),  # Set white background</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="co">#      panel.grid.major = element_blank(),  # Remove grid lines</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="co">#      panel.grid.minor = element_blank(),  # Remove grid lines</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="co">#      axis.text = element_text(size = 9),  # Increase font size of axis text</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="co">#      axis.title.y = element_text(size = 9,face = "bold"),  # Make y-axis label bold and italic</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="co">#      axis.text.y = element_text(color = "black", size = 9),  # Make x-axis text bold</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="co">#      axis.title.x = element_text(size = 10,face = "bold"),</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="co">#      axis.text.x = element_text(color = "black", size = 9, angle = 45, hjust=1),  # Make x-axis text bold</span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="co">#      axis.ticks.x = element_line(color = "black"),  # Add ticks to x-axis in black color</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="co">#      axis.ticks.y = element_line(color = "black"),  # Add ticks to y-axis in black color</span></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a><span class="co">#      plot.margin = margin(0.5, 0.5, 0.4, 0.5, "cm"),  # Set plot margins</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a><span class="co">#      legend.text=element_text(size=9),</span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="co">#      legend.background = element_rect(fill="white",</span></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a><span class="co">#                                     size=0.5, linetype="solid", </span></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a><span class="co">#                                     colour ="black"),</span></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a><span class="co">#      legend.title = element_blank(),</span></span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a><span class="co">#  )</span></span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a><span class="co">#return(p)</span></span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="co">#}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">#uses embrace-operator ({{ }}) from Tidyverse insetad of quosure</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>bar_plot <span class="ot">&lt;-</span> <span class="cf">function</span>(dataframe, xvalue, yvalue, fillvalue, error) {</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data=</span>dataframe, <span class="fu">aes</span>(<span class="at">x=</span>{{ xvalue }}, <span class="at">y=</span>{{ yvalue }}, <span class="at">fill=</span>{{ fillvalue }}))<span class="sc">+</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>,<span class="at">position=</span><span class="fu">position_dodge</span>(<span class="fl">0.9</span>))<span class="sc">+</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin=</span>{{ yvalue}} <span class="sc">-</span>{{error }}, </span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>                      <span class="at">ymax=</span>{{ yvalue }} <span class="sc">+</span>{{ error }}), </span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>                  <span class="at">width=</span><span class="fl">0.3</span>, <span class="at">colour=</span><span class="st">"black"</span>, <span class="at">size=</span><span class="fl">0.8</span>,<span class="at">position=</span><span class="fu">position_dodge</span>(<span class="fl">0.9</span>))<span class="sc">+</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_fill_npg</span>()<span class="sc">+</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>()<span class="sc">+</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>      <span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"white"</span>),  <span class="co"># Set white background</span></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>      <span class="at">panel.grid.major =</span> <span class="fu">element_blank</span>(),  <span class="co"># Remove grid lines</span></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>      <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>(),  <span class="co"># Remove grid lines</span></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>      <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">9</span>),  <span class="co"># Increase font size of axis text</span></span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>      <span class="at">axis.title.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">9</span>,<span class="at">face =</span> <span class="st">"bold"</span>),  <span class="co"># Make y-axis label bold and italic</span></span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>      <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">"black"</span>, <span class="at">size =</span> <span class="dv">9</span>),  <span class="co"># Make x-axis text bold</span></span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>      <span class="at">axis.title.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>,<span class="at">face =</span> <span class="st">"bold"</span>),</span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>      <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">"black"</span>, <span class="at">size =</span> <span class="dv">9</span>, <span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust=</span><span class="dv">1</span>),  <span class="co"># Make x-axis text bold</span></span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>      <span class="at">axis.ticks.x =</span> <span class="fu">element_line</span>(<span class="at">color =</span> <span class="st">"black"</span>),  <span class="co"># Add ticks to x-axis in black color</span></span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>      <span class="at">axis.ticks.y =</span> <span class="fu">element_line</span>(<span class="at">color =</span> <span class="st">"black"</span>),  <span class="co"># Add ticks to y-axis in black color</span></span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>      <span class="at">plot.margin =</span> <span class="fu">margin</span>(<span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="fl">0.4</span>, <span class="fl">0.5</span>, <span class="st">"cm"</span>),  <span class="co"># Set plot margins</span></span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>      <span class="at">legend.text=</span><span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">9</span>),</span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>      <span class="at">legend.background =</span> <span class="fu">element_rect</span>(<span class="at">fill=</span><span class="st">"white"</span>,</span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">size=</span><span class="fl">0.5</span>, <span class="at">linetype=</span><span class="st">"solid"</span>, </span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">colour =</span><span class="st">"black"</span>),</span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>      <span class="at">legend.title =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a><span class="fu">return</span>(p)</span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">#uses embrace-operator ({{ }}) from Tidyverse insetad of quosure</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>bar_plot <span class="ot">&lt;-</span> <span class="cf">function</span>(dataframe, xvalue, yvalue, fillvalue, error) {</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data=</span>dataframe, <span class="fu">aes</span>(<span class="at">x=</span>{{ xvalue }}, <span class="at">y=</span>{{ yvalue }}, <span class="at">fill=</span>{{ fillvalue }}))<span class="sc">+</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>,<span class="at">position=</span><span class="fu">position_dodge</span>(<span class="fl">0.9</span>))<span class="sc">+</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin=</span>{{ yvalue}} <span class="sc">-</span>{{error }}, </span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>                      <span class="at">ymax=</span>{{ yvalue }} <span class="sc">+</span>{{ error }}), </span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>                  <span class="at">width=</span><span class="fl">0.3</span>, <span class="at">colour=</span><span class="st">"black"</span>, <span class="at">size=</span><span class="fl">0.8</span>,<span class="at">position=</span><span class="fu">position_dodge</span>(<span class="fl">0.9</span>))<span class="sc">+</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_fill_npg</span>()<span class="sc">+</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>()<span class="sc">+</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>      <span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"white"</span>),  <span class="co"># Set white background</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>      <span class="at">panel.grid.major =</span> <span class="fu">element_blank</span>(),  <span class="co"># Remove grid lines</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>      <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>(),  <span class="co"># Remove grid lines</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>      <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">9</span>),  <span class="co"># Increase font size of axis text</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>      <span class="at">axis.title.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">9</span>,<span class="at">face =</span> <span class="st">"bold"</span>),  <span class="co"># Make y-axis label bold and italic</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>      <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">"black"</span>, <span class="at">size =</span> <span class="dv">9</span>),  <span class="co"># Make x-axis text bold</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>      <span class="at">axis.title.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>,<span class="at">face =</span> <span class="st">"bold"</span>),</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>      <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">"black"</span>, <span class="at">size =</span> <span class="dv">9</span>, <span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust=</span><span class="dv">1</span>),  <span class="co"># Make x-axis text bold</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>      <span class="at">axis.ticks.x =</span> <span class="fu">element_line</span>(<span class="at">color =</span> <span class="st">"black"</span>),  <span class="co"># Add ticks to x-axis in black color</span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>      <span class="at">axis.ticks.y =</span> <span class="fu">element_line</span>(<span class="at">color =</span> <span class="st">"black"</span>),  <span class="co"># Add ticks to y-axis in black color</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>      <span class="at">plot.margin =</span> <span class="fu">margin</span>(<span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="fl">0.4</span>, <span class="fl">0.5</span>, <span class="st">"cm"</span>),  <span class="co"># Set plot margins</span></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>      <span class="at">legend.text=</span><span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">9</span>),</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>      <span class="at">legend.background =</span> <span class="fu">element_rect</span>(<span class="at">fill=</span><span class="st">"white"</span>,</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">size=</span><span class="fl">0.5</span>, <span class="at">linetype=</span><span class="st">"solid"</span>, </span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">colour =</span><span class="st">"black"</span>),</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>      <span class="at">legend.title =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a><span class="fu">return</span>(p)</span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <ul>
 <li>Function for a <em>Scatter plot</em></li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">#uses embrace-operator ({{ }}) from Tidyverse insetad of quosure</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>scatter_plot <span class="ot">&lt;-</span> <span class="cf">function</span>(dataframe, xvalue, yvalue, colorvalue, error) {</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">#xvalue &lt;- enquo(xvalue)   # Capture xvalue as a quosure</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="co">#yvalue &lt;- enquo(yvalue)   # Capture yvalue as a quosure</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="co">#colorvalue &lt;- enquo(colorvalue)   # Capture colorvalue as a quosure</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="co">#error &lt;- enquo(error)   # Capture error as a quosure</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data=</span>dataframe, <span class="fu">aes</span>(<span class="at">x=</span>{{xvalue}}, <span class="at">y=</span>{{yvalue}}, <span class="at">color=</span>{{colorvalue}}))<span class="sc">+</span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>()<span class="sc">+</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> {{yvalue}} <span class="sc">-</span> {{error}}, </span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>                      <span class="at">ymax =</span> {{yvalue}} <span class="sc">+</span> {{error}}),</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>                  <span class="at">width=</span><span class="fl">0.7</span>, <span class="at">colour=</span><span class="st">"black"</span>, <span class="at">size=</span><span class="fl">0.7</span>) <span class="sc">+</span></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_color_viridis</span>(<span class="at">discrete=</span><span class="cn">TRUE</span>)<span class="sc">+</span></span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>()<span class="sc">+</span></span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(</span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>      <span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"white"</span>),  <span class="co"># Set white background</span></span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>      <span class="at">panel.grid.major =</span> <span class="fu">element_blank</span>(),  <span class="co"># Remove grid lines</span></span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>      <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>(),  <span class="co"># Remove grid lines</span></span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>      <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">9</span>),  <span class="co"># Increase font size of axis text</span></span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>      <span class="at">axis.title.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">9</span>,<span class="at">face =</span> <span class="st">"bold"</span>),  <span class="co"># Make y-axis label bold and italic</span></span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>      <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">"black"</span>, <span class="at">size =</span> <span class="dv">9</span>),  <span class="co"># Make x-axis text bold</span></span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>      <span class="at">axis.title.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>,<span class="at">face =</span> <span class="st">"bold"</span>),</span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>      <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">"black"</span>, <span class="at">size =</span> <span class="dv">9</span>, <span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust=</span><span class="dv">1</span>),  <span class="co"># Make x-axis text bold</span></span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>      <span class="at">axis.ticks.x =</span> <span class="fu">element_line</span>(<span class="at">color =</span> <span class="st">"black"</span>),  <span class="co"># Add ticks to x-axis in black color</span></span>
-<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>      <span class="at">axis.ticks.y =</span> <span class="fu">element_line</span>(<span class="at">color =</span> <span class="st">"black"</span>),  <span class="co"># Add ticks to y-axis in black color</span></span>
-<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>      <span class="at">plot.margin =</span> <span class="fu">margin</span>(<span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="fl">0.4</span>, <span class="fl">0.5</span>, <span class="st">"cm"</span>),  <span class="co"># Set plot margins</span></span>
-<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>      <span class="at">legend.text=</span><span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">9</span>),</span>
-<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>      <span class="at">legend.background =</span> <span class="fu">element_rect</span>(<span class="at">fill=</span><span class="st">"white"</span>,</span>
-<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">size=</span><span class="fl">0.5</span>, <span class="at">linetype=</span><span class="st">"solid"</span>, </span>
-<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">colour =</span><span class="st">"black"</span>),</span>
-<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>      <span class="at">legend.title =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a><span class="do">####### TRIED TO MAKE ERROR AN OPTIONAL, SO IT ONLY PLOTS ERRORBARS IF ERROR IS NOT NULL ##########</span></span>
-<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>  <span class="co">#if(!is.null(error)) {</span></span>
-<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>    <span class="co">#error &lt;- enquo(error)   # Capture error as a quosure</span></span>
-<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>    <span class="co">#p &lt;- p + geom_errorbar(aes(ymin = !!yvalue - !!error, </span></span>
-<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>    <span class="co">#                           ymax = !!yvalue + !!error),</span></span>
-<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>    <span class="co">#                       width=0.7, colour="black", size=0.7)</span></span>
-<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>    <span class="co">#}</span></span>
-<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a><span class="do">####### DOES NOT WORK #############################</span></span>
-<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(p)</span>
-<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">#uses embrace-operator ({{ }}) from Tidyverse insetad of quosure</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>scatter_plot <span class="ot">&lt;-</span> <span class="cf">function</span>(dataframe, xvalue, yvalue, colorvalue, error) {</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">#xvalue &lt;- enquo(xvalue)   # Capture xvalue as a quosure</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="co">#yvalue &lt;- enquo(yvalue)   # Capture yvalue as a quosure</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="co">#colorvalue &lt;- enquo(colorvalue)   # Capture colorvalue as a quosure</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="co">#error &lt;- enquo(error)   # Capture error as a quosure</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data=</span>dataframe, <span class="fu">aes</span>(<span class="at">x=</span>{{xvalue}}, <span class="at">y=</span>{{yvalue}}, <span class="at">color=</span>{{colorvalue}}))<span class="sc">+</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>()<span class="sc">+</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> {{yvalue}} <span class="sc">-</span> {{error}}, </span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>                      <span class="at">ymax =</span> {{yvalue}} <span class="sc">+</span> {{error}}),</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>                  <span class="at">width=</span><span class="fl">0.7</span>, <span class="at">colour=</span><span class="st">"black"</span>, <span class="at">size=</span><span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_color_viridis</span>(<span class="at">discrete=</span><span class="cn">TRUE</span>)<span class="sc">+</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>()<span class="sc">+</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>      <span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"white"</span>),  <span class="co"># Set white background</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>      <span class="at">panel.grid.major =</span> <span class="fu">element_blank</span>(),  <span class="co"># Remove grid lines</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>      <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>(),  <span class="co"># Remove grid lines</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>      <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">9</span>),  <span class="co"># Increase font size of axis text</span></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>      <span class="at">axis.title.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">9</span>,<span class="at">face =</span> <span class="st">"bold"</span>),  <span class="co"># Make y-axis label bold and italic</span></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>      <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">"black"</span>, <span class="at">size =</span> <span class="dv">9</span>),  <span class="co"># Make x-axis text bold</span></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>      <span class="at">axis.title.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>,<span class="at">face =</span> <span class="st">"bold"</span>),</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>      <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">"black"</span>, <span class="at">size =</span> <span class="dv">9</span>, <span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust=</span><span class="dv">1</span>),  <span class="co"># Make x-axis text bold</span></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>      <span class="at">axis.ticks.x =</span> <span class="fu">element_line</span>(<span class="at">color =</span> <span class="st">"black"</span>),  <span class="co"># Add ticks to x-axis in black color</span></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>      <span class="at">axis.ticks.y =</span> <span class="fu">element_line</span>(<span class="at">color =</span> <span class="st">"black"</span>),  <span class="co"># Add ticks to y-axis in black color</span></span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>      <span class="at">plot.margin =</span> <span class="fu">margin</span>(<span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="fl">0.4</span>, <span class="fl">0.5</span>, <span class="st">"cm"</span>),  <span class="co"># Set plot margins</span></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>      <span class="at">legend.text=</span><span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">9</span>),</span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>      <span class="at">legend.background =</span> <span class="fu">element_rect</span>(<span class="at">fill=</span><span class="st">"white"</span>,</span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">size=</span><span class="fl">0.5</span>, <span class="at">linetype=</span><span class="st">"solid"</span>, </span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">colour =</span><span class="st">"black"</span>),</span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>      <span class="at">legend.title =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a><span class="do">####### TRIED TO MAKE ERROR AN OPTIONAL, SO IT ONLY PLOTS ERRORBARS IF ERROR IS NOT NULL ##########</span></span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>  <span class="co">#if(!is.null(error)) {</span></span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>    <span class="co">#error &lt;- enquo(error)   # Capture error as a quosure</span></span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>    <span class="co">#p &lt;- p + geom_errorbar(aes(ymin = !!yvalue - !!error, </span></span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a>    <span class="co">#                           ymax = !!yvalue + !!error),</span></span>
+<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a>    <span class="co">#                       width=0.7, colour="black", size=0.7)</span></span>
+<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a>    <span class="co">#}</span></span>
+<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a><span class="do">####### DOES NOT WORK #############################</span></span>
+<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(p)</span>
+<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <ul>
 <li>Calculate concentration from calibration curve: <span class="math inline">\(Concentration =\frac{Response-Intercept}{Slope}\)</span></li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>cal_conc <span class="ot">&lt;-</span> <span class="cf">function</span>(response, intercept, slope){</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  concentration <span class="ot">&lt;-</span> (response<span class="sc">-</span>intercept)<span class="sc">/</span>slope</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(concentration)</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>cal_conc <span class="ot">&lt;-</span> <span class="cf">function</span>(response, intercept, slope){</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  concentration <span class="ot">&lt;-</span> (response<span class="sc">-</span>intercept)<span class="sc">/</span>slope</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(concentration)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="target-compounds-from-unifi" class="level2" data-number="4.3">
@@ -369,61 +389,61 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><strong>Importing the data</strong></p>
 <p>Two data sets are imported, one containing the measured data (<em>data_hrms</em>) and one with information of the target compounds (<em>target_compounds</em>), which contains the molecular formula, monoisotopic mass, and theoretical mass of the different adducts ([M+H]+, [M+Na]+, [M+NH4]+, and [M-H]-).</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>data_hrms <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="st">"Data_HRMS_Format_TEST.xlsx"</span>, </span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">sheet =</span> <span class="st">"Data_StDB"</span>)</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co">#glimpse(data_hrms)</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>target_compounds <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="st">"Target_Compounds_StDB.xlsx"</span>)</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="co">#glimpse(target_compounds)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>data_hrms <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="st">"Data_HRMS_Format_TEST.xlsx"</span>, </span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">sheet =</span> <span class="st">"Data_StDB"</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co">#glimpse(data_hrms)</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>target_compounds <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="st">"Target_Compounds_StDB.xlsx"</span>)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co">#glimpse(target_compounds)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Calculate the <strong>Mass Accuracy</strong> with the <code>mass_error()</code> function depending on which adduct the compound was found as and add the results in the <em>data_hrms</em> data frame.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">#If the compounds in target_compounds and data_hrms are in the same order</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>data_hrms <span class="ot">&lt;-</span> data_hrms <span class="sc">|&gt;</span> </span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">Mass_accuracy=</span><span class="fu">case_when</span>(Adduct <span class="sc">==</span> <span class="st">"[M+H]+"</span> <span class="sc">~</span> <span class="fu">mass_error</span>(target_compounds<span class="sc">$</span><span class="st">`</span><span class="at">[M+H]+</span><span class="st">`</span>, Mass_to_Charge_Ratio),</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>                              Adduct <span class="sc">==</span> <span class="st">"[M+Na]+"</span> <span class="sc">~</span> <span class="fu">mass_error</span>(target_compounds<span class="sc">$</span><span class="st">`</span><span class="at">[M+Na]+</span><span class="st">`</span>, Mass_to_Charge_Ratio),</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>                              Adduct <span class="sc">==</span> <span class="st">"[M+NH4]+"</span> <span class="sc">~</span> <span class="fu">mass_error</span>(target_compounds<span class="sc">$</span><span class="st">`</span><span class="at">[M+NH4]+</span><span class="st">`</span>, Mass_to_Charge_Ratio),</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>                             Adduct <span class="sc">==</span> <span class="st">"[M-H]-"</span> <span class="sc">~</span> <span class="fu">mass_error</span>(target_compounds<span class="sc">$</span><span class="st">`</span><span class="at">[M-H]-</span><span class="st">`</span>,Mass_to_Charge_Ratio) )) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">#If the compounds in target_compounds and data_hrms are in the same order</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>data_hrms <span class="ot">&lt;-</span> data_hrms <span class="sc">|&gt;</span> </span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">Mass_accuracy=</span><span class="fu">case_when</span>(Adduct <span class="sc">==</span> <span class="st">"[M+H]+"</span> <span class="sc">~</span> <span class="fu">mass_error</span>(target_compounds<span class="sc">$</span><span class="st">`</span><span class="at">[M+H]+</span><span class="st">`</span>, Mass_to_Charge_Ratio),</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>                              Adduct <span class="sc">==</span> <span class="st">"[M+Na]+"</span> <span class="sc">~</span> <span class="fu">mass_error</span>(target_compounds<span class="sc">$</span><span class="st">`</span><span class="at">[M+Na]+</span><span class="st">`</span>, Mass_to_Charge_Ratio),</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>                              Adduct <span class="sc">==</span> <span class="st">"[M+NH4]+"</span> <span class="sc">~</span> <span class="fu">mass_error</span>(target_compounds<span class="sc">$</span><span class="st">`</span><span class="at">[M+NH4]+</span><span class="st">`</span>, Mass_to_Charge_Ratio),</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>                             Adduct <span class="sc">==</span> <span class="st">"[M-H]-"</span> <span class="sc">~</span> <span class="fu">mass_error</span>(target_compounds<span class="sc">$</span><span class="st">`</span><span class="at">[M-H]-</span><span class="st">`</span>,Mass_to_Charge_Ratio) )) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">#If the compounds in target_compounds and data_hrms are not in the same order, can join the two data frames according to the compounds name and then calculate mass accuracy</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>data_hrms <span class="ot">&lt;-</span> <span class="fu">inner_join</span>(data_hrms, target_compounds, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"Compound"</span> <span class="ot">=</span> <span class="st">"Item name"</span>)) <span class="sc">|&gt;</span> </span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">Mass_accuracy=</span><span class="fu">case_when</span>(Adduct <span class="sc">==</span> <span class="st">"[M+H]+"</span> <span class="sc">~</span> <span class="fu">mass_error</span>(<span class="st">`</span><span class="at">[M+H]+</span><span class="st">`</span>, Mass_to_Charge_Ratio),</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>                              Adduct <span class="sc">==</span> <span class="st">"[M+Na]+"</span> <span class="sc">~</span> <span class="fu">mass_error</span>(<span class="st">`</span><span class="at">[M+Na]+</span><span class="st">`</span>, Mass_to_Charge_Ratio),</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>                              Adduct <span class="sc">==</span> <span class="st">"[M+NH4]+"</span> <span class="sc">~</span> <span class="fu">mass_error</span>(<span class="st">`</span><span class="at">[M+NH4]+</span><span class="st">`</span>, Mass_to_Charge_Ratio),</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>                             Adduct <span class="sc">==</span> <span class="st">"[M-H]-"</span> <span class="sc">~</span> <span class="fu">mass_error</span>(<span class="st">`</span><span class="at">[M-H]-</span><span class="st">`</span>,Mass_to_Charge_Ratio) )) <span class="sc">|&gt;</span> </span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Sample_Item, Replicate, Compound, Adduct, Mass_to_Charge_Ratio, Retention_Time, Drift_Time, CCS, Detector_Counts, Mass_accuracy)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">#If the compounds in target_compounds and data_hrms are not in the same order, can join the two data frames according to the compounds name and then calculate mass accuracy</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>data_hrms <span class="ot">&lt;-</span> <span class="fu">inner_join</span>(data_hrms, target_compounds, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"Compound"</span> <span class="ot">=</span> <span class="st">"Item name"</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">Mass_accuracy=</span><span class="fu">case_when</span>(Adduct <span class="sc">==</span> <span class="st">"[M+H]+"</span> <span class="sc">~</span> <span class="fu">mass_error</span>(<span class="st">`</span><span class="at">[M+H]+</span><span class="st">`</span>, Mass_to_Charge_Ratio),</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>                              Adduct <span class="sc">==</span> <span class="st">"[M+Na]+"</span> <span class="sc">~</span> <span class="fu">mass_error</span>(<span class="st">`</span><span class="at">[M+Na]+</span><span class="st">`</span>, Mass_to_Charge_Ratio),</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>                              Adduct <span class="sc">==</span> <span class="st">"[M+NH4]+"</span> <span class="sc">~</span> <span class="fu">mass_error</span>(<span class="st">`</span><span class="at">[M+NH4]+</span><span class="st">`</span>, Mass_to_Charge_Ratio),</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>                             Adduct <span class="sc">==</span> <span class="st">"[M-H]-"</span> <span class="sc">~</span> <span class="fu">mass_error</span>(<span class="st">`</span><span class="at">[M-H]-</span><span class="st">`</span>,Mass_to_Charge_Ratio) )) <span class="sc">|&gt;</span> </span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Sample_Item, Replicate, Compound, Adduct, Mass_to_Charge_Ratio, Retention_Time, Drift_Time, CCS, Detector_Counts, Mass_accuracy)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Calculate the Average and SEM of <em><strong>m/z</strong>,</em> <strong>Mass Accuracy</strong>, <strong>RT</strong>, <strong>DT</strong>, <strong>CCS</strong>, and <strong>intensity</strong> for each compound in each type of sample (<em>Sample Item</em>) with the <code>mean()</code> and <code>SEM()</code> functions.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>data_hrms<span class="sc">$</span>Sample_Item <span class="ot">&lt;-</span> <span class="fu">factor</span>(data_hrms<span class="sc">$</span>Sample_Item, <span class="at">levels=</span><span class="fu">unique</span>(data_hrms<span class="sc">$</span>Sample_Item)) <span class="co">#Convert Sample_Item to factor to be able to keep the original order of the data</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>data_hrms_average <span class="ot">&lt;-</span>data_hrms <span class="sc">|&gt;</span>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(Mass_to_Charge_Ratio))<span class="sc">|&gt;</span> </span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Sample_Item, Compound) <span class="sc">|&gt;</span> </span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">Average_MZ=</span><span class="fu">round</span>(<span class="fu">mean</span>(Mass_to_Charge_Ratio, <span class="at">na.rm =</span><span class="cn">TRUE</span>),<span class="at">digits=</span><span class="dv">3</span>),</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">SEM_MZ=</span><span class="fu">stderror</span>(Mass_to_Charge_Ratio),</span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">Average_MassAccuracy=</span><span class="fu">round</span>(<span class="fu">mean</span>(Mass_accuracy, <span class="at">na.rm =</span><span class="cn">TRUE</span>),<span class="at">digits=</span><span class="dv">3</span>),</span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>            <span class="at">SEM_MassAccuracy=</span><span class="fu">stderror</span>(Mass_accuracy),</span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>            <span class="at">Average_RT=</span><span class="fu">round</span>(<span class="fu">mean</span>(Retention_Time, <span class="at">na.rm =</span><span class="cn">TRUE</span>),<span class="at">digits=</span><span class="dv">3</span>),</span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>            <span class="at">SEM_RT=</span><span class="fu">stderror</span>(Retention_Time),</span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>            <span class="at">Average_DT=</span><span class="fu">round</span>(<span class="fu">mean</span>(Drift_Time, <span class="at">na.rm =</span><span class="cn">TRUE</span>),<span class="at">digits=</span><span class="dv">3</span>),</span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>            <span class="at">SEM_DT=</span><span class="fu">stderror</span>(Drift_Time),</span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>            <span class="at">Average_CCS=</span><span class="fu">round</span>(<span class="fu">mean</span>(CCS, <span class="at">na.rm =</span><span class="cn">TRUE</span>),<span class="at">digits=</span><span class="dv">3</span>),</span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>            <span class="at">SEM_CCS=</span><span class="fu">stderror</span>(CCS),</span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>            <span class="at">Average_intensity=</span><span class="fu">round</span>(<span class="fu">mean</span>(Detector_Counts, <span class="at">na.rm =</span><span class="cn">TRUE</span>),<span class="at">digits=</span><span class="dv">3</span>),</span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>            <span class="at">SEM_intensity=</span><span class="fu">stderror</span>(Detector_Counts)) <span class="sc">|&gt;</span> </span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span> </span>
-<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Compound)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>data_hrms<span class="sc">$</span>Sample_Item <span class="ot">&lt;-</span> <span class="fu">factor</span>(data_hrms<span class="sc">$</span>Sample_Item, <span class="at">levels=</span><span class="fu">unique</span>(data_hrms<span class="sc">$</span>Sample_Item)) <span class="co">#Convert Sample_Item to factor to be able to keep the original order of the data</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>data_hrms_average <span class="ot">&lt;-</span>data_hrms <span class="sc">|&gt;</span>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(Mass_to_Charge_Ratio))<span class="sc">|&gt;</span> </span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Sample_Item, Compound) <span class="sc">|&gt;</span> </span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">Average_MZ=</span><span class="fu">round</span>(<span class="fu">mean</span>(Mass_to_Charge_Ratio, <span class="at">na.rm =</span><span class="cn">TRUE</span>),<span class="at">digits=</span><span class="dv">3</span>),</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">SEM_MZ=</span><span class="fu">stderror</span>(Mass_to_Charge_Ratio),</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">Average_MassAccuracy=</span><span class="fu">round</span>(<span class="fu">mean</span>(Mass_accuracy, <span class="at">na.rm =</span><span class="cn">TRUE</span>),<span class="at">digits=</span><span class="dv">3</span>),</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>            <span class="at">SEM_MassAccuracy=</span><span class="fu">stderror</span>(Mass_accuracy),</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>            <span class="at">Average_RT=</span><span class="fu">round</span>(<span class="fu">mean</span>(Retention_Time, <span class="at">na.rm =</span><span class="cn">TRUE</span>),<span class="at">digits=</span><span class="dv">3</span>),</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>            <span class="at">SEM_RT=</span><span class="fu">stderror</span>(Retention_Time),</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>            <span class="at">Average_DT=</span><span class="fu">round</span>(<span class="fu">mean</span>(Drift_Time, <span class="at">na.rm =</span><span class="cn">TRUE</span>),<span class="at">digits=</span><span class="dv">3</span>),</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>            <span class="at">SEM_DT=</span><span class="fu">stderror</span>(Drift_Time),</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>            <span class="at">Average_CCS=</span><span class="fu">round</span>(<span class="fu">mean</span>(CCS, <span class="at">na.rm =</span><span class="cn">TRUE</span>),<span class="at">digits=</span><span class="dv">3</span>),</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>            <span class="at">SEM_CCS=</span><span class="fu">stderror</span>(CCS),</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>            <span class="at">Average_intensity=</span><span class="fu">round</span>(<span class="fu">mean</span>(Detector_Counts, <span class="at">na.rm =</span><span class="cn">TRUE</span>),<span class="at">digits=</span><span class="dv">3</span>),</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>            <span class="at">SEM_intensity=</span><span class="fu">stderror</span>(Detector_Counts)) <span class="sc">|&gt;</span> </span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Compound)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>`summarise()` has grouped output by 'Sample_Item'. You can override using the
 `.groups` argument.</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co">#glimpse(data_hrms_average)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co">#glimpse(data_hrms_average)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Plots using the <code>bar_plot</code> function.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">bar_plot</span>(data_hrms_average, Compound, Average_MZ, Sample_Item, SEM_MZ)<span class="sc">+</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">"Average Mass-To-Charge Ratio"</span>, <span class="at">x=</span><span class="st">""</span>)<span class="sc">+</span></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">add=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">30</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">bar_plot</span>(data_hrms_average, Compound, Average_MZ, Sample_Item, SEM_MZ)<span class="sc">+</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">"Average Mass-To-Charge Ratio"</span>, <span class="at">x=</span><span class="st">""</span>)<span class="sc">+</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">add=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">30</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
 ℹ Please use `linewidth` instead.</code></pre>
@@ -432,50 +452,50 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <pre><code>Warning: The `size` argument of `element_rect()` is deprecated as of ggplot2 3.4.0.
 ℹ Please use the `linewidth` argument instead.</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">bar_plot</span>(data_hrms_average, Compound, Average_RT, Sample_Item, SEM_RT)<span class="sc">+</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">"Average Retention time [min]"</span>, <span class="at">x=</span><span class="st">""</span>)<span class="sc">+</span></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">add=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>)))</span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="co">#(p1 / p2) #need patchwork package for this</span></span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="fu">bar_plot</span>(data_hrms_average, Compound, Average_DT, Sample_Item, SEM_DT)<span class="sc">+</span></span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">"Average Drift time [ms]"</span>, <span class="at">x=</span><span class="st">""</span>)<span class="sc">+</span></span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">add=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="fl">0.11</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">bar_plot</span>(data_hrms_average, Compound, Average_RT, Sample_Item, SEM_RT)<span class="sc">+</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">"Average Retention time [min]"</span>, <span class="at">x=</span><span class="st">""</span>)<span class="sc">+</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">add=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>)))</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="co">#(p1 / p2) #need patchwork package for this</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="fu">bar_plot</span>(data_hrms_average, Compound, Average_DT, Sample_Item, SEM_DT)<span class="sc">+</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">"Average Drift time [ms]"</span>, <span class="at">x=</span><span class="st">""</span>)<span class="sc">+</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">add=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="fl">0.11</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="project_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
 </div>
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bar_plot</span>(data_hrms_average, Compound, Average_CCS, Sample_Item, SEM_CCS)<span class="sc">+</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="fu">expression</span>(<span class="st">"Average CCS [Å"</span><span class="sc">^</span><span class="st">"2"</span><span class="sc">~</span><span class="st">"]"</span>), <span class="at">x=</span><span class="st">""</span>)<span class="sc">+</span></span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">add=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">10</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bar_plot</span>(data_hrms_average, Compound, Average_CCS, Sample_Item, SEM_CCS)<span class="sc">+</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="fu">expression</span>(<span class="st">"Average CCS [Å"</span><span class="sc">^</span><span class="st">"2"</span><span class="sc">~</span><span class="st">"]"</span>), <span class="at">x=</span><span class="st">""</span>)<span class="sc">+</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">add=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">10</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="project_files/figure-html/unnamed-chunk-12-2.png" class="img-fluid" width="672"></p>
 </div>
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bar_plot</span>(data_hrms_average, Compound, Average_intensity, Sample_Item, SEM_intensity)<span class="sc">+</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">"Average Intensity"</span>, <span class="at">x=</span><span class="st">""</span>)<span class="sc">+</span></span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">add=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">100</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bar_plot</span>(data_hrms_average, Compound, Average_intensity, Sample_Item, SEM_intensity)<span class="sc">+</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">"Average Intensity"</span>, <span class="at">x=</span><span class="st">""</span>)<span class="sc">+</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">add=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">100</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="project_files/figure-html/unnamed-chunk-12-3.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>Plots using the <code>scatter_plot</code> function.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scatter_plot</span>(data_hrms_average, Average_MZ, Average_RT, Compound, SEM_RT)<span class="sc">+</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text_repel</span>(<span class="at">data=</span>data_hrms_average <span class="sc">|&gt;</span> <span class="fu">distinct</span>(Compound, <span class="at">.keep_all=</span><span class="cn">TRUE</span>),</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>                   <span class="fu">aes</span>(<span class="at">label=</span>Compound),</span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>                     <span class="at">size =</span> <span class="fl">2.5</span>,</span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>                     <span class="at">point.padding =</span> <span class="cn">NA</span>, <span class="co"># additional padding around each point</span></span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>                     <span class="at">min.segment.length =</span> <span class="dv">0</span>, <span class="co"># draw all line segments</span></span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>                     <span class="at">force=</span><span class="dv">2</span>,</span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>                     <span class="at">nudge_x=</span><span class="dv">3</span>, <span class="at">nudge_y=</span><span class="fl">0.1</span>,</span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>                     <span class="at">color=</span><span class="st">"black"</span></span>
-<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>                   )<span class="sc">+</span></span>
-<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">"Average Retention time [min]"</span>, <span class="at">x=</span><span class="fu">expression</span>(<span class="fu">paste</span>(<span class="st">"Theoretical "</span>,<span class="fu">italic</span>(<span class="st">"m/z"</span>), <span class="st">" values"</span>)))<span class="sc">+</span></span>
-<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scatter_plot</span>(data_hrms_average, Average_MZ, Average_RT, Compound, SEM_RT)<span class="sc">+</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text_repel</span>(<span class="at">data=</span>data_hrms_average <span class="sc">|&gt;</span> <span class="fu">distinct</span>(Compound, <span class="at">.keep_all=</span><span class="cn">TRUE</span>),</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>                   <span class="fu">aes</span>(<span class="at">label=</span>Compound),</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>                     <span class="at">size =</span> <span class="fl">2.5</span>,</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>                     <span class="at">point.padding =</span> <span class="cn">NA</span>, <span class="co"># additional padding around each point</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>                     <span class="at">min.segment.length =</span> <span class="dv">0</span>, <span class="co"># draw all line segments</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>                     <span class="at">force=</span><span class="dv">2</span>,</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>                     <span class="at">nudge_x=</span><span class="dv">3</span>, <span class="at">nudge_y=</span><span class="fl">0.1</span>,</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>                     <span class="at">color=</span><span class="st">"black"</span></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>                   )<span class="sc">+</span></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">"Average Retention time [min]"</span>, <span class="at">x=</span><span class="fu">expression</span>(<span class="fu">paste</span>(<span class="st">"Theoretical "</span>,<span class="fu">italic</span>(<span class="st">"m/z"</span>), <span class="st">" values"</span>)))<span class="sc">+</span></span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="project_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="672"></p>
 </div>
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scatter_plot</span>(data_hrms_average, Average_MZ, Average_CCS, Compound, SEM_CCS)<span class="sc">+</span></span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">"Average Drift time [min]"</span>, <span class="at">x=</span><span class="fu">expression</span>(<span class="fu">paste</span>(<span class="st">"Theoretical "</span>,<span class="fu">italic</span>(<span class="st">"m/z"</span>), <span class="st">" values"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scatter_plot</span>(data_hrms_average, Average_MZ, Average_CCS, Compound, SEM_CCS)<span class="sc">+</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">"Average Drift time [min]"</span>, <span class="at">x=</span><span class="fu">expression</span>(<span class="fu">paste</span>(<span class="st">"Theoretical "</span>,<span class="fu">italic</span>(<span class="st">"m/z"</span>), <span class="st">" values"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="project_files/figure-html/unnamed-chunk-13-2.png" class="img-fluid" width="672"></p>
 </div>
@@ -484,39 +504,39 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><strong>If measured samples are standards of different concentrations, calibration curves can be plotted.</strong></p>
 <p>Plotting calibration curves of the concentration vs intensities to be able to visually see the regression. However, to obtain the S<em>tandard Error of the Slope</em> and the <em>Slope</em> for calculation of <strong>Limit of Detection (LOD)</strong>, no calibration curve needs to be plotted.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co">#End of the Sample_Item-names contains the concentrations in ppb, which is added to a new column</span></span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>data_hrms_average <span class="ot">&lt;-</span> data_hrms_average <span class="sc">|&gt;</span> </span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Concentration =</span> <span class="fu">as.numeric</span>(<span class="fu">str_extract</span>(Sample_Item, <span class="st">"</span><span class="sc">\\</span><span class="st">d+"</span>)))</span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="co">#Plot the calibrations curves for each compounds in separate plots. To each calibration curve is the R^2 added</span></span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>data_hrms_average, <span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">x=</span>Concentration, <span class="at">y=</span>Average_intensity, <span class="at">colour=</span>Compound))<span class="sc">+</span></span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin=</span>Average_intensity<span class="sc">-</span>SEM_intensity, <span class="at">ymax=</span>Average_intensity<span class="sc">+</span>SEM_intensity), <span class="at">width=</span><span class="dv">3</span>, <span class="at">size=</span><span class="fl">0.6</span>, <span class="at">colour=</span><span class="st">"black"</span>)<span class="sc">+</span></span>
-<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method=</span><span class="st">"lm"</span>, </span>
-<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>              <span class="at">size=</span><span class="fl">0.6</span>, </span>
-<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>              <span class="at">se=</span><span class="cn">FALSE</span>, </span>
-<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>              <span class="at">linetype=</span><span class="st">"dashed"</span>,</span>
-<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>              <span class="at">fullrange=</span><span class="cn">TRUE</span>,</span>
-<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>              <span class="fu">aes</span>(<span class="at">color=</span>Compound))<span class="sc">+</span> </span>
-<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_cor</span>(<span class="fu">aes</span>(<span class="at">label=</span>..rr.label..), <span class="at">label.x=</span><span class="dv">200</span>, <span class="at">size=</span><span class="dv">3</span>, <span class="at">colour=</span><span class="st">"black"</span>, <span class="at">r.digits =</span> <span class="dv">5</span>)<span class="sc">+</span> <span class="co">#adds R^2</span></span>
-<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> Compound, <span class="at">scales=</span><span class="st">"free"</span>)<span class="sc">+</span> <span class="co">#separates the plots for each compound</span></span>
-<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_viridis</span>(<span class="at">discrete=</span><span class="cn">TRUE</span>)<span class="sc">+</span></span>
-<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()<span class="sc">+</span></span>
-<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
-<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"white"</span>),  <span class="co"># Set white background</span></span>
-<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid.major =</span> <span class="fu">element_blank</span>(),  <span class="co"># Remove grid lines</span></span>
-<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>(),  <span class="co"># Remove grid lines</span></span>
-<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">9</span>),  <span class="co"># Increase font size of axis text</span></span>
-<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.title.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">9</span>,<span class="at">face =</span> <span class="st">"bold"</span>),  <span class="co"># Make y-axis label bold and italic</span></span>
-<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">"black"</span>, <span class="at">size =</span> <span class="dv">9</span>),  <span class="co"># Make x-axis text bold</span></span>
-<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.title.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>,<span class="at">face =</span> <span class="st">"bold"</span>),</span>
-<span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">"black"</span>, <span class="at">size =</span> <span class="dv">9</span>),  <span class="co"># Make x-axis text bold</span></span>
-<span id="cb21-28"><a href="#cb21-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.ticks.x =</span> <span class="fu">element_line</span>(<span class="at">color =</span> <span class="st">"black"</span>),  <span class="co"># Add ticks to x-axis in black color</span></span>
-<span id="cb21-29"><a href="#cb21-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.ticks.y =</span> <span class="fu">element_line</span>(<span class="at">color =</span> <span class="st">"black"</span>),  <span class="co"># Add ticks to y-axis in black color</span></span>
-<span id="cb21-30"><a href="#cb21-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.margin =</span> <span class="fu">margin</span>(<span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="fl">0.4</span>, <span class="fl">0.5</span>, <span class="st">"cm"</span>),  <span class="co"># Set plot margins</span></span>
-<span id="cb21-31"><a href="#cb21-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">"none"</span></span>
-<span id="cb21-32"><a href="#cb21-32" aria-hidden="true" tabindex="-1"></a>)<span class="sc">+</span></span>
-<span id="cb21-33"><a href="#cb21-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">"Average Intensity"</span>, <span class="at">x=</span><span class="st">"Concentration [ppb]"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co">#End of the Sample_Item-names contains the concentrations in ppb, which is added to a new column</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>data_hrms_average <span class="ot">&lt;-</span> data_hrms_average <span class="sc">|&gt;</span> </span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Concentration =</span> <span class="fu">as.numeric</span>(<span class="fu">str_extract</span>(Sample_Item, <span class="st">"</span><span class="sc">\\</span><span class="st">d+"</span>)))</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="co">#Plot the calibrations curves for each compounds in separate plots. To each calibration curve is the R^2 added</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>data_hrms_average, <span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">x=</span>Concentration, <span class="at">y=</span>Average_intensity, <span class="at">colour=</span>Compound))<span class="sc">+</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin=</span>Average_intensity<span class="sc">-</span>SEM_intensity, <span class="at">ymax=</span>Average_intensity<span class="sc">+</span>SEM_intensity), <span class="at">width=</span><span class="dv">3</span>, <span class="at">size=</span><span class="fl">0.6</span>, <span class="at">colour=</span><span class="st">"black"</span>)<span class="sc">+</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method=</span><span class="st">"lm"</span>, </span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>              <span class="at">size=</span><span class="fl">0.6</span>, </span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>              <span class="at">se=</span><span class="cn">FALSE</span>, </span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>              <span class="at">linetype=</span><span class="st">"dashed"</span>,</span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>              <span class="at">fullrange=</span><span class="cn">TRUE</span>,</span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>              <span class="fu">aes</span>(<span class="at">color=</span>Compound))<span class="sc">+</span> </span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_cor</span>(<span class="fu">aes</span>(<span class="at">label=</span>..rr.label..), <span class="at">label.x=</span><span class="dv">200</span>, <span class="at">size=</span><span class="dv">3</span>, <span class="at">colour=</span><span class="st">"black"</span>, <span class="at">r.digits =</span> <span class="dv">5</span>)<span class="sc">+</span> <span class="co">#adds R^2</span></span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> Compound, <span class="at">scales=</span><span class="st">"free"</span>)<span class="sc">+</span> <span class="co">#separates the plots for each compound</span></span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_viridis</span>(<span class="at">discrete=</span><span class="cn">TRUE</span>)<span class="sc">+</span></span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()<span class="sc">+</span></span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"white"</span>),  <span class="co"># Set white background</span></span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid.major =</span> <span class="fu">element_blank</span>(),  <span class="co"># Remove grid lines</span></span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>(),  <span class="co"># Remove grid lines</span></span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">9</span>),  <span class="co"># Increase font size of axis text</span></span>
+<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.title.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">9</span>,<span class="at">face =</span> <span class="st">"bold"</span>),  <span class="co"># Make y-axis label bold and italic</span></span>
+<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">"black"</span>, <span class="at">size =</span> <span class="dv">9</span>),  <span class="co"># Make x-axis text bold</span></span>
+<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.title.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>,<span class="at">face =</span> <span class="st">"bold"</span>),</span>
+<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">"black"</span>, <span class="at">size =</span> <span class="dv">9</span>),  <span class="co"># Make x-axis text bold</span></span>
+<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.ticks.x =</span> <span class="fu">element_line</span>(<span class="at">color =</span> <span class="st">"black"</span>),  <span class="co"># Add ticks to x-axis in black color</span></span>
+<span id="cb22-29"><a href="#cb22-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.ticks.y =</span> <span class="fu">element_line</span>(<span class="at">color =</span> <span class="st">"black"</span>),  <span class="co"># Add ticks to y-axis in black color</span></span>
+<span id="cb22-30"><a href="#cb22-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.margin =</span> <span class="fu">margin</span>(<span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="fl">0.4</span>, <span class="fl">0.5</span>, <span class="st">"cm"</span>),  <span class="co"># Set plot margins</span></span>
+<span id="cb22-31"><a href="#cb22-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">"none"</span></span>
+<span id="cb22-32"><a href="#cb22-32" aria-hidden="true" tabindex="-1"></a>)<span class="sc">+</span></span>
+<span id="cb22-33"><a href="#cb22-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">"Average Intensity"</span>, <span class="at">x=</span><span class="st">"Concentration [ppb]"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning: The dot-dot notation (`..rr.label..`) was deprecated in ggplot2 3.4.0.
 ℹ Please use `after_stat(rr.label)` instead.</code></pre>
@@ -532,82 +552,82 @@ Caused by error in `cor.test.default()`:
 <div class="cell-output-display">
 <p><img src="project_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
 </div>
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Obtain the Slope (a) and Intercept (b) for each calibration curve (y=ax+b)</span></span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>regression_1 <span class="ot">&lt;-</span> data_hrms_average <span class="sc">|&gt;</span> </span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Compound)  <span class="sc">|&gt;</span> </span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">do</span>(<span class="fu">tidy</span>(<span class="fu">lm</span>(Average_intensity <span class="sc">~</span> Concentration, <span class="at">data =</span> .)))  <span class="sc">|&gt;</span> </span>
-<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Concentration"</span>, <span class="st">"(Intercept)"</span>))  <span class="sc">|&gt;</span> </span>
-<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">parameter =</span> <span class="fu">if_else</span>(term <span class="sc">==</span> <span class="st">"Concentration"</span>, <span class="st">"Slope"</span>, <span class="st">"Intercept"</span>))  <span class="sc">|&gt;</span> </span>
-<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Compound, parameter, estimate)  <span class="sc">|&gt;</span> </span>
-<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">spread</span>(parameter, estimate)</span>
-<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a><span class="do">##### Obtain the Slope (a) for each calibration curve (y=ax+b)#####</span></span>
-<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a><span class="co">#regression_1 &lt;- data_hrms_average |&gt; </span></span>
-<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a><span class="co">#  group_by(Compound) |&gt; </span></span>
-<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a><span class="co">#  do(tidy(lm(Average_intensity ~ Concentration, data = .)))  |&gt; </span></span>
-<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a><span class="co">#  filter(term == "Concentration")  |&gt; </span></span>
-<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a><span class="co">#  select(Compound, Slope = estimate)</span></span>
-<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Obtain the StDErrorY for each calibration curve</span></span>
-<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>regression_2 <span class="ot">&lt;-</span> data_hrms_average <span class="sc">|&gt;</span> </span>
-<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a>   <span class="fu">group_by</span>(Compound) <span class="sc">|&gt;</span> </span>
-<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a>   <span class="fu">do</span>(<span class="fu">augment</span>(<span class="fu">lm</span>(Average_intensity <span class="sc">~</span> Concentration, <span class="at">data =</span> .))) <span class="sc">|&gt;</span> </span>
-<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a>   <span class="fu">summarise</span>(<span class="at">StdErrorY =</span> <span class="fu">sd</span>(.resid))  <span class="sc">|&gt;</span> </span>
-<span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a>   <span class="fu">select</span>(Compound, StdErrorY)</span>
-<span id="cb25-23"><a href="#cb25-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Combines the two data frames with Slope and StDErrorY, and calculate the LOD and LOQ for them</span></span>
-<span id="cb25-24"><a href="#cb25-24" aria-hidden="true" tabindex="-1"></a>regression_data_hrms_average <span class="ot">&lt;-</span> regression_1 <span class="sc">|&gt;</span> </span>
-<span id="cb25-25"><a href="#cb25-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(regression_2, <span class="fu">join_by</span>(Compound)) <span class="sc">|&gt;</span>   </span>
-<span id="cb25-26"><a href="#cb25-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="st">`</span><span class="at">LOD_[ppb]</span><span class="st">`</span><span class="ot">=</span> <span class="fu">round</span>(<span class="fl">3.3</span><span class="sc">*</span>StdErrorY<span class="sc">/</span>Slope,<span class="at">digits=</span><span class="dv">3</span>)) <span class="sc">|&gt;</span> </span>
-<span id="cb25-27"><a href="#cb25-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="st">`</span><span class="at">LOQ_[ppb]</span><span class="st">`</span><span class="ot">=</span> <span class="fu">round</span>(<span class="dv">10</span><span class="sc">*</span>StdErrorY<span class="sc">/</span>Slope,<span class="at">digits=</span><span class="dv">3</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Obtain the Slope (a) and Intercept (b) for each calibration curve (y=ax+b)</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>regression_1 <span class="ot">&lt;-</span> data_hrms_average <span class="sc">|&gt;</span> </span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Compound)  <span class="sc">|&gt;</span> </span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">do</span>(<span class="fu">tidy</span>(<span class="fu">lm</span>(Average_intensity <span class="sc">~</span> Concentration, <span class="at">data =</span> .)))  <span class="sc">|&gt;</span> </span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Concentration"</span>, <span class="st">"(Intercept)"</span>))  <span class="sc">|&gt;</span> </span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">parameter =</span> <span class="fu">if_else</span>(term <span class="sc">==</span> <span class="st">"Concentration"</span>, <span class="st">"Slope"</span>, <span class="st">"Intercept"</span>))  <span class="sc">|&gt;</span> </span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Compound, parameter, estimate)  <span class="sc">|&gt;</span> </span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">spread</span>(parameter, estimate)</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a><span class="do">##### Obtain the Slope (a) for each calibration curve (y=ax+b)#####</span></span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a><span class="co">#regression_1 &lt;- data_hrms_average |&gt; </span></span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a><span class="co">#  group_by(Compound) |&gt; </span></span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a><span class="co">#  do(tidy(lm(Average_intensity ~ Concentration, data = .)))  |&gt; </span></span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a><span class="co">#  filter(term == "Concentration")  |&gt; </span></span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a><span class="co">#  select(Compound, Slope = estimate)</span></span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Obtain the StDErrorY for each calibration curve</span></span>
+<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a>regression_2 <span class="ot">&lt;-</span> data_hrms_average <span class="sc">|&gt;</span> </span>
+<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>   <span class="fu">group_by</span>(Compound) <span class="sc">|&gt;</span> </span>
+<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a>   <span class="fu">do</span>(<span class="fu">augment</span>(<span class="fu">lm</span>(Average_intensity <span class="sc">~</span> Concentration, <span class="at">data =</span> .))) <span class="sc">|&gt;</span> </span>
+<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a>   <span class="fu">summarise</span>(<span class="at">StdErrorY =</span> <span class="fu">sd</span>(.resid))  <span class="sc">|&gt;</span> </span>
+<span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a>   <span class="fu">select</span>(Compound, StdErrorY)</span>
+<span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Combines the two data frames with Slope and StDErrorY, and calculate the LOD and LOQ for them</span></span>
+<span id="cb26-24"><a href="#cb26-24" aria-hidden="true" tabindex="-1"></a>regression_data_hrms_average <span class="ot">&lt;-</span> regression_1 <span class="sc">|&gt;</span> </span>
+<span id="cb26-25"><a href="#cb26-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(regression_2, <span class="fu">join_by</span>(Compound)) <span class="sc">|&gt;</span>   </span>
+<span id="cb26-26"><a href="#cb26-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="st">`</span><span class="at">LOD_[ppb]</span><span class="st">`</span><span class="ot">=</span> <span class="fu">round</span>(<span class="fl">3.3</span><span class="sc">*</span>StdErrorY<span class="sc">/</span>Slope,<span class="at">digits=</span><span class="dv">3</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb26-27"><a href="#cb26-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="st">`</span><span class="at">LOQ_[ppb]</span><span class="st">`</span><span class="ot">=</span> <span class="fu">round</span>(<span class="dv">10</span><span class="sc">*</span>StdErrorY<span class="sc">/</span>Slope,<span class="at">digits=</span><span class="dv">3</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Calculate the concentration from the calibration curve for selected Sample_Item and Replicate</span></span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>sample <span class="ot">&lt;-</span> <span class="st">"StD_300"</span></span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>nr_replicate <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>cal_conc_data_hrms <span class="ot">&lt;-</span> data_hrms <span class="sc">|&gt;</span> </span>
-<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Sample_Item <span class="sc">==</span> sample <span class="sc">&amp;</span> Replicate <span class="sc">==</span> nr_replicate) <span class="sc">|&gt;</span></span>
-<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">semi_join</span>(regression_data_hrms_average, <span class="at">by =</span> <span class="st">"Compound"</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Calculated_Conc =</span> <span class="fu">cal_conc</span>(Detector_Counts, regression_data_hrms_average<span class="sc">$</span>Intercept, regression_data_hrms_average<span class="sc">$</span>Slope))</span>
-<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a><span class="co">#Create a table with the calculated concentrations</span></span>
-<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>gt_tab <span class="ot">&lt;-</span> cal_conc_data_hrms <span class="sc">|&gt;</span> <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(Calculated_Conc))<span class="sc">|&gt;</span> </span>
-<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Compound, Mass_to_Charge_Ratio, Retention_Time, Drift_Time, CCS, Calculated_Conc) <span class="sc">|&gt;</span> </span>
-<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt</span>() <span class="sc">|&gt;</span></span>
-<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tab_options</span>(<span class="at">table.font.color=</span><span class="st">"black"</span>)<span class="sc">|&gt;</span> </span>
-<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tab_header</span>(</span>
-<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a>      <span class="at">title=</span><span class="fu">md</span>(<span class="st">"**Calculated Concentrations**"</span>), <span class="co">#**to make bold</span></span>
-<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>      ) <span class="sc">|&gt;</span> </span>
-<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fmt_number</span>(<span class="at">columns =</span> <span class="fu">c</span>(Mass_to_Charge_Ratio, Retention_Time, Drift_Time, CCS, Calculated_Conc), <span class="at">decimals=</span><span class="dv">3</span>) <span class="sc">|&gt;</span>  <span class="co">#to formate numbers, can select specific columns to display certain nr. of deicmals for example. </span></span>
-<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cols_label</span>(</span>
-<span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">Mass_to_Charge_Ratio =</span> <span class="fu">md</span>(<span class="st">"*m/z*"</span>),</span>
-<span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">Retention_Time =</span> <span class="fu">md</span>(<span class="st">"Retention Time &lt;br&gt;[min]"</span>),</span>
-<span id="cb26-24"><a href="#cb26-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">Drift_Time =</span> <span class="fu">md</span>(<span class="st">"Drift Time &lt;br&gt;[ms]"</span>),</span>
-<span id="cb26-25"><a href="#cb26-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">CCS =</span> <span class="fu">md</span>(<span class="st">"Å^2^"</span>),</span>
-<span id="cb26-26"><a href="#cb26-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">Calculated_Conc =</span> <span class="fu">md</span>(<span class="st">"Calculated Concentrations"</span>)</span>
-<span id="cb26-27"><a href="#cb26-27" aria-hidden="true" tabindex="-1"></a>  ) </span>
-<span id="cb26-28"><a href="#cb26-28" aria-hidden="true" tabindex="-1"></a>gt_tab </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Calculate the concentration from the calibration curve for selected Sample_Item and Replicate</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>sample <span class="ot">&lt;-</span> <span class="st">"StD_300"</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>nr_replicate <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>cal_conc_data_hrms <span class="ot">&lt;-</span> data_hrms <span class="sc">|&gt;</span> </span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Sample_Item <span class="sc">==</span> sample <span class="sc">&amp;</span> Replicate <span class="sc">==</span> nr_replicate) <span class="sc">|&gt;</span></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">semi_join</span>(regression_data_hrms_average, <span class="at">by =</span> <span class="st">"Compound"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Calculated_Conc =</span> <span class="fu">cal_conc</span>(Detector_Counts, regression_data_hrms_average<span class="sc">$</span>Intercept, regression_data_hrms_average<span class="sc">$</span>Slope))</span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a><span class="co">#Create a table with the calculated concentrations</span></span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>gt_tab <span class="ot">&lt;-</span> cal_conc_data_hrms <span class="sc">|&gt;</span> <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(Calculated_Conc))<span class="sc">|&gt;</span> </span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Compound, Mass_to_Charge_Ratio, Retention_Time, Drift_Time, CCS, Calculated_Conc) <span class="sc">|&gt;</span> </span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt</span>() <span class="sc">|&gt;</span></span>
+<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tab_options</span>(<span class="at">table.font.color=</span><span class="st">"black"</span>)<span class="sc">|&gt;</span> </span>
+<span id="cb27-17"><a href="#cb27-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tab_header</span>(</span>
+<span id="cb27-18"><a href="#cb27-18" aria-hidden="true" tabindex="-1"></a>      <span class="at">title=</span><span class="fu">md</span>(<span class="st">"**Calculated Concentrations**"</span>), <span class="co">#**to make bold</span></span>
+<span id="cb27-19"><a href="#cb27-19" aria-hidden="true" tabindex="-1"></a>      ) <span class="sc">|&gt;</span> </span>
+<span id="cb27-20"><a href="#cb27-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fmt_number</span>(<span class="at">columns =</span> <span class="fu">c</span>(Mass_to_Charge_Ratio, Retention_Time, Drift_Time, CCS, Calculated_Conc), <span class="at">decimals=</span><span class="dv">3</span>) <span class="sc">|&gt;</span>  <span class="co">#to formate numbers, can select specific columns to display certain nr. of deicmals for example. </span></span>
+<span id="cb27-21"><a href="#cb27-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cols_label</span>(</span>
+<span id="cb27-22"><a href="#cb27-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">Mass_to_Charge_Ratio =</span> <span class="fu">md</span>(<span class="st">"*m/z*"</span>),</span>
+<span id="cb27-23"><a href="#cb27-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">Retention_Time =</span> <span class="fu">md</span>(<span class="st">"Retention Time &lt;br&gt;[min]"</span>),</span>
+<span id="cb27-24"><a href="#cb27-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">Drift_Time =</span> <span class="fu">md</span>(<span class="st">"Drift Time &lt;br&gt;[ms]"</span>),</span>
+<span id="cb27-25"><a href="#cb27-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">CCS =</span> <span class="fu">md</span>(<span class="st">"Å^2^"</span>),</span>
+<span id="cb27-26"><a href="#cb27-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">Calculated_Conc =</span> <span class="fu">md</span>(<span class="st">"Calculated Concentrations"</span>)</span>
+<span id="cb27-27"><a href="#cb27-27" aria-hidden="true" tabindex="-1"></a>  ) </span>
+<span id="cb27-28"><a href="#cb27-28" aria-hidden="true" tabindex="-1"></a>gt_tab </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 
-<div id="lqkoczncts" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#lqkoczncts table {
+<div id="orspojwyan" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#orspojwyan table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#lqkoczncts thead, #lqkoczncts tbody, #lqkoczncts tfoot, #lqkoczncts tr, #lqkoczncts td, #lqkoczncts th {
+#orspojwyan thead, #orspojwyan tbody, #orspojwyan tfoot, #orspojwyan tr, #orspojwyan td, #orspojwyan th {
   border-style: none;
 }
 
-#lqkoczncts p {
+#orspojwyan p {
   margin: 0;
   padding: 0;
 }
 
-#lqkoczncts .gt_table {
+#orspojwyan .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -633,12 +653,12 @@ Caused by error in `cor.test.default()`:
   border-left-color: #D3D3D3;
 }
 
-#lqkoczncts .gt_caption {
+#orspojwyan .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#lqkoczncts .gt_title {
+#orspojwyan .gt_title {
   color: #000000;
   font-size: 125%;
   font-weight: initial;
@@ -650,7 +670,7 @@ Caused by error in `cor.test.default()`:
   border-bottom-width: 0;
 }
 
-#lqkoczncts .gt_subtitle {
+#orspojwyan .gt_subtitle {
   color: #000000;
   font-size: 85%;
   font-weight: initial;
@@ -662,7 +682,7 @@ Caused by error in `cor.test.default()`:
   border-top-width: 0;
 }
 
-#lqkoczncts .gt_heading {
+#orspojwyan .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -674,13 +694,13 @@ Caused by error in `cor.test.default()`:
   border-right-color: #D3D3D3;
 }
 
-#lqkoczncts .gt_bottom_border {
+#orspojwyan .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#lqkoczncts .gt_col_headings {
+#orspojwyan .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -695,7 +715,7 @@ Caused by error in `cor.test.default()`:
   border-right-color: #D3D3D3;
 }
 
-#lqkoczncts .gt_col_heading {
+#orspojwyan .gt_col_heading {
   color: #000000;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -715,7 +735,7 @@ Caused by error in `cor.test.default()`:
   overflow-x: hidden;
 }
 
-#lqkoczncts .gt_column_spanner_outer {
+#orspojwyan .gt_column_spanner_outer {
   color: #000000;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -727,15 +747,15 @@ Caused by error in `cor.test.default()`:
   padding-right: 4px;
 }
 
-#lqkoczncts .gt_column_spanner_outer:first-child {
+#orspojwyan .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#lqkoczncts .gt_column_spanner_outer:last-child {
+#orspojwyan .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#lqkoczncts .gt_column_spanner {
+#orspojwyan .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -747,11 +767,11 @@ Caused by error in `cor.test.default()`:
   width: 100%;
 }
 
-#lqkoczncts .gt_spanner_row {
+#orspojwyan .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#lqkoczncts .gt_group_heading {
+#orspojwyan .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -777,7 +797,7 @@ Caused by error in `cor.test.default()`:
   text-align: left;
 }
 
-#lqkoczncts .gt_empty_group_heading {
+#orspojwyan .gt_empty_group_heading {
   padding: 0.5px;
   color: #000000;
   background-color: #FFFFFF;
@@ -792,15 +812,15 @@ Caused by error in `cor.test.default()`:
   vertical-align: middle;
 }
 
-#lqkoczncts .gt_from_md > :first-child {
+#orspojwyan .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#lqkoczncts .gt_from_md > :last-child {
+#orspojwyan .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#lqkoczncts .gt_row {
+#orspojwyan .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -819,7 +839,7 @@ Caused by error in `cor.test.default()`:
   overflow-x: hidden;
 }
 
-#lqkoczncts .gt_stub {
+#orspojwyan .gt_stub {
   color: #000000;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -832,7 +852,7 @@ Caused by error in `cor.test.default()`:
   padding-right: 5px;
 }
 
-#lqkoczncts .gt_stub_row_group {
+#orspojwyan .gt_stub_row_group {
   color: #000000;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -846,15 +866,15 @@ Caused by error in `cor.test.default()`:
   vertical-align: top;
 }
 
-#lqkoczncts .gt_row_group_first td {
+#orspojwyan .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#lqkoczncts .gt_row_group_first th {
+#orspojwyan .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#lqkoczncts .gt_summary_row {
+#orspojwyan .gt_summary_row {
   color: #000000;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -864,16 +884,16 @@ Caused by error in `cor.test.default()`:
   padding-right: 5px;
 }
 
-#lqkoczncts .gt_first_summary_row {
+#orspojwyan .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#lqkoczncts .gt_first_summary_row.thick {
+#orspojwyan .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#lqkoczncts .gt_last_summary_row {
+#orspojwyan .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -883,7 +903,7 @@ Caused by error in `cor.test.default()`:
   border-bottom-color: #D3D3D3;
 }
 
-#lqkoczncts .gt_grand_summary_row {
+#orspojwyan .gt_grand_summary_row {
   color: #000000;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -893,7 +913,7 @@ Caused by error in `cor.test.default()`:
   padding-right: 5px;
 }
 
-#lqkoczncts .gt_first_grand_summary_row {
+#orspojwyan .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -903,7 +923,7 @@ Caused by error in `cor.test.default()`:
   border-top-color: #D3D3D3;
 }
 
-#lqkoczncts .gt_last_grand_summary_row_top {
+#orspojwyan .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -913,11 +933,11 @@ Caused by error in `cor.test.default()`:
   border-bottom-color: #D3D3D3;
 }
 
-#lqkoczncts .gt_striped {
+#orspojwyan .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#lqkoczncts .gt_table_body {
+#orspojwyan .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -926,7 +946,7 @@ Caused by error in `cor.test.default()`:
   border-bottom-color: #D3D3D3;
 }
 
-#lqkoczncts .gt_footnotes {
+#orspojwyan .gt_footnotes {
   color: #000000;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -940,7 +960,7 @@ Caused by error in `cor.test.default()`:
   border-right-color: #D3D3D3;
 }
 
-#lqkoczncts .gt_footnote {
+#orspojwyan .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -949,7 +969,7 @@ Caused by error in `cor.test.default()`:
   padding-right: 5px;
 }
 
-#lqkoczncts .gt_sourcenotes {
+#orspojwyan .gt_sourcenotes {
   color: #000000;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -963,7 +983,7 @@ Caused by error in `cor.test.default()`:
   border-right-color: #D3D3D3;
 }
 
-#lqkoczncts .gt_sourcenote {
+#orspojwyan .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -971,63 +991,63 @@ Caused by error in `cor.test.default()`:
   padding-right: 5px;
 }
 
-#lqkoczncts .gt_left {
+#orspojwyan .gt_left {
   text-align: left;
 }
 
-#lqkoczncts .gt_center {
+#orspojwyan .gt_center {
   text-align: center;
 }
 
-#lqkoczncts .gt_right {
+#orspojwyan .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#lqkoczncts .gt_font_normal {
+#orspojwyan .gt_font_normal {
   font-weight: normal;
 }
 
-#lqkoczncts .gt_font_bold {
+#orspojwyan .gt_font_bold {
   font-weight: bold;
 }
 
-#lqkoczncts .gt_font_italic {
+#orspojwyan .gt_font_italic {
   font-style: italic;
 }
 
-#lqkoczncts .gt_super {
+#orspojwyan .gt_super {
   font-size: 65%;
 }
 
-#lqkoczncts .gt_footnote_marks {
+#orspojwyan .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#lqkoczncts .gt_asterisk {
+#orspojwyan .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#lqkoczncts .gt_indent_1 {
+#orspojwyan .gt_indent_1 {
   text-indent: 5px;
 }
 
-#lqkoczncts .gt_indent_2 {
+#orspojwyan .gt_indent_2 {
   text-indent: 10px;
 }
 
-#lqkoczncts .gt_indent_3 {
+#orspojwyan .gt_indent_3 {
   text-indent: 15px;
 }
 
-#lqkoczncts .gt_indent_4 {
+#orspojwyan .gt_indent_4 {
   text-indent: 20px;
 }
 
-#lqkoczncts .gt_indent_5 {
+#orspojwyan .gt_indent_5 {
   text-indent: 25px;
 }
 </style>
@@ -1143,9 +1163,9 @@ Caused by error in `cor.test.default()`:
 </table>
 </div>
 </div>
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co">#gt_tab |&gt; gtsave(filename = "tab_1.html") #saves the table in HTML format</span></span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="co">#gt_tab |&gt; gtsave(filename = "tab_1.tex") #saves the table in LaTEX format</span></span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="co">#gt_tab |&gt; gtsave(filename = "tab_1.docx") #saves the table in WORD format</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co">#gt_tab |&gt; gtsave(filename = "tab_1.html") #saves the table in HTML format</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="co">#gt_tab |&gt; gtsave(filename = "tab_1.tex") #saves the table in LaTEX format</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="co">#gt_tab |&gt; gtsave(filename = "tab_1.docx") #saves the table in WORD format</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <hr>
 </section>
@@ -1153,13 +1173,13 @@ Caused by error in `cor.test.default()`:
 <h2 data-number="4.4" class="anchored" data-anchor-id="processed-data-ms-dial"><span class="header-section-number">4.4</span> Processed Data MS-DIAL</h2>
 <p>This section is for data that has been exported from UNIFI and then been processed in <strong>MS-DIAL</strong>. Hence, the output file contains many features and the target compounds needs to be extracted from the processed output file by comparison with expected data (e.g.&nbsp;theoretical <em>m/z</em> of different adducts).</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>Data_HRMS_Format_StDB_A <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="st">"~/01_Projects/02_NM-CT-stdAB_Collaboration_CCS_MEASURMENT_2024/NMCTAB_2024_03_21_MSconvert_MSDIAL/Data_HRMS_Format_StDB.xlsx"</span>, </span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">sheet =</span> <span class="st">"Data_StDB_A_MSDIAL_1001_2"</span>)</span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>Data_HRMS_Format_StDB_A <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">diff_CCS =</span> (<span class="st">`</span><span class="at">UNIFI ccs</span><span class="st">`</span><span class="sc">-</span>CCS)<span class="sc">/</span><span class="st">`</span><span class="at">UNIFI ccs</span><span class="st">`</span><span class="sc">*</span><span class="dv">100</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>Mass_to_Charge_Ratio, <span class="at">y=</span>diff_CCS))<span class="sc">+</span></span>
-<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>Data_HRMS_Format_StDB_A <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="st">"~/01_Projects/02_NM-CT-stdAB_Collaboration_CCS_MEASURMENT_2024/NMCTAB_2024_03_21_MSconvert_MSDIAL/Data_HRMS_Format_StDB.xlsx"</span>, </span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">sheet =</span> <span class="st">"Data_StDB_A_MSDIAL_1001_2"</span>)</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>Data_HRMS_Format_StDB_A <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">diff_CCS =</span> (<span class="st">`</span><span class="at">UNIFI ccs</span><span class="st">`</span><span class="sc">-</span>CCS)<span class="sc">/</span><span class="st">`</span><span class="at">UNIFI ccs</span><span class="st">`</span><span class="sc">*</span><span class="dv">100</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>Mass_to_Charge_Ratio, <span class="at">y=</span>diff_CCS))<span class="sc">+</span></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning: Removed 21 rows containing missing values or values outside the scale range
 (`geom_point()`).</code></pre>
@@ -1167,11 +1187,11 @@ Caused by error in `cor.test.default()`:
 <div class="cell-output-display">
 <p><img src="project_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="672"></p>
 </div>
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>  <span class="co">#xlim(190,350)</span></span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(Data_HRMS_Format_StDB_A, <span class="fu">aes</span>(<span class="at">x=</span>Mass_to_Charge_Ratio,<span class="at">y=</span>CCS, <span class="at">label=</span>Compound))<span class="sc">+</span></span>
-<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()<span class="sc">+</span></span>
-<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x=</span>Mass_to_Charge_Ratio,<span class="at">y=</span><span class="st">`</span><span class="at">UNIFI ccs</span><span class="st">`</span>, <span class="at">label=</span>Compound), <span class="at">color=</span><span class="st">"red"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>  <span class="co">#xlim(190,350)</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(Data_HRMS_Format_StDB_A, <span class="fu">aes</span>(<span class="at">x=</span>Mass_to_Charge_Ratio,<span class="at">y=</span>CCS, <span class="at">label=</span>Compound))<span class="sc">+</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()<span class="sc">+</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x=</span>Mass_to_Charge_Ratio,<span class="at">y=</span><span class="st">`</span><span class="at">UNIFI ccs</span><span class="st">`</span>, <span class="at">label=</span>Compound), <span class="at">color=</span><span class="st">"red"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning in geom_point(aes(x = Mass_to_Charge_Ratio, y = `UNIFI ccs`, label = Compound), : Ignoring unknown aesthetics: label
 Removed 21 rows containing missing values or values outside the scale range
@@ -1182,13 +1202,13 @@ Removed 21 rows containing missing values or values outside the scale range
 <div class="cell-output-display">
 <p><img src="project_files/figure-html/unnamed-chunk-16-2.png" class="img-fluid" width="672"></p>
 </div>
-<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_label_repel</span>(<span class="at">size =</span> <span class="fl">2.5</span>,</span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>                   <span class="at">point.padding =</span> <span class="cn">NA</span>, <span class="co"># additional padding around each point</span></span>
-<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>                   <span class="at">min.segment.length =</span> <span class="dv">0</span>, <span class="co"># draw all line segments</span></span>
-<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>                   <span class="at">force=</span><span class="dv">2</span>,</span>
-<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>                   <span class="at">fill=</span> <span class="fu">alpha</span>(<span class="st">"white"</span>,<span class="dv">0</span>),</span>
-<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>                   <span class="at">nudge_x=</span><span class="dv">2</span>, <span class="at">nudge_y=</span><span class="dv">2</span></span>
-<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>                   )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_label_repel</span>(<span class="at">size =</span> <span class="fl">2.5</span>,</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>                   <span class="at">point.padding =</span> <span class="cn">NA</span>, <span class="co"># additional padding around each point</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>                   <span class="at">min.segment.length =</span> <span class="dv">0</span>, <span class="co"># draw all line segments</span></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>                   <span class="at">force=</span><span class="dv">2</span>,</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>                   <span class="at">fill=</span> <span class="fu">alpha</span>(<span class="st">"white"</span>,<span class="dv">0</span>),</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>                   <span class="at">nudge_x=</span><span class="dv">2</span>, <span class="at">nudge_y=</span><span class="dv">2</span></span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>                   )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>geom_label_repel: parse = FALSE, box.padding = 0.25, label.padding = 0.25, point.padding = NA, label.r = 0.15, label.size = 0.25, min.segment.length = 0, arrow = NULL, na.rm = FALSE, force = 2, force_pull = 1, max.time = 0.5, max.iter = 10000, max.overlaps = 10, nudge_x = 2, nudge_y = 2, xlim = c(NA, NA), ylim = c(NA, NA), direction = both, seed = NA, verbose = FALSE
 stat_identity: na.rm = FALSE
@@ -1440,6 +1460,9 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       </a>          
   </div>
   <div class="nav-page nav-page-next">
+      <a href="./raw_ims_hrms.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Raw Data - IMS-HRMS</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
   </div>
 </nav>
 </div> <!-- /content -->
