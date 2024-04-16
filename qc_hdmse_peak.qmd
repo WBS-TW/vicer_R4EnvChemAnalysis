@@ -2,7 +2,7 @@
 
 Some analysis of data. Most of the code is just to try different functions and methods to analyse data from a LC-IMS-HRMS instrument and to compare the processing of the data between different softwares.
 
-## QC mixture 
+## QC mixture
 
 The following part is for analysis of a QC mixture containing 9 analytes.
 
@@ -100,7 +100,7 @@ The criteria for a match is based on the retention time (RT), drift time (DT), a
 -   For doing this the `join` -functions can be used.
 
 |                                                                                                                                                                     |
-|------------------------------------------------------------------------|
+|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | [R for Data Science (2e) - 19  Joins (hadley.nz)](https://r4ds.hadley.nz/joins.html)                                                                                |
 | "Mutating joins, which add new variables to one data frame from matching observations in another." e.g. `left_join()` and `inner_join()`                            |
 | "Filtering joins, which filter observations from one data frame based on whether or not they match an observation in another." e.g. `semi_join()` and `anti_join()` |
@@ -847,4 +847,14 @@ TidyMass
 ```{r}
 #source("https://www.tidymass.org/tidymass-packages/install_tidymass.txt")
 #install_tidymass(from = "tidymass.org")
+```
+
+EstimatePrecursorMz
+
+```{r}
+#library(Spectra)
+#fls <- system.file("C:/Users/vicer06/OneDrive - Linköpings universitet/Documents/01_Projects/01_VION_HRMS_MSConvert_Processing_2024/Drugmixture_MSconvert_Processing_240321")
+#sps_sciex <- Spectra(fls, source = MsBackendMzR())
+#sps_sciex
+
 ```

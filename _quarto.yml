@@ -12,6 +12,7 @@ book:
     - Data_vis.qmd
     - qc_hdmse_peak.qmd
     - project.qmd
+    - raw_ims_hrms.qmd
 
 bibliography: references.bib
 

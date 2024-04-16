@@ -1,0 +1,67 @@
+---
+title: "Raw Data - IMS-HRMS"
+---
+editor_options:    
+chunk_output_type: console ---
+---
+
+# Raw Data - IMS-HRMS
+
+## A look into the mzml data structure
+
+<https://rformassspectrometry.github.io/book/sec-raw.html>
+
+Loading libraries
+
+```{r}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("tidyverse")
+BiocManager::install("factoextra")
+BiocManager::install("msdata")
+BiocManager::install("mzR")
+BiocManager::install("rhdf5")
+BiocManager::install("rpx")
+BiocManager::install("MsCoreUtils")
+BiocManager::install("QFeatures")
+BiocManager::install("Spectra")
+BiocManager::install("ProtGenerics")
+BiocManager::install("PSMatch")
+BiocManager::install("pheatmap")
+BiocManager::install("limma")
+BiocManager::install("MSnID")
+BiocManager::install("RforMassSpectrometry/SpectraVis")
+
+library(Spectra)
+
+```
+
+Open test mzml file (Waters MSe)
+
+```{r}
+
+# This Waters MSe does not have totIonCurrent 
+# mzf <- "D:/OneDrive - Linköpings universitet/Raw_data/Dust_Florian/LC/LC_pos_mzML/QC_rep2.mzML"
+
+# Agilent qtof data contain totIonCurrent
+mzf <- "C:\\Users\\vicer06\\OneDrive - Linköpings universitet\\Documents\\01_Projects\\01_VION_HRMS_MSConvert_Processing_2024\\Test_Spectra_Function_R\\Drugstd-200ppb_1_A,3_1.mzML"
+
+sp <- Spectra(mzf)
+```
+
+Checking metainfo
+
+```{r}
+
+#plotting individual spectra
+plotSpectra(sp[2784]) #MS1
+plotSpectra(sp[2785]) #MS2
+
+
+with(spectraData(filterMsLevel(sp, 1)),
+     plot(rtime, totIonCurrent, type = "l"))
+abline(v = rtime(sp)[2784], col = "red")
+
+ms_2 <- filterPrecursorScan(sp, 2784)
+```
