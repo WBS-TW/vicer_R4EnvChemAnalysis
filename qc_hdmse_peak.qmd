@@ -100,7 +100,7 @@ The criteria for a match is based on the retention time (RT), drift time (DT), a
 -   For doing this the `join` -functions can be used.
 
 |                                                                                                                                                                     |
-|------------------------------------------------------------------------|
+|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | [R for Data Science (2e) - 19  Joins (hadley.nz)](https://r4ds.hadley.nz/joins.html)                                                                                |
 | "Mutating joins, which add new variables to one data frame from matching observations in another." e.g. `left_join()` and `inner_join()`                            |
 | "Filtering joins, which filter observations from one data frame based on whether or not they match an observation in another." e.g. `semi_join()` and `anti_join()` |
