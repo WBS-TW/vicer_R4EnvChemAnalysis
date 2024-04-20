@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>R4EnvChemAnalysis - PhD Course - 5&nbsp; Raw Data - IMS-HRMS</title>
+<title>R4EnvChemAnalysis - PhD Course - 5&nbsp; Familiarization of Raw Data - IMS-HRMS</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -107,7 +107,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./raw_ims_hrms.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Raw Data - IMS-HRMS</span></a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./raw_ims_hrms.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Familiarization of Raw Data - IMS-HRMS</span></a></li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
       <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
@@ -165,7 +165,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./raw_ims_hrms.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Raw Data - IMS-HRMS</span></span></a>
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Familiarization of Raw Data - IMS-HRMS</span></span></a>
   </div>
 </li>
     </ul>
@@ -178,10 +178,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#raw-data---ims-hrms" id="toc-raw-data---ims-hrms" class="nav-link active" data-scroll-target="#raw-data---ims-hrms"><span class="header-section-number">6</span> Raw Data - IMS-HRMS</a>
-  <ul class="collapse">
-  <li><a href="#a-look-into-the-mzml-data-structure" id="toc-a-look-into-the-mzml-data-structure" class="nav-link" data-scroll-target="#a-look-into-the-mzml-data-structure"><span class="header-section-number">6.1</span> A look into the mzml data structure</a></li>
-  </ul></li>
+  <li><a href="#loading-of-libraries" id="toc-loading-of-libraries" class="nav-link active" data-scroll-target="#loading-of-libraries"><span class="header-section-number">5.0.1</span> Loading of libraries</a></li>
+  <li><a href="#plot-mass-spectrum" id="toc-plot-mass-spectrum" class="nav-link" data-scroll-target="#plot-mass-spectrum"><span class="header-section-number">5.0.2</span> Plot Mass Spectrum</a></li>
+  <li><a href="#constructing-a-tic-of-the-data" id="toc-constructing-a-tic-of-the-data" class="nav-link" data-scroll-target="#constructing-a-tic-of-the-data"><span class="header-section-number">5.0.3</span> Constructing a TIC of the data</a></li>
+  <li><a href="#xic-of-the-data" id="toc-xic-of-the-data" class="nav-link" data-scroll-target="#xic-of-the-data"><span class="header-section-number">5.0.4</span> XIC of the data</a></li>
+  <li><a href="#import-more-than-one-file-at-a-time" id="toc-import-more-than-one-file-at-a-time" class="nav-link" data-scroll-target="#import-more-than-one-file-at-a-time"><span class="header-section-number">5.0.5</span> Import more than one file at a time</a></li>
   </ul>
 </nav>
     </div>
@@ -190,7 +191,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Raw Data - IMS-HRMS</span></h1>
+<h1 class="title"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Familiarization of Raw Data - IMS-HRMS</span></h1>
 </div>
 
 
@@ -205,383 +206,425 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
-<p>editor_options:<br>
-chunk_output_type: console —</p>
-<hr>
-<section id="raw-data---ims-hrms" class="level1" data-number="6">
-<h1 data-number="6"><span class="header-section-number">6</span> Raw Data - IMS-HRMS</h1>
-<section id="a-look-into-the-mzml-data-structure" class="level2" data-number="6.1">
-<h2 data-number="6.1" class="anchored" data-anchor-id="a-look-into-the-mzml-data-structure"><span class="header-section-number">6.1</span> A look into the mzml data structure</h2>
 <p><a href="https://rformassspectrometry.github.io/book/sec-raw.html" class="uri">https://rformassspectrometry.github.io/book/sec-raw.html</a></p>
-<p>Loading libraries</p>
+<section id="loading-of-libraries" class="level3" data-number="5.0.1">
+<h3 data-number="5.0.1" class="anchored" data-anchor-id="loading-of-libraries"><span class="header-section-number">5.0.1</span> Loading of libraries</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">"BiocManager"</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>))</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">install.packages</span>(<span class="st">"BiocManager"</span>)</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>BiocManager<span class="sc">::</span><span class="fu">install</span>(<span class="st">"tidyverse"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Bioconductor version 3.18 (BiocManager 1.30.22), R 4.3.2 (2023-10-31 ucrt)</code></pre>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>BiocManager<span class="sc">::</span><span class="fu">install</span>(<span class="st">"tidyverse"</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>BiocManager<span class="sc">::</span><span class="fu">install</span>(<span class="st">"factoextra"</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>BiocManager<span class="sc">::</span><span class="fu">install</span>(<span class="st">"msdata"</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>BiocManager<span class="sc">::</span><span class="fu">install</span>(<span class="st">"mzR"</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>BiocManager<span class="sc">::</span><span class="fu">install</span>(<span class="st">"rhdf5"</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>BiocManager<span class="sc">::</span><span class="fu">install</span>(<span class="st">"rpx"</span>)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>BiocManager<span class="sc">::</span><span class="fu">install</span>(<span class="st">"MsCoreUtils"</span>)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>BiocManager<span class="sc">::</span><span class="fu">install</span>(<span class="st">"QFeatures"</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>BiocManager<span class="sc">::</span><span class="fu">install</span>(<span class="st">"Spectra"</span>)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>BiocManager<span class="sc">::</span><span class="fu">install</span>(<span class="st">"ProtGenerics"</span>)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>BiocManager<span class="sc">::</span><span class="fu">install</span>(<span class="st">"PSMatch"</span>)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>BiocManager<span class="sc">::</span><span class="fu">install</span>(<span class="st">"pheatmap"</span>)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>BiocManager<span class="sc">::</span><span class="fu">install</span>(<span class="st">"limma"</span>)</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>BiocManager<span class="sc">::</span><span class="fu">install</span>(<span class="st">"MSnID"</span>)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>BiocManager<span class="sc">::</span><span class="fu">install</span>(<span class="st">"RforMassSpectrometry/SpectraVis"</span>)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mzR)</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Spectra)</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(viridis)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: package(s) not installed when version(s) same as or greater than current; use
-  `force = TRUE` to re-install: 'tidyverse'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Installation paths not writeable, unable to update packages
-  path: C:/Program Files/R/R-4.3.2/library
-  packages:
-    boot, cluster, codetools, foreign, lattice, MASS, Matrix, mgcv, nlme,
-    rpart, survival</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Old packages: 'Biostrings', 'bookdown', 'cliqueMS', 'lme4', 'MLmetrics',
-  'prismatic', 'RcppArmadillo', 'renv', 'reticulate', 'testthat'</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>BiocManager<span class="sc">::</span><span class="fu">install</span>(<span class="st">"factoextra"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Bioconductor version 3.18 (BiocManager 1.30.22), R 4.3.2 (2023-10-31 ucrt)</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: package(s) not installed when version(s) same as or greater than current; use
-  `force = TRUE` to re-install: 'factoextra'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Installation paths not writeable, unable to update packages
-  path: C:/Program Files/R/R-4.3.2/library
-  packages:
-    boot, cluster, codetools, foreign, lattice, MASS, Matrix, mgcv, nlme,
-    rpart, survival
-Old packages: 'Biostrings', 'bookdown', 'cliqueMS', 'lme4', 'MLmetrics',
-  'prismatic', 'RcppArmadillo', 'renv', 'reticulate', 'testthat'</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>BiocManager<span class="sc">::</span><span class="fu">install</span>(<span class="st">"msdata"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Bioconductor version 3.18 (BiocManager 1.30.22), R 4.3.2 (2023-10-31 ucrt)</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: package(s) not installed when version(s) same as or greater than current; use
-  `force = TRUE` to re-install: 'msdata'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Installation paths not writeable, unable to update packages
-  path: C:/Program Files/R/R-4.3.2/library
-  packages:
-    boot, cluster, codetools, foreign, lattice, MASS, Matrix, mgcv, nlme,
-    rpart, survival
-Old packages: 'Biostrings', 'bookdown', 'cliqueMS', 'lme4', 'MLmetrics',
-  'prismatic', 'RcppArmadillo', 'renv', 'reticulate', 'testthat'</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>BiocManager<span class="sc">::</span><span class="fu">install</span>(<span class="st">"mzR"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Bioconductor version 3.18 (BiocManager 1.30.22), R 4.3.2 (2023-10-31 ucrt)</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: package(s) not installed when version(s) same as or greater than current; use
-  `force = TRUE` to re-install: 'mzR'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Installation paths not writeable, unable to update packages
-  path: C:/Program Files/R/R-4.3.2/library
-  packages:
-    boot, cluster, codetools, foreign, lattice, MASS, Matrix, mgcv, nlme,
-    rpart, survival
-Old packages: 'Biostrings', 'bookdown', 'cliqueMS', 'lme4', 'MLmetrics',
-  'prismatic', 'RcppArmadillo', 'renv', 'reticulate', 'testthat'</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>BiocManager<span class="sc">::</span><span class="fu">install</span>(<span class="st">"rhdf5"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Bioconductor version 3.18 (BiocManager 1.30.22), R 4.3.2 (2023-10-31 ucrt)</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: package(s) not installed when version(s) same as or greater than current; use
-  `force = TRUE` to re-install: 'rhdf5'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Installation paths not writeable, unable to update packages
-  path: C:/Program Files/R/R-4.3.2/library
-  packages:
-    boot, cluster, codetools, foreign, lattice, MASS, Matrix, mgcv, nlme,
-    rpart, survival
-Old packages: 'Biostrings', 'bookdown', 'cliqueMS', 'lme4', 'MLmetrics',
-  'prismatic', 'RcppArmadillo', 'renv', 'reticulate', 'testthat'</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>BiocManager<span class="sc">::</span><span class="fu">install</span>(<span class="st">"rpx"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Bioconductor version 3.18 (BiocManager 1.30.22), R 4.3.2 (2023-10-31 ucrt)</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: package(s) not installed when version(s) same as or greater than current; use
-  `force = TRUE` to re-install: 'rpx'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Installation paths not writeable, unable to update packages
-  path: C:/Program Files/R/R-4.3.2/library
-  packages:
-    boot, cluster, codetools, foreign, lattice, MASS, Matrix, mgcv, nlme,
-    rpart, survival
-Old packages: 'Biostrings', 'bookdown', 'cliqueMS', 'lme4', 'MLmetrics',
-  'prismatic', 'RcppArmadillo', 'renv', 'reticulate', 'testthat'</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>BiocManager<span class="sc">::</span><span class="fu">install</span>(<span class="st">"MsCoreUtils"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Bioconductor version 3.18 (BiocManager 1.30.22), R 4.3.2 (2023-10-31 ucrt)</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: package(s) not installed when version(s) same as or greater than current; use
-  `force = TRUE` to re-install: 'MsCoreUtils'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Installation paths not writeable, unable to update packages
-  path: C:/Program Files/R/R-4.3.2/library
-  packages:
-    boot, cluster, codetools, foreign, lattice, MASS, Matrix, mgcv, nlme,
-    rpart, survival
-Old packages: 'Biostrings', 'bookdown', 'cliqueMS', 'lme4', 'MLmetrics',
-  'prismatic', 'RcppArmadillo', 'renv', 'reticulate', 'testthat'</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>BiocManager<span class="sc">::</span><span class="fu">install</span>(<span class="st">"QFeatures"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Bioconductor version 3.18 (BiocManager 1.30.22), R 4.3.2 (2023-10-31 ucrt)</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: package(s) not installed when version(s) same as or greater than current; use
-  `force = TRUE` to re-install: 'QFeatures'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Installation paths not writeable, unable to update packages
-  path: C:/Program Files/R/R-4.3.2/library
-  packages:
-    boot, cluster, codetools, foreign, lattice, MASS, Matrix, mgcv, nlme,
-    rpart, survival
-Old packages: 'Biostrings', 'bookdown', 'cliqueMS', 'lme4', 'MLmetrics',
-  'prismatic', 'RcppArmadillo', 'renv', 'reticulate', 'testthat'</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>BiocManager<span class="sc">::</span><span class="fu">install</span>(<span class="st">"Spectra"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Bioconductor version 3.18 (BiocManager 1.30.22), R 4.3.2 (2023-10-31 ucrt)</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: package(s) not installed when version(s) same as or greater than current; use
-  `force = TRUE` to re-install: 'Spectra'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Installation paths not writeable, unable to update packages
-  path: C:/Program Files/R/R-4.3.2/library
-  packages:
-    boot, cluster, codetools, foreign, lattice, MASS, Matrix, mgcv, nlme,
-    rpart, survival
-Old packages: 'Biostrings', 'bookdown', 'cliqueMS', 'lme4', 'MLmetrics',
-  'prismatic', 'RcppArmadillo', 'renv', 'reticulate', 'testthat'</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>BiocManager<span class="sc">::</span><span class="fu">install</span>(<span class="st">"ProtGenerics"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Bioconductor version 3.18 (BiocManager 1.30.22), R 4.3.2 (2023-10-31 ucrt)</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: package(s) not installed when version(s) same as or greater than current; use
-  `force = TRUE` to re-install: 'ProtGenerics'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Installation paths not writeable, unable to update packages
-  path: C:/Program Files/R/R-4.3.2/library
-  packages:
-    boot, cluster, codetools, foreign, lattice, MASS, Matrix, mgcv, nlme,
-    rpart, survival
-Old packages: 'Biostrings', 'bookdown', 'cliqueMS', 'lme4', 'MLmetrics',
-  'prismatic', 'RcppArmadillo', 'renv', 'reticulate', 'testthat'</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>BiocManager<span class="sc">::</span><span class="fu">install</span>(<span class="st">"PSMatch"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Bioconductor version 3.18 (BiocManager 1.30.22), R 4.3.2 (2023-10-31 ucrt)</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: package(s) not installed when version(s) same as or greater than current; use
-  `force = TRUE` to re-install: 'PSMatch'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Installation paths not writeable, unable to update packages
-  path: C:/Program Files/R/R-4.3.2/library
-  packages:
-    boot, cluster, codetools, foreign, lattice, MASS, Matrix, mgcv, nlme,
-    rpart, survival
-Old packages: 'Biostrings', 'bookdown', 'cliqueMS', 'lme4', 'MLmetrics',
-  'prismatic', 'RcppArmadillo', 'renv', 'reticulate', 'testthat'</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>BiocManager<span class="sc">::</span><span class="fu">install</span>(<span class="st">"pheatmap"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Bioconductor version 3.18 (BiocManager 1.30.22), R 4.3.2 (2023-10-31 ucrt)</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: package(s) not installed when version(s) same as or greater than current; use
-  `force = TRUE` to re-install: 'pheatmap'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Installation paths not writeable, unable to update packages
-  path: C:/Program Files/R/R-4.3.2/library
-  packages:
-    boot, cluster, codetools, foreign, lattice, MASS, Matrix, mgcv, nlme,
-    rpart, survival
-Old packages: 'Biostrings', 'bookdown', 'cliqueMS', 'lme4', 'MLmetrics',
-  'prismatic', 'RcppArmadillo', 'renv', 'reticulate', 'testthat'</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>BiocManager<span class="sc">::</span><span class="fu">install</span>(<span class="st">"limma"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Bioconductor version 3.18 (BiocManager 1.30.22), R 4.3.2 (2023-10-31 ucrt)</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: package(s) not installed when version(s) same as or greater than current; use
-  `force = TRUE` to re-install: 'limma'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Installation paths not writeable, unable to update packages
-  path: C:/Program Files/R/R-4.3.2/library
-  packages:
-    boot, cluster, codetools, foreign, lattice, MASS, Matrix, mgcv, nlme,
-    rpart, survival
-Old packages: 'Biostrings', 'bookdown', 'cliqueMS', 'lme4', 'MLmetrics',
-  'prismatic', 'RcppArmadillo', 'renv', 'reticulate', 'testthat'</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>BiocManager<span class="sc">::</span><span class="fu">install</span>(<span class="st">"MSnID"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Bioconductor version 3.18 (BiocManager 1.30.22), R 4.3.2 (2023-10-31 ucrt)</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: package(s) not installed when version(s) same as or greater than current; use
-  `force = TRUE` to re-install: 'MSnID'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Installation paths not writeable, unable to update packages
-  path: C:/Program Files/R/R-4.3.2/library
-  packages:
-    boot, cluster, codetools, foreign, lattice, MASS, Matrix, mgcv, nlme,
-    rpart, survival
-Old packages: 'Biostrings', 'bookdown', 'cliqueMS', 'lme4', 'MLmetrics',
-  'prismatic', 'RcppArmadillo', 'renv', 'reticulate', 'testthat'</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>BiocManager<span class="sc">::</span><span class="fu">install</span>(<span class="st">"RforMassSpectrometry/SpectraVis"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Bioconductor version 3.18 (BiocManager 1.30.22), R 4.3.2 (2023-10-31 ucrt)</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Installing github package(s) 'RforMassSpectrometry/SpectraVis'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Using GitHub PAT from the git credential store.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Skipping install of 'SpectraVis' from a github remote, the SHA1 (bbecad18) has not changed since last install.
-  Use `force = TRUE` to force installation</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Installation paths not writeable, unable to update packages
-  path: C:/Program Files/R/R-4.3.2/library
-  packages:
-    boot, cluster, codetools, foreign, lattice, MASS, Matrix, mgcv, nlme,
-    rpart, survival</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Old packages: 'Biostrings', 'bookdown', 'cliqueMS', 'lme4', 'MLmetrics',
-  'prismatic', 'RcppArmadillo', 'renv', 'reticulate', 'testthat'</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Spectra)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: S4Vectors</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: stats4</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: BiocGenerics</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>
-Attaching package: 'BiocGenerics'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following objects are masked from 'package:stats':
-
-    IQR, mad, sd, var, xtabs</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following objects are masked from 'package:base':
-
-    anyDuplicated, aperm, append, as.data.frame, basename, cbind,
-    colnames, dirname, do.call, duplicated, eval, evalq, Filter, Find,
-    get, grep, grepl, intersect, is.unsorted, lapply, Map, mapply,
-    match, mget, order, paste, pmax, pmax.int, pmin, pmin.int,
-    Position, rank, rbind, Reduce, rownames, sapply, setdiff, sort,
-    table, tapply, union, unique, unsplit, which.max, which.min</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>
-Attaching package: 'S4Vectors'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following object is masked from 'package:utils':
-
-    findMatches</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following objects are masked from 'package:base':
-
-    expand.grid, I, unname</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: BiocParallel</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: ProtGenerics</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>
-Attaching package: 'ProtGenerics'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following object is masked from 'package:stats':
-
-    smooth</code></pre>
-</div>
-</div>
-<p>Open test mzml file (Waters MSe)</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a><span class="co"># This Waters MSe does not have totIonCurrent </span></span>
-<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a><span class="co"># mzf &lt;- "D:/OneDrive - Linköpings universitet/Raw_data/Dust_Florian/LC/LC_pos_mzML/QC_rep2.mzML"</span></span>
-<span id="cb79-3"><a href="#cb79-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb79-4"><a href="#cb79-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Agilent qtof data contain totIonCurrent</span></span>
-<span id="cb79-5"><a href="#cb79-5" aria-hidden="true" tabindex="-1"></a>mzf <span class="ot">&lt;-</span> <span class="st">"C:</span><span class="sc">\\</span><span class="st">Users</span><span class="sc">\\</span><span class="st">vicer06</span><span class="sc">\\</span><span class="st">OneDrive - Linköpings universitet</span><span class="sc">\\</span><span class="st">Documents</span><span class="sc">\\</span><span class="st">01_Projects</span><span class="sc">\\</span><span class="st">01_VION_HRMS_MSConvert_Processing_2024</span><span class="sc">\\</span><span class="st">Test_Spectra_Function_R</span><span class="sc">\\</span><span class="st">Drugstd-200ppb_1_A,3_1.mzML"</span></span>
-<span id="cb79-6"><a href="#cb79-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb79-7"><a href="#cb79-7" aria-hidden="true" tabindex="-1"></a>sp <span class="ot">&lt;-</span> <span class="fu">Spectra</span>(mzf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in fun(libname, pkgname): mzR has been built against a different Rcpp version (1.0.11)
-than is installed on your system (1.0.12). This might lead to errors
-when loading mzR. If you encounter such issues, please send a report,
-including the output of sessionInfo() to the Bioc support forum at 
-https://support.bioconductor.org/. For details see also
-https://github.com/sneumann/mzR/wiki/mzR-Rcpp-compiler-linker-issue.</code></pre>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Combined IMS</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co">#mz_ims2 &lt;- "C:\\Users\\vicer06\\OneDrive - Linköpings universitet\\Documents\\01_Projects\\01_VION_HRMS_MSConvert_Processing_2024\\Test_Spectra_Function_R\\Drugstd-200ppb_1_A,3_1-Combined.mzML"</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co">#sp_ims2 &lt;- Spectra(mz_ims2)</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co">#IMS-HRMS data</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>mz_ims <span class="ot">&lt;-</span> <span class="st">"C:</span><span class="sc">\\</span><span class="st">Users</span><span class="sc">\\</span><span class="st">vicer06</span><span class="sc">\\</span><span class="st">OneDrive - Linköpings universitet</span><span class="sc">\\</span><span class="st">Documents</span><span class="sc">\\</span><span class="st">01_Projects</span><span class="sc">\\</span><span class="st">01_VION_HRMS_MSConvert_Processing_2024</span><span class="sc">\\</span><span class="st">Test_Spectra_Function_R</span><span class="sc">\\</span><span class="st">Drugstd-200ppb_1_A,3_1.mzML"</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>sp_ims <span class="ot">&lt;-</span> <span class="fu">Spectra</span>(mz_ims)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co"># glimpse(sp_ims) #view structure of file</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co"># length(sp_ims) #number of scans</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co"># spectraVariables(sp_ims) #Extract metadata varaibles</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co"># sp_ims[["peaksCount"]] #Use metadata variables to extract them</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="co"># sp_ims[["ionMobilityDriftTime"]]</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="co"># sp_ims[["rtime"]]</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="co"># sp_ims[["msLevel"]]</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="co"># #or can use</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="co"># rtime(sp_ims)</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="co"># scanIndex(sp_ims)</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="co"># msLevel(sp_ims)</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="co"># spectraData(sp_ims) #Extract all metadata</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="co"># raw_data_ims &lt;- peaksData(sp_ims) #Extract list with all raw data</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="co"># ####for help ?Spectra####</span></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="co"># filterAcquisitionNum(sp_ims, n=2000:2001) #filter for scan 2000-2001 in sp_ims</span></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a><span class="co"># filterIntensity(</span></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a><span class="co">#     sp_ims,</span></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="co">#     intensity = c(10000, Inf)#,</span></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a><span class="co">#     #msLevel. = uniqueMsLevels(sp_ims)</span></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a><span class="co"># ) #filter for intensities, removes peaks below 10 000 in intensity</span></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a><span class="co"># filterMsLevel(sp_ims, msLevel. = 1) #filter for MS levels, here for MS1</span></span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a><span class="co"># filterRt(sp_ims, rt = 1:2, uniqueMsLevels(sp_ims)) #filter for Retention time, here between 1 and 2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</div>
-<p>Checking metainfo</p>
+</section>
+<section id="plot-mass-spectrum" class="level3" data-number="5.0.2">
+<h3 data-number="5.0.2" class="anchored" data-anchor-id="plot-mass-spectrum"><span class="header-section-number">5.0.2</span> Plot Mass Spectrum</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a><span class="co">#plotting individual spectra</span></span>
-<span id="cb81-2"><a href="#cb81-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plotSpectra</span>(sp[<span class="dv">2784</span>]) <span class="co">#MS1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">#plotSpectra can bu used to plot the Mass spectrum of a scan. In the raw data (Spectrum("xxx.mzML")), one can find ""peaksVariables" containing "mz" and "intensity", which tells what to use for the plot??</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># #Plot Spectra of a scan and displays the m/z with a smaller font size</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># plotSpectra(sp_ims[1800], labels = function(z) format(unlist(mz(z))), labelCex=0.5) #MS1</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># plotSpectra(sp_ims[1801], labels = function(z) format(unlist(mz(z))), labelCex=0.5) #MS2</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># plotSpectra(filterAcquisitionNum(sp_ims, n=1800:1801)) #Both MS1 and MS2 at same time</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co"># plotSpectra(filterMsLevel(sp_ims, msLevel. = 1)[1800], labels = function(z) format(unlist(mz(z))))</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co"># plotSpectra(filterMsLevel(sp_ims, msLevel. = 2)[1800], labels = function(z) format(unlist(mz(z))))</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co"># plotSpectraOverlay(filterMsLevel(sp_ims, msLevel. = 1)[1:200]) #overlay the spectran for scan nr1 to nr200 for MS1</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co">#plot scan 24655, and labels the peaks above 500 intensity and smaller font size</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="fu">plotSpectra</span>(sp_ims[<span class="dv">24655</span>], <span class="at">labelCex=</span><span class="fl">0.5</span>,</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>            <span class="at">labels =</span> <span class="cf">function</span>(z) {</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>        lbls <span class="ot">&lt;-</span> <span class="fu">format</span>(<span class="fu">mz</span>(z)[[1L]], <span class="at">digits=</span><span class="dv">6</span>)</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>        lbls[<span class="fu">intensity</span>(z)[[1L]] <span class="sc">&lt;=</span> <span class="dv">500</span>] <span class="ot">&lt;-</span> <span class="st">""</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>        lbls</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    })</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="raw_ims_hrms_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
 </div>
-<div class="sourceCode cell-code" id="cb82"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotSpectra</span>(sp[<span class="dv">2785</span>]) <span class="co">#MS2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<p><img src="raw_ims_hrms_files/figure-html/unnamed-chunk-3-2.png" class="img-fluid" width="672"></p>
 </div>
-<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a><span class="fu">with</span>(<span class="fu">spectraData</span>(<span class="fu">filterMsLevel</span>(sp, <span class="dv">1</span>)),</span>
-<span id="cb83-2"><a href="#cb83-2" aria-hidden="true" tabindex="-1"></a>     <span class="fu">plot</span>(rtime, totIonCurrent, <span class="at">type =</span> <span class="st">"l"</span>))</span>
-<span id="cb83-3"><a href="#cb83-3" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v =</span> <span class="fu">rtime</span>(sp)[<span class="dv">2784</span>], <span class="at">col =</span> <span class="st">"red"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<p><img src="raw_ims_hrms_files/figure-html/unnamed-chunk-3-3.png" class="img-fluid" width="672"></p>
-</div>
-<div class="sourceCode cell-code" id="cb84"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1" aria-hidden="true" tabindex="-1"></a>ms_2 <span class="ot">&lt;-</span> <span class="fu">filterPrecursorScan</span>(sp, <span class="dv">2784</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-
-
 </section>
+<section id="constructing-a-tic-of-the-data" class="level3" data-number="5.0.3">
+<h3 data-number="5.0.3" class="anchored" data-anchor-id="constructing-a-tic-of-the-data"><span class="header-section-number">5.0.3</span> Constructing a TIC of the data</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="do">################### TIC MS1 ##############################</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co"># sp_ims_ms1 &lt;- filterMsLevel(sp_ims, msLevel. = 1) #filter for MS levels, here for MS1</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># mz_ms1 &lt;- mz(sp_ims_ms1)</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co"># rtime_ms1 &lt;- rtime(sp_ims_ms1)</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co"># intensity_ms1 &lt;- intensity(sp_ims_ms1)</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co"># scanindex_ms1 &lt;- scanIndex(sp_ims_ms1)</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="do">#### Sum intensities for each scan ####</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co"># # Initialize an empty vector to store the sum of intensities</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="co"># sum_intensity_ms1 &lt;- numeric(length(scanindex_ms1))</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="co"># # Iterate over each scan time</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="co"># for (i in seq_along(scanindex_ms1)) {</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="co">#   # Sum the intensity values for the current scan time</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="co">#   sum_intensity_ms1[i] &lt;- sum(intensity_ms1[[i]])</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="co"># }</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="co"># ## ionCount(sp_ims) sums the intensities for each scan</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="co"># #Plot the summed intensities against the retention times</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="co"># with(spectraData(sp_ims_ms1),</span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="co">#      plot(rtime_ms1, sum_intensity_ms1, type="l"))</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="co"># abline(v = rtime(sp_ims_ms1)[24455], col = "red")</span></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="do">#### Sum intensities for each RT ####</span></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a><span class="co"># unique_rt_ms1 &lt;- unique(rtime_ms1)</span></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a><span class="co"># # Initialize an empty vector to store the sum of intensities</span></span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a><span class="co"># sum2_intensity_ms1 &lt;- numeric(length(unique_rt_ms1))</span></span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a><span class="co"># # Iterate over each unique scan time</span></span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="co"># for (i in seq_along(unique_rt_ms1)) {</span></span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a><span class="co">#   # Find the index of the current scan time in the original data</span></span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a><span class="co">#   idx_ms1 &lt;- which(rtime_ms1 == unique_rt_ms1[i])</span></span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a><span class="co">#   # Sum the intensity values for the scans with the current scan time</span></span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a><span class="co">#   sum2_intensity_ms1[i] &lt;- sum(unlist(intensity_ms1[idx_ms1]))</span></span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a><span class="co"># }</span></span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a><span class="co"># #Plot the summed intensities against the retention times</span></span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a><span class="co"># with(spectraData(sp_ims_ms1),</span></span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a><span class="co">#      plot(unique_rt_ms1/60, sum2_intensity_ms1, type="l",</span></span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a><span class="co">#           xlab="RT", ylab= "Summed Intensities",</span></span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a><span class="co">#           main = "Sum Intensties MS1",</span></span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a><span class="co">#           xlim=c(0.3,8.4)))</span></span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a><span class="do">######overlaying of msdial TIC and MS1 TIC</span></span>
+<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a>  <span class="co">#  plot(unique_rt_ms1/60, sum2_intensity_ms1, type="l")</span></span>
+<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a>  <span class="co">#  lines(msdial$RETENTIONTIME, msdial$INTENSITY, col="red")</span></span>
+<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a><span class="do">############################ TIC all MS #####################################</span></span>
+<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a><span class="co">#Saves m/z, RT, Intensity, and scanIndex as new objects</span></span>
+<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a>mz <span class="ot">&lt;-</span> <span class="fu">mz</span>(sp_ims) <span class="co">#not needed for tic</span></span>
+<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a>scanindex <span class="ot">&lt;-</span> <span class="fu">scanIndex</span>(sp_ims) <span class="co">#not needed for tic</span></span>
+<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a>rtime <span class="ot">&lt;-</span> <span class="fu">rtime</span>(sp_ims)</span>
+<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a>intensity <span class="ot">&lt;-</span> <span class="fu">intensity</span>(sp_ims)</span>
+<span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-60"><a href="#cb4-60" aria-hidden="true" tabindex="-1"></a>unique_rt <span class="ot">&lt;-</span> <span class="fu">unique</span>(rtime) <span class="co">#Finds the uniques retention times since the same RT exists for multiple scans</span></span>
+<span id="cb4-61"><a href="#cb4-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-62"><a href="#cb4-62" aria-hidden="true" tabindex="-1"></a><span class="co"># Create an empty vector to store the sum of intensities</span></span>
+<span id="cb4-63"><a href="#cb4-63" aria-hidden="true" tabindex="-1"></a>sum2_intensity <span class="ot">&lt;-</span> <span class="fu">numeric</span>(<span class="fu">length</span>(unique_rt))</span>
+<span id="cb4-64"><a href="#cb4-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-65"><a href="#cb4-65" aria-hidden="true" tabindex="-1"></a><span class="co"># Iterate over each unique scan time</span></span>
+<span id="cb4-66"><a href="#cb4-66" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_along</span>(unique_rt)) {</span>
+<span id="cb4-67"><a href="#cb4-67" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Find the index of the current scan time in the original data</span></span>
+<span id="cb4-68"><a href="#cb4-68" aria-hidden="true" tabindex="-1"></a>  idx <span class="ot">&lt;-</span> <span class="fu">which</span>(rtime <span class="sc">==</span> unique_rt[i])</span>
+<span id="cb4-69"><a href="#cb4-69" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Sum the intensity values for the scans with the current scan time</span></span>
+<span id="cb4-70"><a href="#cb4-70" aria-hidden="true" tabindex="-1"></a>  sum2_intensity[i] <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">unlist</span>(intensity[idx]))</span>
+<span id="cb4-71"><a href="#cb4-71" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb4-72"><a href="#cb4-72" aria-hidden="true" tabindex="-1"></a><span class="co">#Plot the retention times against the summed intensities</span></span>
+<span id="cb4-73"><a href="#cb4-73" aria-hidden="true" tabindex="-1"></a><span class="fu">with</span>(<span class="fu">spectraData</span>(sp_ims),</span>
+<span id="cb4-74"><a href="#cb4-74" aria-hidden="true" tabindex="-1"></a>     <span class="fu">plot</span>(unique_rt<span class="sc">/</span><span class="dv">60</span>, sum2_intensity, <span class="at">type=</span><span class="st">"l"</span>,</span>
+<span id="cb4-75"><a href="#cb4-75" aria-hidden="true" tabindex="-1"></a>          <span class="at">xlab=</span><span class="st">"RT [min]"</span>, <span class="at">ylab=</span> <span class="st">"Summed Intensities"</span>,</span>
+<span id="cb4-76"><a href="#cb4-76" aria-hidden="true" tabindex="-1"></a>          <span class="at">main =</span> <span class="st">"TIC"</span>,</span>
+<span id="cb4-77"><a href="#cb4-77" aria-hidden="true" tabindex="-1"></a>          <span class="at">xlim=</span><span class="fu">c</span>(<span class="fl">0.3</span>,<span class="fl">8.4</span>),</span>
+<span id="cb4-78"><a href="#cb4-78" aria-hidden="true" tabindex="-1"></a>          <span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="fl">3.0e6</span>)))</span>
+<span id="cb4-79"><a href="#cb4-79" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v =</span> <span class="fu">rtime</span>(sp_ims)[<span class="dv">267139</span>]<span class="sc">/</span><span class="dv">60</span>, <span class="at">col =</span> <span class="st">"red"</span>) <span class="co">#adds red line for scan 267139</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="raw_ims_hrms_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">max</span>(sum2_intensity) <span class="co">#find maximum intensity in TIC</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1775374</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">#plots spectrum for scan 267139</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plotSpectra</span>(sp_ims[<span class="dv">267139</span>], <span class="at">labelCex=</span><span class="fl">0.6</span>,</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">labels =</span> <span class="cf">function</span>(z) {</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>        lbls <span class="ot">&lt;-</span> <span class="fu">format</span>(<span class="fu">mz</span>(z)[[1L]], <span class="at">digits=</span><span class="dv">6</span>)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>        lbls[<span class="fu">intensity</span>(z)[[1L]] <span class="sc">&lt;=</span> <span class="dv">500</span>] <span class="ot">&lt;-</span> <span class="st">""</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>        lbls</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    })</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="raw_ims_hrms_files/figure-html/unnamed-chunk-4-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">max</span>(intensity[<span class="dv">267139</span>]) <span class="co">#find maximum intensity at scan 267139</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1173</code></pre>
+</div>
+</div>
+<p><u><strong>Comparion of TIC of drug-mixture (200 ppb, old-settings) with other softwares:</strong></u></p>
+<ul>
+<li><p>TIC MS1MS2 - R code (time ⁓ 56 + 46 sec)</p>
+<p><img src="images/clipboard-3494339759.png" class="img-fluid"></p></li>
+<li><p>SeeMS - Higher intensities (time ⁓ 50sec)</p>
+<p><img src="images/tic_drugstd_200ppb_seeMS.png" class="img-fluid" width="926"></p></li>
+<li><p>MS-DIAL (first needs to process the file, then can open TIC, time ⁓ 10 min )</p>
+<p><img src="images/tic_drugstd_200ppb_msdial.png" class="img-fluid"></p>
+<ul>
+<li><p>Overlaying TIC MS1 (black) and TIC MSDIAL (red)</p>
+<p><img src="images/clipboard-3237629783.png" class="img-fluid"></p></li>
+</ul></li>
+<li><p>ToppView (time ⁓ 1.22 min)</p>
+<p><img src="images/clipboard-654016648.png" class="img-fluid"></p></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="do">##Drift time Summed inteisities</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>intensity <span class="ot">&lt;-</span> <span class="fu">intensity</span>(sp_ims)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>dtime <span class="ot">&lt;-</span> sp_ims[[<span class="st">"ionMobilityDriftTime"</span>]]</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>unique_dt <span class="ot">&lt;-</span> <span class="fu">unique</span>(dtime) <span class="co">#Finds the uniques retention times since the same RT exists for multiple scans</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Create an empty vector to store the sum of intensities</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>sum3_intensity <span class="ot">&lt;-</span> <span class="fu">numeric</span>(<span class="fu">length</span>(unique_dt))</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Iterate over each unique scan time</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_along</span>(unique_dt)) {</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Find the index of the current scan time in the original data</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>  idx <span class="ot">&lt;-</span> <span class="fu">which</span>(dtime <span class="sc">==</span> unique_dt[i])</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Sum the intensity values for the scans with the current scan time</span></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>  sum3_intensity[i] <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">unlist</span>(intensity[idx]))</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a><span class="co">#Plot the retention times against the summed intensities</span></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a><span class="fu">with</span>(<span class="fu">spectraData</span>(sp_ims),</span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>     <span class="fu">plot</span>(unique_dt, sum3_intensity, <span class="at">type=</span><span class="st">"l"</span>,</span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>          <span class="at">xlab=</span><span class="st">"DT [ms]"</span>, <span class="at">ylab=</span> <span class="st">"Summed Intensities"</span>,</span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>          <span class="at">main =</span> <span class="st">"Drift Time Summed Intensities"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="raw_ims_hrms_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="do">#######################################################################</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="co">#PLOT of Retention time vs Drift time and Intensities</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>test_intensities <span class="ot">&lt;-</span> <span class="fu">ionCount</span>(sp_ims)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(dtime,</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>                   rtime ,</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>                   test_intensities)</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data, <span class="fu">aes</span>(<span class="at">x=</span>rtime<span class="sc">/</span><span class="dv">60</span>, <span class="at">y=</span>dtime))<span class="sc">+</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">color=</span>test_intensities))<span class="sc">+</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_viridis</span>(<span class="at">discrete=</span><span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="raw_ims_hrms_files/figure-html/unnamed-chunk-5-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="do">############# To arrange RT VS DT plot with the RT and DT TIC ###########</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>gg <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(data, <span class="fu">aes</span>(<span class="at">x=</span>rtime<span class="sc">/</span><span class="dv">60</span>, <span class="at">y=</span>dtime))<span class="sc">+</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">color=</span>test_intensities))<span class="sc">+</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_viridis</span>(<span class="at">discrete=</span><span class="cn">FALSE</span>)<span class="sc">+</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()<span class="sc">+</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>()</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="co">#make data fram of TIC to be abel to use ggplot</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>d1 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(unique_rt, sum2_intensity) </span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>d2 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(unique_dt, sum3_intensity)</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>g1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(d1, <span class="fu">aes</span>(<span class="at">x=</span>unique_rt<span class="sc">/</span><span class="dv">60</span>, <span class="at">y=</span>sum2_intensity))<span class="sc">+</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>()<span class="sc">+</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()<span class="sc">+</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x=</span><span class="fu">element_blank</span>(), </span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>      <span class="at">axis.ticks.x=</span><span class="fu">element_blank</span>(), </span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>      <span class="at">axis.text.y=</span><span class="fu">element_blank</span>(), </span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>      <span class="at">axis.ticks.y=</span><span class="fu">element_blank</span>())</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>g2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(d2, <span class="fu">aes</span>(<span class="at">x=</span>unique_dt, <span class="at">y=</span>sum3_intensity))<span class="sc">+</span></span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>()<span class="sc">+</span></span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x=</span><span class="fu">element_blank</span>(), </span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>      <span class="at">axis.ticks.x=</span><span class="fu">element_blank</span>(), </span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>      <span class="at">axis.text.y=</span><span class="fu">element_blank</span>(), </span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>      <span class="at">axis.ticks.y=</span><span class="fu">element_blank</span>())<span class="sc">+</span></span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>()</span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>g3 <span class="ot">&lt;-</span> <span class="fu">plot_spacer</span>() <span class="co">#blank plot to be used in upper right corner</span></span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a>(g1 <span class="sc">/</span> gg) <span class="sc">|</span> (g3 <span class="sc">/</span> g2) <span class="co">#arrange the plots with patchwork-package</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="raw_ims_hrms_files/figure-html/unnamed-chunk-5-3.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="do">##### RT vs DT MS1 #################</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>sp_ims_ms1 <span class="ot">&lt;-</span> <span class="fu">filterMsLevel</span>(sp_ims, <span class="at">msLevel. =</span> <span class="dv">1</span>) <span class="co">#filter for MS levels, here for MS1</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>dtime_ms1 <span class="ot">&lt;-</span> sp_ims_ms1[[<span class="st">"ionMobilityDriftTime"</span>]]</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>rtime_ms1 <span class="ot">&lt;-</span> <span class="fu">rtime</span>(sp_ims_ms1)</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>scan_sum_intensities_ms1 <span class="ot">&lt;-</span> <span class="fu">ionCount</span>(sp_ims_ms1)</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>dt_rt_int <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(dtime_ms1,</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>                   rtime_ms1,</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>                   scan_sum_intensities_ms1)</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(dt_rt_int, <span class="fu">aes</span>(<span class="at">x=</span>rtime_ms1<span class="sc">/</span><span class="dv">60</span>, <span class="at">y=</span>dtime_ms1))<span class="sc">+</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">color=</span>scan_sum_intensities_ms1))<span class="sc">+</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_viridis</span>(<span class="at">discrete=</span><span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="raw_ims_hrms_files/figure-html/unnamed-chunk-5-4.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="do">#################### not working ################################################</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="co"># mz_ms1 &lt;- mz(sp_ims_ms1)</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="co"># intensity_ms1 &lt;- intensity(sp_ims_ms1)</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="co"># mz_ms1_unlist &lt;- unlist(mz_ms1)</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="co"># int_ms1_unlist &lt;- unlist(intensity_ms1)</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="co"># dt_rep_ms1 &lt;- rep(unlist(dtime_ms1), lengths(mz_ms1))</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="co"># data2 &lt;- data.frame(dt_rep_ms1,</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a><span class="co">#                     mz_ms1_unlist,</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="co">#                     int_ms1_unlist)</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a><span class="co"># ggplot(data2, aes(x=mz_ms1_unlist, y=dt_rep_ms1))+</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a><span class="co">#   geom_point(aes(color=int_ms1_unlist))+</span></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a><span class="co">#   scale_color_viridis(discrete=FALSE)</span></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a><span class="co"># ## Attempting to make plot of mz vs dt with intensities</span></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a><span class="co"># test_intens2 &lt;- unlist(intensity)</span></span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a><span class="co"># test_mz2 &lt;- unlist(mz)</span></span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a><span class="co"># dt_rep &lt;- rep(unlist(dtime), lengths(mz))</span></span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a><span class="co"># data2 &lt;- data.frame(dt_rep,</span></span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a><span class="co">#                     test_mz2,</span></span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a><span class="co">#                     test_intens2)</span></span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a><span class="co"># ggplot(data2, aes(x=test_mz2, y=dt_rep))+</span></span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a><span class="co">#   geom_point(aes(color=test_intens2))+</span></span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a><span class="co">#   scale_color_viridis(discrete=FALSE)</span></span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a><span class="co"># test_mz2</span></span>
+<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a><span class="co"># dtime</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="xic-of-the-data" class="level3" data-number="5.0.4">
+<h3 data-number="5.0.4" class="anchored" data-anchor-id="xic-of-the-data"><span class="header-section-number">5.0.4</span> XIC of the data</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="do">####</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="co"># # Plot using ggplot2</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="co"># ggplot(data, aes(x = dtime, y = rtime, color = intensity)) +</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="co">#   geom_point() +</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="co">#   scale_color_gradient(low = "blue", high = "red", na.value = "black") +</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="co">#   labs(x = "DTime", y = "RTime", color = "Intensity") +</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="co">#   theme_minimal()</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a><span class="co"># test &lt;- filterMzRange(sp_ims, c(200.128, 200.129))</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a><span class="co"># test_rt &lt;- rtime(test)</span></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a><span class="co"># test &lt;- filterMzValues(sp_ims, c(200.128, 200.129))</span></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a><span class="co"># test &lt;- combinePeaks(sp_ims, mz = c(200.12, 200.13))</span></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a><span class="co"># test &lt;- filterMzValues(sp_ims, mz = c(103, 104), tolerance = 0.3)</span></span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a><span class="co"># chromatogram(sp_ims, mz = 200.1)</span></span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a><span class="co"># test_rt &lt;- rtime(test)</span></span>
+<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a><span class="co"># test_intensity &lt;- intensity(test)</span></span>
+<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a><span class="co"># # Plot the extracted ion chromatogram (XIC)</span></span>
+<span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a><span class="co"># with(spectraData(test),</span></span>
+<span id="cb16-29"><a href="#cb16-29" aria-hidden="true" tabindex="-1"></a><span class="co">#      plot(test_rt, test_intensity, type = "l")</span></span>
+<span id="cb16-30"><a href="#cb16-30" aria-hidden="true" tabindex="-1"></a><span class="co"># )</span></span>
+<span id="cb16-31"><a href="#cb16-31" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb16-32"><a href="#cb16-32" aria-hidden="true" tabindex="-1"></a><span class="co"># mz(test)</span></span>
+<span id="cb16-33"><a href="#cb16-33" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb16-34"><a href="#cb16-34" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb16-35"><a href="#cb16-35" aria-hidden="true" tabindex="-1"></a><span class="co"># test &lt;- containsMz(</span></span>
+<span id="cb16-36"><a href="#cb16-36" aria-hidden="true" tabindex="-1"></a><span class="co"># sp_ims,</span></span>
+<span id="cb16-37"><a href="#cb16-37" aria-hidden="true" tabindex="-1"></a><span class="co"># mz = 200.128,</span></span>
+<span id="cb16-38"><a href="#cb16-38" aria-hidden="true" tabindex="-1"></a><span class="co"># tolerance = 0.2,</span></span>
+<span id="cb16-39"><a href="#cb16-39" aria-hidden="true" tabindex="-1"></a><span class="co"># ppm = 10,</span></span>
+<span id="cb16-40"><a href="#cb16-40" aria-hidden="true" tabindex="-1"></a><span class="co"># which = c("any", "all"),</span></span>
+<span id="cb16-41"><a href="#cb16-41" aria-hidden="true" tabindex="-1"></a><span class="co"># BPPARAM = bpparam()</span></span>
+<span id="cb16-42"><a href="#cb16-42" aria-hidden="true" tabindex="-1"></a><span class="co"># )</span></span>
+<span id="cb16-43"><a href="#cb16-43" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb16-44"><a href="#cb16-44" aria-hidden="true" tabindex="-1"></a><span class="co"># plotSpectra(test)</span></span>
+<span id="cb16-45"><a href="#cb16-45" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb16-46"><a href="#cb16-46" aria-hidden="true" tabindex="-1"></a><span class="co"># peaksData(sp_ims)</span></span>
+<span id="cb16-47"><a href="#cb16-47" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb16-48"><a href="#cb16-48" aria-hidden="true" tabindex="-1"></a><span class="co"># plotSpectra(filterMzValues(sp_ims, c(200.128, 200.129)))</span></span>
+<span id="cb16-49"><a href="#cb16-49" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb16-50"><a href="#cb16-50" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb16-51"><a href="#cb16-51" aria-hidden="true" tabindex="-1"></a><span class="co"># plotSpectra(sp_ims, xlim = c(521.2, 522.5))</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="import-more-than-one-file-at-a-time" class="level3" data-number="5.0.5">
+<h3 data-number="5.0.5" class="anchored" data-anchor-id="import-more-than-one-file-at-a-time"><span class="header-section-number">5.0.5</span> Import more than one file at a time</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co">#import data from folder "Test_Spectra_Function_R" that contains the pattern "Drugstd-200ppb_1_A,3_1", hence data with IMS and combined IMS-dimension are importet</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="co">#takes some time to run these</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="co">#fls &lt;- dir(path = "C:\\Users\\vicer06\\OneDrive - Linköpings universitet\\Documents\\01_Projects\\01_VION_HRMS_MSConvert_Processing_2024\\Test_Spectra_Function_R", pattern="Drugstd-200ppb_1_A,3_1", full.names = TRUE)</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="co">#fls2 &lt;- Spectra(fls)</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="co">#table(dataOrigin(fls2)) #show which files been imported</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="co">#imports all mzML files in the folder</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="co">#fls &lt;- dir(path = "C:\\Users\\vicer06\\OneDrive - Linköpings universitet\\Documents\\01_Projects\\01_VION_HRMS_MSConvert_Processing_2024\\Test_Spectra_Function_R", full.names = TRUE)</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="co">#fls2 &lt;- Spectra(fls)</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="co">#table(dataOrigin(fls2))</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Backend</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="co">#MsBackenedMzR: default, relies on MzR package to read MS data</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="co">#MsBackenedMemry: full MS data stored within object (in-memory) to guarantee high performance but on the other hand has higher memory footprint if many mass peaks in specrum</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="co">#setBackend(fls2, MsBackendMemory())</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<hr>
+
+
 </section>
 
 </main> <!-- /main -->
