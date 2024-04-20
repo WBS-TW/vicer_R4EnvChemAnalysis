@@ -260,31 +260,61 @@ ggplot(data, aes(x=rtime/60, y=dtime))+
 gg <- ggplot(data, aes(x=rtime/60, y=dtime))+
   geom_point(aes(color=test_intensities))+
   scale_color_viridis(discrete=FALSE)+
+  scale_x_continuous(expand=c(0, 0),limits=c(0, max(rtime)/60))+
+  scale_y_continuous(expand=c(0, 0), limits=c(0, max(dtime)))+
+  labs(y = "Drift Time [ms]", x= "Retention Time [min]")+
   theme_minimal()+
-  theme()
+  theme(legend.title = element_blank(),
+        legend.position = c(.9,.75),
+        legend.text=element_text(size=9),
+        legend.background = element_rect(fill="white",
+                                         colour ="white"),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        plot.margin = margin(-1, -1, -1, -1, "cm"),
+        axis.ticks.x = element_line(color = "black"), 
+        axis.ticks.y = element_line(color = "black"),
+        panel.border = element_rect(colour = "black", fill=NA, size=.5))
+
 #make data fram of TIC to be abel to use ggplot
 d1 <- data.frame(unique_rt, sum2_intensity) 
 d2 <- data.frame(unique_dt, sum3_intensity)
 g1 <- ggplot(d1, aes(x=unique_rt/60, y=sum2_intensity))+
   geom_line()+
+  scale_x_continuous(expand=c(0, 0))+
+  scale_y_continuous(expand=c(0, 0))+
   theme_minimal()+
   theme(axis.text.x=element_blank(), 
       axis.ticks.x=element_blank(), 
       axis.text.y=element_blank(), 
-      axis.ticks.y=element_blank())
+      axis.ticks.y=element_blank(),
+      axis.title.x = element_blank(),
+      axis.title.y = element_blank(),
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank())
 g2 <- ggplot(d2, aes(x=unique_dt, y=sum3_intensity))+
   geom_line()+
+  scale_x_continuous(expand=c(0, 0))+
+  scale_y_continuous(expand=c(0, 0))+
   theme_minimal() +
   theme(axis.text.x=element_blank(), 
       axis.ticks.x=element_blank(), 
       axis.text.y=element_blank(), 
-      axis.ticks.y=element_blank())+
+      axis.ticks.y=element_blank(),
+      axis.title.x = element_blank(),
+      axis.title.y = element_blank(),
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank())+
   coord_flip()
 
 g3 <- plot_spacer() #blank plot to be used in upper right corner
 
-(g1 / gg) | (g3 / g2) #arrange the plots with patchwork-package
 
+
+g1 + g3 + gg + g2 +  #arrange the plots with patchwork-package
+  plot_layout(widths = c(5, 1), 
+              heights = c(1, 5),
+              guides = "collect")
 
 
 
